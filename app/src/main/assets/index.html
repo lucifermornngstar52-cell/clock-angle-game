@@ -2,922 +2,590 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Угол Стрелок</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-
   :root {
-    --green: #00ff41;
-    --darkgreen: #008f11;
-    --bg: #0d0d0d;
-    --panel: rgba(0,20,0,0.85);
-    --border: rgba(0,255,65,0.3);
+    --green:#00ff41; --dg:#008f11; --bg:#0a0a0a;
+    --panel:rgba(0,18,0,0.92); --border:rgba(0,255,65,0.25);
   }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{width:100%;height:100%;background:var(--bg);color:var(--green);
+    font-family:'Share Tech Mono',monospace;overflow:hidden;}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+  /* матрица */
+  #mc{position:fixed;inset:0;z-index:0;opacity:.13;pointer-events:none;}
 
-  body {
-    background: var(--bg);
-    color: var(--green);
-    font-family: 'Share Tech Mono', monospace;
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
-  }
+  /* скан-линии */
+  body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);}
 
-  /* ── МАТРИЦА-ФОН ── */
-  #matrix-canvas {
-    position: fixed; top:0; left:0; z-index: 0;
-    opacity: 0.18; pointer-events: none;
-  }
+  /* экраны */
+  .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:16px;}
+  .screen.hidden{display:none!important;}
 
-  /* ── ОВЕРЛЕЙ ── */
-  .screen {
-    position: fixed; inset: 0; z-index: 10;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.6);
-  }
-  .screen.hidden { display: none; }
+  /* часы реального времени */
+  #rc{position:fixed;top:10px;left:12px;z-index:100;font-family:'Orbitron',monospace;
+    font-size:.85rem;color:var(--green);text-shadow:0 0 8px var(--green);
+    background:rgba(0,0,0,.6);border:1px solid var(--border);
+    padding:3px 10px;border-radius:6px;letter-spacing:2px;}
 
-  /* ── ЧАСЫ РЕАЛЬНОГО ВРЕМЕНИ ── */
-  #real-clock {
-    position: fixed; top: 12px; left: 16px; z-index: 100;
-    font-family: 'Orbitron', monospace;
-    font-size: 1rem; color: var(--green);
-    text-shadow: 0 0 8px var(--green);
-    background: rgba(0,0,0,0.5);
-    border: 1px solid var(--border);
-    padding: 4px 10px; border-radius: 6px;
-    letter-spacing: 2px;
-  }
+  /* ══════ МЕНЮ ══════ */
+  #menu-screen{gap:18px;}
+  .mtitle{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,6vw,2.2rem);
+    font-weight:900;color:var(--green);text-shadow:0 0 20px var(--green),0 0 40px var(--green);
+    text-align:center;letter-spacing:4px;animation:flicker 5s infinite;}
+  .msub{font-size:.7rem;color:var(--dg);letter-spacing:3px;text-align:center;}
+  .btn{font-family:'Share Tech Mono',monospace;font-size:.95rem;background:transparent;
+    border:1px solid var(--green);color:var(--green);padding:12px 0;cursor:pointer;
+    letter-spacing:2px;text-transform:uppercase;width:100%;max-width:280px;text-align:center;
+    transition:all .2s;border-radius:4px;}
+  .btn:active{background:rgba(0,255,65,.15);}
+  .btn.dis{opacity:.3;pointer-events:none;}
+  .vrow{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;}
+  .vrow label{font-size:.7rem;color:var(--dg);letter-spacing:1px;min-width:56px;}
+  input[type=range]{-webkit-appearance:none;flex:1;height:3px;
+    background:var(--dg);border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+    background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);cursor:pointer;}
+  .vv{font-size:.7rem;min-width:30px;text-align:right;}
 
-  /* ── ГЛАВНОЕ МЕНЮ ── */
-  #menu-screen {
-    gap: 24px;
-  }
-  .menu-title {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1.6rem, 5vw, 3rem);
-    font-weight: 900;
-    color: var(--green);
-    text-shadow: 0 0 20px var(--green), 0 0 40px var(--green);
-    text-align: center;
-    letter-spacing: 4px;
-    margin-bottom: 8px;
-    animation: flicker 4s infinite;
-  }
-  .menu-sub {
-    font-size: 0.75rem; color: var(--darkgreen);
-    letter-spacing: 3px; margin-bottom: 16px;
-    text-align: center;
-  }
-  .btn {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1rem;
-    background: transparent;
-    border: 1px solid var(--green);
-    color: var(--green);
-    padding: 12px 40px;
-    cursor: pointer;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-    min-width: 220px;
-    text-align: center;
-  }
-  .btn::before {
-    content:''; position:absolute; inset:0;
-    background: var(--green); opacity:0; transition:opacity 0.2s;
-  }
-  .btn:hover::before { opacity: 0.12; }
-  .btn:hover {
-    box-shadow: 0 0 16px var(--green), inset 0 0 8px rgba(0,255,65,0.1);
-    text-shadow: 0 0 8px var(--green);
-  }
-  .btn:active { transform: scale(0.97); }
-  .btn.disabled { opacity: 0.35; cursor: default; }
-  .btn.disabled:hover::before { opacity: 0; }
-  .btn.disabled:hover { box-shadow: none; text-shadow: none; }
-
-  /* Звук */
-  .volume-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-top: 4px;
-  }
-  .volume-row label { font-size: 0.75rem; color: var(--darkgreen); letter-spacing:1px; }
-  input[type=range] {
-    -webkit-appearance: none; appearance: none;
-    width: 130px; height: 3px;
-    background: var(--darkgreen); border-radius:2px; outline:none;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance:none; width:14px; height:14px;
-    background: var(--green); border-radius:50%;
-    box-shadow: 0 0 6px var(--green); cursor:pointer;
-  }
-  .vol-val { font-size:0.75rem; min-width:28px; text-align:right; }
-
-  /* ── ИГРОВОЙ ЭКРАН ── */
-  #game-screen {
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: center;
-    gap: 0;
-    padding: 0;
-  }
-
-  #game-left {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 16px;
-    width: 340px; flex-shrink: 0;
-    padding: 20px 16px;
-  }
-
-  #game-right {
-    flex: 1;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: flex-end;
-    padding: 20px 20px 16px;
-    gap: 12px;
-    max-width: 480px;
+  /* ══════ ИГРА (вертикальный layout) ══════ */
+  #game-screen{
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-start;
+    gap:0;padding:8px 10px 8px;
+    overflow-y:auto;overflow-x:hidden;
   }
 
   /* HUD */
-  .hud-row {
-    display: flex; gap: 12px; align-items: center;
-    width: 100%; justify-content: space-between;
-  }
-  .hud-box {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 14px;
-    font-family: 'Orbitron', monospace;
-    font-size: 0.75rem;
-    text-align: center;
-    flex: 1;
-  }
-  .hud-box .lbl { color: var(--darkgreen); font-size: 0.6rem; letter-spacing:1px; }
-  .hud-box .val { color: var(--green); font-size: 1rem; text-shadow: 0 0 6px var(--green); }
-  .lives-ico { font-size: 1.1rem; }
+  .hud{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:100%;margin-top:36px;}
+  .hbox{background:var(--panel);border:1px solid var(--border);border-radius:5px;
+    padding:4px 6px;text-align:center;}
+  .hbox .lb{font-size:.5rem;color:var(--dg);letter-spacing:1px;}
+  .hbox .vl{font-size:.85rem;color:var(--green);text-shadow:0 0 5px var(--green);}
 
-  /* ВОПРОС */
-  .question-box {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 18px;
-    width: 100%;
-    text-align: center;
-  }
-  .question-box .q-level {
-    font-size: 0.6rem; color: var(--darkgreen); letter-spacing:2px; margin-bottom:4px;
-  }
-  .question-box .q-text {
-    font-size: 0.95rem; color: var(--green);
-    text-shadow: 0 0 6px var(--green);
-    line-height: 1.4;
-  }
+  /* Вопрос */
+  .qbox{background:var(--panel);border:1px solid var(--border);border-radius:7px;
+    padding:8px 12px;width:100%;text-align:center;margin-top:6px;}
+  .qlb{font-size:.55rem;color:var(--dg);letter-spacing:1px;margin-bottom:2px;}
+  .qtx{font-size:.8rem;color:var(--green);line-height:1.4;}
 
-  /* ЧАСЫ-SVG */
-  #clock-svg-wrap {
-    position: relative;
-  }
-  #clock-svg-wrap svg {
-    filter: drop-shadow(0 0 12px rgba(0,255,65,0.5));
-  }
+  /* Часы */
+  .clock-wrap{margin:6px 0;flex-shrink:0;}
+  .clock-wrap svg{filter:drop-shadow(0 0 10px rgba(0,255,65,.45));}
 
-  /* ОТВЕТ */
-  .answer-area {
-    width: 100%;
-    display: flex; flex-direction: column; gap: 10px;
-    align-items: center;
+  /* Варианты ответа */
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:4px;}
+  .choice-btn{
+    background:rgba(0,18,0,.9);
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--green);
+    font-family:'Orbitron',monospace;
+    font-size:.95rem;
+    padding:14px 8px;
+    cursor:pointer;
+    text-align:center;
+    letter-spacing:1px;
+    transition:all .15s;
   }
-  .answer-row {
-    display: flex; gap: 8px; align-items: center; width: 100%;
-  }
-  .answer-row input[type=number] {
-    flex: 1;
-    background: rgba(0,20,0,0.8);
-    border: 1px solid var(--green);
-    border-radius: 6px;
-    color: var(--green);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1.2rem;
-    padding: 10px 14px;
-    outline: none;
-    text-align: center;
-    letter-spacing: 2px;
-  }
-  .answer-row input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none; }
-  .answer-row input:focus { box-shadow: 0 0 10px rgba(0,255,65,0.4); }
+  .choice-btn:active{transform:scale(.96);}
+  .choice-btn.correct{border-color:#00ff41;background:rgba(0,255,65,.18);
+    box-shadow:0 0 12px rgba(0,255,65,.5);color:#fff;}
+  .choice-btn.wrong{border-color:#ff3131;background:rgba(255,49,49,.15);
+    box-shadow:0 0 12px rgba(255,49,49,.4);color:#ff3131;}
 
-  .btn-ok {
-    background: rgba(0,255,65,0.15);
-    border: 1px solid var(--green);
-    border-radius: 6px;
-    color: var(--green);
-    font-family: 'Orbitron', monospace;
-    font-size: 0.85rem;
-    padding: 10px 22px;
-    cursor: pointer;
-    letter-spacing: 1px;
-    transition: all 0.2s;
-  }
-  .btn-ok:hover { background: rgba(0,255,65,0.28); box-shadow: 0 0 12px var(--green); }
+  /* Обратная связь */
+  .fb{font-family:'Orbitron',monospace;font-size:.8rem;text-align:center;
+    min-height:20px;margin-top:4px;letter-spacing:1px;}
+  .fb.ok{color:#00ff41;text-shadow:0 0 8px #00ff41;}
+  .fb.bad{color:#ff3131;text-shadow:0 0 8px #ff3131;}
 
-  .btn-hint {
-    background: transparent;
-    border: 1px solid rgba(255,200,0,0.5);
-    border-radius: 6px;
-    color: rgba(255,200,0,0.9);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.75rem;
-    padding: 7px 14px;
-    cursor: pointer;
-    letter-spacing: 1px;
-    transition: all 0.2s;
-    width: 100%;
-  }
-  .btn-hint:hover { background: rgba(255,200,0,0.1); box-shadow: 0 0 8px rgba(255,200,0,0.4); }
+  /* Подсказка текст */
+  #hint-text{font-size:.65rem;color:rgba(255,200,0,.85);text-align:center;
+    min-height:16px;margin-top:2px;padding:0 4px;}
 
-  /* ОБРАТНАЯ СВЯЗЬ */
-  .feedback {
-    font-family: 'Orbitron', monospace;
-    font-size: 1rem; height: 22px;
-    text-align: center; letter-spacing: 2px;
-  }
-  .feedback.correct { color: #00ff41; text-shadow: 0 0 10px #00ff41; }
-  .feedback.wrong   { color: #ff3131; text-shadow: 0 0 10px #ff3131; }
+  /* Нижние кнопки */
+  .bot-row{display:flex;gap:8px;width:100%;margin-top:6px;}
+  .hbtn{flex:1;background:transparent;border:1px solid rgba(255,200,0,.5);
+    border-radius:6px;color:rgba(255,200,0,.9);font-family:'Share Tech Mono',monospace;
+    font-size:.72rem;padding:10px 4px;cursor:pointer;letter-spacing:.5px;}
+  .hbtn:active{background:rgba(255,200,0,.1);}
+  .mbtn{flex:.7;background:transparent;border:1px solid var(--border);
+    border-radius:6px;color:var(--dg);font-family:'Share Tech Mono',monospace;
+    font-size:.7rem;padding:10px 4px;cursor:pointer;}
+  .mbtn:active{background:rgba(0,255,65,.07);}
 
-  /* КЛАССИКИ */
-  #hopscotch-wrap {
-    width: 100%; display: flex; flex-direction: column; align-items: center;
-    gap: 0; margin-top: 4px;
-  }
-  .hops-row { display: flex; gap: 6px; margin-bottom: 4px; }
-  .hop-cell {
-    width: 40px; height: 40px;
-    border: 2px solid var(--border);
-    border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Orbitron', monospace; font-size: 0.7rem;
-    color: var(--darkgreen); transition: all 0.4s;
-    background: rgba(0,10,0,0.6);
-  }
-  .hop-cell.done {
-    border-color: var(--green);
-    background: rgba(0,255,65,0.12);
-    color: var(--green);
-    box-shadow: 0 0 8px rgba(0,255,65,0.4);
-  }
-  .hop-cell.active {
-    border-color: #0ff;
-    background: rgba(0,255,255,0.15);
-    color: #0ff;
-    box-shadow: 0 0 12px rgba(0,255,255,0.5);
-    animation: pulse 0.8s infinite;
-  }
+  /* Классики */
+  .hops-wrap{width:100%;display:flex;flex-direction:column;align-items:center;
+    gap:3px;margin-top:6px;}
+  .hops-label{font-size:.55rem;color:var(--dg);letter-spacing:2px;margin-bottom:2px;}
+  .hops-row{display:flex;gap:5px;}
+  .hop{width:34px;height:34px;border:2px solid var(--border);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:.65rem;color:var(--dg);
+    background:rgba(0,10,0,.6);transition:all .35s;}
+  .hop.done{border-color:var(--green);background:rgba(0,255,65,.12);
+    color:var(--green);box-shadow:0 0 7px rgba(0,255,65,.35);}
+  .hop.act{border-color:#0ff;background:rgba(0,255,255,.13);color:#0ff;
+    box-shadow:0 0 10px rgba(0,255,255,.45);animation:pulse .9s infinite;}
 
-  /* ЭКРАН КОНЦА УРОВНЯ / КОНЦА ИГРЫ */
-  #result-screen { gap: 18px; }
-  #gameover-screen { gap: 18px; }
-  .result-title {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1.4rem,4vw,2.2rem); font-weight:900;
-    text-shadow: 0 0 20px var(--green);
-    text-align: center; letter-spacing: 3px;
-  }
-  .result-info { font-size:0.85rem; color: var(--darkgreen); text-align:center; line-height:1.8; }
+  /* Результат / конец */
+  #result-screen,#gameover-screen,#win-screen{gap:16px;}
+  .rtitle{font-family:'Orbitron',monospace;font-size:clamp(1.2rem,5vw,2rem);
+    font-weight:900;text-align:center;letter-spacing:2px;
+    text-shadow:0 0 16px var(--green);}
+  .rinfo{font-size:.8rem;color:var(--dg);text-align:center;line-height:1.9;}
 
-  /* ── АНИМАЦИИ ── */
-  @keyframes flicker {
-    0%,95%,100% { opacity:1; }
-    96% { opacity:0.6; }
-    97% { opacity:1; }
-    98% { opacity:0.4; }
-    99% { opacity:1; }
-  }
-  @keyframes pulse {
-    0%,100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-  }
-
-  /* скан-линии */
-  body::after {
-    content:''; position:fixed; inset:0; z-index:1; pointer-events:none;
-    background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px,
-      rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
-    );
-  }
+  /* анимации */
+  @keyframes flicker{0%,94%,100%{opacity:1;}95%{opacity:.5;}97%{opacity:.3;}99%{opacity:1;}}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.09);}}
 </style>
 </head>
 <body>
+<canvas id="mc"></canvas>
+<div id="rc">00:00:00</div>
 
-<canvas id="matrix-canvas"></canvas>
-<div id="real-clock">00:00:00</div>
-
-<!-- ── ГЛАВНОЕ МЕНЮ ── -->
+<!-- ══ МЕНЮ ══ -->
 <div class="screen" id="menu-screen">
-  <div class="menu-title">&gt; УГОЛ СТРЕЛОК_</div>
-  <div class="menu-sub">// CLOCK ANGLE CRACKER v1.0 //</div>
+  <div class="mtitle">&gt; УГОЛ СТРЕЛОК_</div>
+  <div class="msub">// CLOCK ANGLE CRACKER v2.0 //</div>
   <button class="btn" onclick="startGame()">[ ИГРАТЬ ]</button>
-  <button class="btn disabled">[ ДРУГИЕ ИГРЫ ]<br><span style="font-size:0.65rem;opacity:0.5">// в разработке //</span></button>
-  <div class="volume-row" style="margin-top:12px;">
+  <button class="btn dis">[ ДРУГИЕ ИГРЫ ]<br><span style="font-size:.6rem;opacity:.4">// в разработке //</span></button>
+  <div class="vrow">
     <label>МУЗЫКА</label>
-    <input type="range" id="vol-music" min="0" max="100" value="40" oninput="setMusicVol(this.value)">
-    <span class="vol-val" id="vol-music-val">40%</span>
+    <input type="range" id="vm" min="0" max="100" value="40" oninput="setMV(this.value)">
+    <span class="vv" id="vml">40%</span>
   </div>
-  <div class="volume-row">
+  <div class="vrow">
     <label>ЗВУКИ</label>
-    <input type="range" id="vol-sfx" min="0" max="100" value="70" oninput="setSfxVol(this.value)">
-    <span class="vol-val" id="vol-sfx-val">70%</span>
+    <input type="range" id="vs" min="0" max="100" value="70" oninput="setSV(this.value)">
+    <span class="vv" id="vsl">70%</span>
   </div>
 </div>
 
-<!-- ── ИГРА ── -->
+<!-- ══ ИГРА ══ -->
 <div class="screen hidden" id="game-screen">
-  <div id="game-left">
-    <!-- HUD -->
-    <div class="hud-row">
-      <div class="hud-box">
-        <div class="lbl">УРОВЕНЬ</div>
-        <div class="val" id="hud-level">1</div>
-      </div>
-      <div class="hud-box">
-        <div class="lbl">ВОПРОС</div>
-        <div class="val" id="hud-q">1/5</div>
-      </div>
-      <div class="hud-box">
-        <div class="lbl">МОНЕТЫ</div>
-        <div class="val" id="hud-coins">0 🪙</div>
-      </div>
-      <div class="hud-box">
-        <div class="lbl">ЖИЗНИ</div>
-        <div class="val" id="hud-lives">❤️❤️❤️</div>
-      </div>
-    </div>
-
-    <!-- ВОПРОС -->
-    <div class="question-box">
-      <div class="q-level" id="q-level-label">УРОВЕНЬ 1 — МИНУТНАЯ И СЕКУНДНАЯ</div>
-      <div class="q-text" id="q-text">Найди угол между минутной и секундной стрелками</div>
-    </div>
-
-    <!-- ЧАСЫ -->
-    <div id="clock-svg-wrap">
-      <svg id="clock-svg" width="240" height="240" viewBox="-120 -120 240 240">
-        <!-- фон -->
-        <circle r="118" fill="rgba(0,10,0,0.9)" stroke="#00ff41" stroke-width="2"/>
-        <circle r="114" fill="none" stroke="rgba(0,255,65,0.15)" stroke-width="1"/>
-        <!-- деления -->
-        <g id="ticks"></g>
-        <!-- стрелки -->
-        <line id="hand-hour"   x1="0" y1="0" x2="0" y2="-60"  stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/>
-        <line id="hand-minute" x1="0" y1="0" x2="0" y2="-82"  stroke="#00ff41" stroke-width="3" stroke-linecap="round"/>
-        <line id="hand-second" x1="0" y1="6" x2="0" y2="-90"  stroke="#00cfff" stroke-width="1.5" stroke-linecap="round"/>
-        <!-- центр -->
-        <circle r="5" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
-        <!-- метки угла -->
-        <path id="angle-arc" fill="rgba(255,255,0,0.08)" stroke="rgba(255,255,0,0.5)" stroke-width="1.5" d=""/>
-        <!-- цифры -->
-        <g id="clock-nums"></g>
-      </svg>
-    </div>
-
-    <!-- ПОДСКАЗКА ПОД ЧАСАМИ -->
-    <div id="hint-text" style="font-size:0.7rem;color:rgba(255,200,0,0.8);text-align:center;min-height:18px;"></div>
-
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hbox"><div class="lb">УРОВЕНЬ</div><div class="vl" id="h-lv">1</div></div>
+    <div class="hbox"><div class="lb">ВОПРОС</div><div class="vl" id="h-q">1/5</div></div>
+    <div class="hbox"><div class="lb">МОНЕТЫ</div><div class="vl" id="h-c">0🪙</div></div>
+    <div class="hbox"><div class="lb">ЖИЗНИ</div><div class="vl" id="h-l">❤️❤️❤️</div></div>
   </div>
 
-  <div id="game-right">
-    <!-- КЛАССИКИ -->
-    <div style="width:100%">
-      <div style="font-size:0.6rem;color:var(--darkgreen);letter-spacing:2px;margin-bottom:6px;text-align:center;">// КЛАССИКИ //</div>
-      <div id="hopscotch-wrap"></div>
-    </div>
+  <!-- Вопрос -->
+  <div class="qbox">
+    <div class="qlb" id="qlb">УРОВЕНЬ 1 — МИНУТНАЯ И СЕКУНДНАЯ</div>
+    <div class="qtx" id="qtx">Найди угол между стрелками</div>
+  </div>
 
-    <!-- ОТВЕТ -->
-    <div class="answer-area">
-      <div class="feedback" id="feedback"></div>
-      <div class="answer-row">
-        <input type="number" id="answer-input" placeholder="°" min="0" max="360"
-               onkeydown="if(event.key==='Enter') checkAnswer()">
-        <button class="btn-ok" onclick="checkAnswer()">OK</button>
-      </div>
-      <button class="btn-hint" onclick="useHint()">💡 ПОДСКАЗКА (-15 🪙)</button>
-    </div>
+  <!-- Часы -->
+  <div class="clock-wrap">
+    <svg id="clk" width="200" height="200" viewBox="-100 -100 200 200">
+      <circle r="98" fill="rgba(0,10,0,.95)" stroke="#00ff41" stroke-width="2"/>
+      <circle r="93" fill="none" stroke="rgba(0,255,65,.1)" stroke-width="1"/>
+      <g id="ticks"></g>
+      <g id="nums"></g>
+      <path id="arc" fill="rgba(255,255,0,.07)" stroke="rgba(255,255,0,.5)" stroke-width="1.5" d=""/>
+      <line id="hh" x1="0" y1="0" x2="0" y2="-50" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/>
+      <line id="mh" x1="0" y1="0" x2="0" y2="-68" stroke="#00ff41" stroke-width="3" stroke-linecap="round"/>
+      <line id="sh" x1="0" y1="5" x2="0" y2="-76" stroke="#00cfff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle r="4.5" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
+    </svg>
+  </div>
 
-    <button class="btn" style="margin-top:4px;padding:8px 20px;font-size:0.75rem;" onclick="goMenu()">← МЕНЮ</button>
+  <!-- Варианты ответа -->
+  <div class="choices" id="choices">
+    <button class="choice-btn" id="c0" onclick="pick(0)">—</button>
+    <button class="choice-btn" id="c1" onclick="pick(1)">—</button>
+    <button class="choice-btn" id="c2" onclick="pick(2)">—</button>
+    <button class="choice-btn" id="c3" onclick="pick(3)">—</button>
+  </div>
+
+  <div class="fb" id="fb"></div>
+  <div id="hint-text"></div>
+
+  <!-- Классики -->
+  <div class="hops-wrap">
+    <div class="hops-label">// КЛАССИКИ //</div>
+    <div id="hops"></div>
+  </div>
+
+  <!-- Нижние кнопки -->
+  <div class="bot-row">
+    <button class="hbtn" onclick="useHint()">💡 ПОДСКАЗКА (-15🪙)</button>
+    <button class="mbtn" onclick="goMenu()">← МЕНЮ</button>
   </div>
 </div>
 
-<!-- ── КОНЕЦ УРОВНЯ ── -->
+<!-- ══ КОНЕЦ УРОВНЯ ══ -->
 <div class="screen hidden" id="result-screen">
-  <div class="result-title" id="result-title">УРОВЕНЬ ПРОЙДЕН!</div>
-  <div class="result-info" id="result-info"></div>
+  <div class="rtitle" id="rt">УРОВЕНЬ ПРОЙДЕН!</div>
+  <div class="rinfo" id="ri"></div>
   <button class="btn" onclick="nextLevel()">[ СЛЕДУЮЩИЙ УРОВЕНЬ ]</button>
-  <button class="btn" style="margin-top:4px;" onclick="goMenu()">[ МЕНЮ ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
 </div>
 
-<!-- ── КОНЕЦ ИГРЫ ── -->
+<!-- ══ КОНЕЦ ИГРЫ ══ -->
 <div class="screen hidden" id="gameover-screen">
-  <div class="result-title" style="color:#ff3131;text-shadow:0 0 20px #ff3131;">ИГРА ОКОНЧЕНА</div>
-  <div class="result-info" id="gameover-info"></div>
+  <div class="rtitle" style="color:#ff3131;text-shadow:0 0 18px #ff3131;">ИГРА ОКОНЧЕНА</div>
+  <div class="rinfo" id="gi"></div>
   <button class="btn" onclick="startGame()">[ ЗАНОВО ]</button>
-  <button class="btn" style="margin-top:4px;" onclick="goMenu()">[ МЕНЮ ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
 </div>
 
-<!-- ── ПОБЕДА ── -->
+<!-- ══ ПОБЕДА ══ -->
 <div class="screen hidden" id="win-screen">
-  <div class="result-title" style="color:#ffd700;text-shadow:0 0 20px #ffd700;animation:flicker 2s infinite;">🏆 ВЫ ПОБЕДИЛИ! 🏆</div>
-  <div class="result-info" id="win-info"></div>
+  <div class="rtitle" style="color:#ffd700;text-shadow:0 0 20px #ffd700;animation:flicker 2s infinite;">🏆 ВЫ ПОБЕДИЛИ! 🏆</div>
+  <div class="rinfo" id="wi"></div>
   <button class="btn" onclick="startGame()">[ ИГРАТЬ СНОВА ]</button>
-  <button class="btn" style="margin-top:4px;" onclick="goMenu()">[ МЕНЮ ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  МАТРИЦА — фоновый код
-// ═══════════════════════════════════════════════════════
-(function(){
-  const c = document.getElementById('matrix-canvas');
-  const ctx = c.getContext('2d');
-  function resize(){ c.width=window.innerWidth; c.height=window.innerHeight; }
-  resize(); window.addEventListener('resize', resize);
-  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01アβ∂∑∏∞≠≈∫Ωλ#@$%^&*();:{}|<>?/\\'.split('');
-  const cols = () => Math.floor(c.width/14);
-  let drops = Array.from({length:cols()},()=>Math.random()*c.height/14|0);
+/* ── МАТРИЦА ── */
+(()=>{
+  const c=document.getElementById('mc'),x=c.getContext('2d');
+  const resize=()=>{c.width=innerWidth;c.height=innerHeight;};
+  resize();addEventListener('resize',resize);
+  const ch='アイウエオ01αβ∑∏∞#@$%&(){}<>?\\|'.split('');
+  let dr=[];
+  const cols=()=>Math.floor(c.width/13);
   setInterval(()=>{
-    if(drops.length !== cols()) drops = Array.from({length:cols()},()=>0);
-    ctx.fillStyle='rgba(13,13,13,0.07)';
-    ctx.fillRect(0,0,c.width,c.height);
-    ctx.fillStyle='#00ff41'; ctx.font='12px Share Tech Mono';
-    drops.forEach((y,i)=>{
-      const ch = chars[Math.random()*chars.length|0];
-      ctx.fillText(ch, i*14, y*14);
-      if(y*14>c.height && Math.random()>0.975) drops[i]=0;
-      drops[i]++;
+    if(dr.length!==cols())dr=Array.from({length:cols()},()=>Math.random()*c.height/13|0);
+    x.fillStyle='rgba(10,10,10,.08)';x.fillRect(0,0,c.width,c.height);
+    x.fillStyle='#00ff41';x.font='11px Share Tech Mono';
+    dr.forEach((y,i)=>{
+      x.fillText(ch[Math.random()*ch.length|0],i*13,y*13);
+      if(y*13>c.height&&Math.random()>.975)dr[i]=0;
+      dr[i]++;
     });
-  }, 50);
+  },55);
 })();
 
-// ═══════════════════════════════════════════════════════
-//  РЕАЛЬНЫЕ ЧАСЫ
-// ═══════════════════════════════════════════════════════
-function updateRealClock(){
-  const now = new Date();
-  const pad = n => String(n).padStart(2,'0');
-  document.getElementById('real-clock').textContent =
-    pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
-}
-setInterval(updateRealClock, 1000); updateRealClock();
+/* ── РЕАЛЬНЫЕ ЧАСЫ ── */
+setInterval(()=>{
+  const n=new Date(),p=v=>String(v).padStart(2,'0');
+  document.getElementById('rc').textContent=p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());
+},1000);
 
-// ═══════════════════════════════════════════════════════
-//  АУДИО
-// ═══════════════════════════════════════════════════════
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx, musicGain, sfxGain, musicOsc;
-let musicVolume = 0.4, sfxVolume = 0.7;
-
-function initAudio(){
-  if(audioCtx) return;
-  audioCtx = new AudioCtx();
-  musicGain = audioCtx.createGain(); musicGain.gain.value = musicVolume * 0.3;
-  sfxGain   = audioCtx.createGain(); sfxGain.gain.value   = sfxVolume;
-  musicGain.connect(audioCtx.destination);
-  sfxGain.connect(audioCtx.destination);
-  startMusic();
-}
-
-function startMusic(){
-  // Электронная ambient музыка из осциляторов
-  const notes = [110,138.6,164.8,196,220,261.6,329.6];
-  let i=0;
-  function playNote(){
-    if(!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.connect(g); g.connect(musicGain);
-    o.type = 'sine';
-    o.frequency.value = notes[i%notes.length];
-    g.gain.setValueAtTime(0,audioCtx.currentTime);
-    g.gain.linearRampToValueAtTime(0.5,audioCtx.currentTime+0.5);
-    g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+2.5);
-    o.start(audioCtx.currentTime); o.stop(audioCtx.currentTime+2.8);
-    i++;
-  }
-  setInterval(playNote, 1400);
-
-  // Бас-ритм
+/* ── АУДИО ── */
+let AC,MG,SG;let mv=.4,sv=.7;
+function initA(){
+  if(AC)return;
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  MG=AC.createGain();MG.gain.value=mv*.25;MG.connect(AC.destination);
+  SG=AC.createGain();SG.gain.value=sv;SG.connect(AC.destination);
+  const notes=[110,138.6,164.8,196,220];let ni=0;
   setInterval(()=>{
-    if(!audioCtx) return;
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.connect(g); g.connect(musicGain);
-    o.type='square'; o.frequency.value=55;
-    g.gain.setValueAtTime(0.3,audioCtx.currentTime);
-    g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
-    o.start(audioCtx.currentTime); o.stop(audioCtx.currentTime+0.18);
-  }, 800);
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(MG);o.type='sine';
+    o.frequency.value=notes[ni++%notes.length];
+    g.gain.setValueAtTime(0,AC.currentTime);
+    g.gain.linearRampToValueAtTime(.5,AC.currentTime+.5);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+2.4);
+    o.start(AC.currentTime);o.stop(AC.currentTime+2.6);
+  },1500);
+  setInterval(()=>{
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(MG);o.type='square';o.frequency.value=55;
+    g.gain.setValueAtTime(.25,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+.12);
+    o.start();o.stop(AC.currentTime+.15);
+  },900);
 }
-
-function playSfx(type){
-  if(!audioCtx) return;
-  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-  o.connect(g); g.connect(sfxGain);
-  if(type==='correct'){
-    o.frequency.setValueAtTime(523,audioCtx.currentTime);
-    o.frequency.linearRampToValueAtTime(1047,audioCtx.currentTime+0.2);
-    g.gain.setValueAtTime(0.4,audioCtx.currentTime);
-    g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
-    o.start(); o.stop(audioCtx.currentTime+0.3);
-  } else if(type==='wrong'){
-    o.type='sawtooth'; o.frequency.setValueAtTime(200,audioCtx.currentTime);
-    o.frequency.linearRampToValueAtTime(80,audioCtx.currentTime+0.3);
-    g.gain.setValueAtTime(0.4,audioCtx.currentTime);
-    g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.35);
-    o.start(); o.stop(audioCtx.currentTime+0.35);
-  } else if(type==='levelup'){
+function sfx(t){
+  if(!AC)return;
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.connect(g);g.connect(SG);
+  if(t==='ok'){
+    o.frequency.setValueAtTime(520,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(1040,AC.currentTime+.18);
+    g.gain.setValueAtTime(.4,AC.currentTime);g.gain.linearRampToValueAtTime(0,AC.currentTime+.25);
+    o.start();o.stop(AC.currentTime+.27);
+  }else if(t==='no'){
+    o.type='sawtooth';o.frequency.setValueAtTime(200,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(80,AC.currentTime+.28);
+    g.gain.setValueAtTime(.35,AC.currentTime);g.gain.linearRampToValueAtTime(0,AC.currentTime+.32);
+    o.start();o.stop(AC.currentTime+.35);
+  }else if(t==='up'){
     [523,659,784,1047].forEach((f,i)=>{
-      const oo=audioCtx.createOscillator(), gg=audioCtx.createGain();
-      oo.connect(gg); gg.connect(sfxGain);
-      oo.frequency.value=f; gg.gain.setValueAtTime(0.3,audioCtx.currentTime+i*0.12);
-      gg.gain.linearRampToValueAtTime(0,audioCtx.currentTime+i*0.12+0.2);
-      oo.start(audioCtx.currentTime+i*0.12); oo.stop(audioCtx.currentTime+i*0.12+0.25);
+      const oo=AC.createOscillator(),gg=AC.createGain();
+      oo.connect(gg);gg.connect(SG);oo.frequency.value=f;
+      gg.gain.setValueAtTime(.3,AC.currentTime+i*.11);
+      gg.gain.linearRampToValueAtTime(0,AC.currentTime+i*.11+.18);
+      oo.start(AC.currentTime+i*.11);oo.stop(AC.currentTime+i*.11+.22);
     });
   }
 }
+function setMV(v){mv=v/100;document.getElementById('vml').textContent=v+'%';if(MG)MG.gain.value=mv*.25;}
+function setSV(v){sv=v/100;document.getElementById('vsl').textContent=v+'%';if(SG)SG.gain.value=sv;}
 
-function setMusicVol(v){ musicVolume=v/100; document.getElementById('vol-music-val').textContent=v+'%'; if(musicGain) musicGain.gain.value=musicVolume*0.3; }
-function setSfxVol(v){ sfxVolume=v/100; document.getElementById('vol-sfx-val').textContent=v+'%'; if(sfxGain) sfxGain.gain.value=sfxVolume; }
-
-// ═══════════════════════════════════════════════════════
-//  ЛОГИКА ИГРЫ
-// ═══════════════════════════════════════════════════════
-const LEVELS = [
-  { title:'УРОВЕНЬ 1', desc:'МИНУТНАЯ И СЕКУНДНАЯ', type:'ms', qCount:5, coinsPerQ:1 },
-  { title:'УРОВЕНЬ 2', desc:'ЧАСОВАЯ И СЕКУНДНАЯ',  type:'hs', qCount:5, coinsPerQ:2 },
-  { title:'УРОВЕНЬ 3', desc:'ЧАСОВАЯ И МИНУТНАЯ',   type:'hm', qCount:5, coinsPerQ:3 },
-  { title:'УРОВЕНЬ 4', desc:'ВСЕ СТРЕЛКИ',          type:'all', qCount:3, coinsPerQ:4 },
+/* ── ЛОГИКА ── */
+const LVS=[
+  {title:'УРОВЕНЬ 1',desc:'МИНУТНАЯ И СЕКУНДНАЯ',type:'ms',qc:5,cp:1},
+  {title:'УРОВЕНЬ 2',desc:'ЧАСОВАЯ И СЕКУНДНАЯ', type:'hs',qc:5,cp:2},
+  {title:'УРОВЕНЬ 3',desc:'ЧАСОВАЯ И МИНУТНАЯ',  type:'hm',qc:5,cp:3},
+  {title:'УРОВЕНЬ 4',desc:'ВСЕ СТРЕЛКИ',         type:'all',qc:3,cp:4},
 ];
+// Классики: после каждого уровня прыгаем вперёд
+const HOP_AFTER=[1,3,5,8];
 
-// Классики: 1ур→1 прыжок, 2ур→3, 3ур→5, 4ур→7 (накопительно)
-const HOPS_PER_LEVEL = [1,2,2,3]; // прибавка за каждый уровень
-const TOTAL_HOPS = 8;
+let ST={};
+let correctIdx=0; // индекс правильного варианта среди 4 кнопок
 
-let state = {
-  level: 0, qIndex: 0,
-  coins: 0, lives: 3,
-  hopsCompleted: 0,
-  currentTime: null,
-  subQIndex: 0, // для уровня 4
-  answers: [],  // для уровня 4
-};
+function rndTime(){return{h:Math.floor(Math.random()*12),m:Math.floor(Math.random()*60),s:Math.floor(Math.random()*60)};}
 
-// Генерируем случайное время
-function randomTime(){
-  return {
-    h: Math.floor(Math.random()*12),
-    m: Math.floor(Math.random()*60),
-    s: Math.floor(Math.random()*60),
+function angles(t){
+  return{
+    s:t.s*6,
+    m:t.m*6+t.s*.1,
+    h:(t.h%12)*30+t.m*.5+t.s/120,
   };
 }
+function angBetween(a,b){let d=Math.abs(a-b)%360;return d>180?360-d:d;}
+function r1(x){return Math.round(x*10)/10;}
 
-// Точный расчёт углов стрелок (в градусах, от 12 часов по часовой)
-function handAngles(t){
-  // Секундная: 6° за сек
-  const second = t.s * 6;
-  // Минутная: 6° за мин + 0.1° за сек
-  const minute = t.m * 6 + t.s * 0.1;
-  // Часовая: 30° за час + 0.5° за мин + 1/120° за сек
-  const hour   = (t.h % 12) * 30 + t.m * 0.5 + t.s / 120;
-  return { second, minute, hour };
+function correctAngle(){
+  const lv=LVS[ST.lv],a=angles(ST.time);
+  let tp=lv.type==='all'?['ms','hm','hs'][ST.sub]:lv.type;
+  if(tp==='ms')return r1(angBetween(a.m,a.s));
+  if(tp==='hs')return r1(angBetween(a.h,a.s));
+  return r1(angBetween(a.h,a.m));
 }
 
-// Угол между двумя стрелками (меньший, 0-180)
-function angleBetween(a1, a2){
-  let diff = Math.abs(a1 - a2) % 360;
-  if(diff > 180) diff = 360 - diff;
-  return diff;
-}
-
-// Округляем до 1 знака
-function round1(x){ return Math.round(x*10)/10; }
-
-// Получаем правильный ответ для текущего состояния
-function getCorrectAnswer(){
-  const lv = LEVELS[state.level];
-  const ang = handAngles(state.currentTime);
-  let type = lv.type;
-  if(type === 'all'){
-    const seq = ['ms','hm','hs'];
-    type = seq[state.subQIndex];
+/* Генерируем 4 варианта: 1 правильный + 3 близких случайных */
+function genChoices(correct){
+  const opts=new Set([correct]);
+  while(opts.size<4){
+    // смещение от 5 до 40 градусов
+    let delta=(Math.floor(Math.random()*8)+1)*5;
+    if(Math.random()>.5)delta=-delta;
+    let v=r1((correct+delta+360)%360);
+    if(v>180)v=r1(360-v); // угол всегда 0-180
+    if(v>=0&&v<=180)opts.add(v);
   }
-  if(type==='ms') return round1(angleBetween(ang.minute, ang.second));
-  if(type==='hs') return round1(angleBetween(ang.hour,   ang.second));
-  if(type==='hm') return round1(angleBetween(ang.hour,   ang.minute));
+  const arr=Array.from(opts);
+  // перемешиваем
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
 }
 
-// Рисуем циферблат
-function drawClockTicks(){
-  const g = document.getElementById('ticks');
-  const n = document.getElementById('clock-nums');
-  g.innerHTML=''; n.innerHTML='';
+/* ── РЕНДЕР ЦИФЕРБЛАТА ── */
+function drawTicks(){
+  const tg=document.getElementById('ticks'),ng=document.getElementById('nums');
+  tg.innerHTML='';ng.innerHTML='';
   for(let i=0;i<60;i++){
-    const ang = i*6; const rad=ang*Math.PI/180;
-    const isMaj = i%5===0;
-    const r1=isMaj?96:100, r2=110;
-    const x1=Math.sin(rad)*r1, y1=-Math.cos(rad)*r1;
-    const x2=Math.sin(rad)*r2, y2=-Math.cos(rad)*r2;
-    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
-    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
-    line.setAttribute('stroke', isMaj ? '#00ff41' : 'rgba(0,255,65,0.3)');
-    line.setAttribute('stroke-width', isMaj ? '2' : '1');
-    g.appendChild(line);
-    if(isMaj){
-      const num = i/5||12;
-      const nr=82; const tx=Math.sin(rad)*nr, ty=-Math.cos(rad)*nr;
+    const r=i*6*Math.PI/180,maj=i%5===0;
+    const r1v=maj?77:82,r2v=90;
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',Math.sin(r)*r1v);line.setAttribute('y1',-Math.cos(r)*r1v);
+    line.setAttribute('x2',Math.sin(r)*r2v);line.setAttribute('y2',-Math.cos(r)*r2v);
+    line.setAttribute('stroke',maj?'#00ff41':'rgba(0,255,65,.3)');
+    line.setAttribute('stroke-width',maj?'2':'1');
+    tg.appendChild(line);
+    if(maj){
+      const num=i/5||12,nr=67;
       const t=document.createElementNS('http://www.w3.org/2000/svg','text');
-      t.setAttribute('x',tx); t.setAttribute('y',ty);
-      t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
-      t.setAttribute('fill','rgba(0,255,65,0.6)');
-      t.setAttribute('font-size','9');
-      t.setAttribute('font-family','Orbitron,monospace');
-      t.textContent=num;
-      n.appendChild(t);
+      t.setAttribute('x',Math.sin(r)*nr);t.setAttribute('y',-Math.cos(r)*nr+3.5);
+      t.setAttribute('text-anchor','middle');t.setAttribute('fill','rgba(0,255,65,.55)');
+      t.setAttribute('font-size','8');t.setAttribute('font-family','Orbitron,monospace');
+      t.textContent=num;ng.appendChild(t);
     }
   }
 }
-
-function setHandAngle(id, deg){
-  const el = document.getElementById(id);
-  const rad = deg*Math.PI/180;
-  const len = id==='hand-hour' ? 60 : id==='hand-minute' ? 82 : 90;
-  const tailLen = id==='hand-second' ? 6 : 0;
-  el.setAttribute('x1', tailLen ? -Math.sin(rad)*tailLen : 0);
-  el.setAttribute('y1', tailLen ?  Math.cos(rad)*tailLen : 0);
-  el.setAttribute('x2',  Math.sin(rad)*len);
-  el.setAttribute('y2', -Math.cos(rad)*len);
+function setHand(id,deg,lenY,tailY=0){
+  const el=document.getElementById(id),r=deg*Math.PI/180;
+  el.setAttribute('x1',tailY?-Math.sin(r)*tailY:0);
+  el.setAttribute('y1',tailY?Math.cos(r)*tailY:0);
+  el.setAttribute('x2',Math.sin(r)*lenY);
+  el.setAttribute('y2',-Math.cos(r)*lenY);
 }
-
-function drawAngleArc(ang1, ang2){
-  // Рисуем дугу угла между двумя стрелками
-  const arc = document.getElementById('angle-arc');
-  const r = 38;
-  const a1r = ang1*Math.PI/180, a2r = ang2*Math.PI/180;
-  const x1=Math.sin(a1r)*r, y1=-Math.cos(a1r)*r;
-  const x2=Math.sin(a2r)*r, y2=-Math.cos(a2r)*r;
-  let diff = ((ang2-ang1)%360+360)%360;
-  const large = diff>180?1:0;
-  // sweep зависит от направления
-  arc.setAttribute('d',`M 0 0 L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`);
-}
-
 function renderClock(){
-  if(!state.currentTime) return;
-  const ang = handAngles(state.currentTime);
-  setHandAngle('hand-hour',   ang.hour);
-  setHandAngle('hand-minute', ang.minute);
-  setHandAngle('hand-second', ang.second);
-
-  // Подсвечиваем нужные стрелки
-  const lv = LEVELS[state.level];
-  let type = lv.type;
-  if(type==='all'){
-    const seq=['ms','hm','hs']; type=seq[state.subQIndex];
-  }
-  document.getElementById('hand-hour').setAttribute('opacity',   (type==='hm'||type==='hs'||type==='all') ? '1' : '0.2');
-  document.getElementById('hand-minute').setAttribute('opacity', (type==='ms'||type==='hm'||type==='all') ? '1' : '0.2');
-  document.getElementById('hand-second').setAttribute('opacity', (type==='ms'||type==='hs'||type==='all') ? '1' : '0.2');
-
-  // Дуга угла
-  if(type==='ms') drawAngleArc(ang.minute, ang.second);
-  else if(type==='hs') drawAngleArc(ang.hour, ang.second);
-  else if(type==='hm') drawAngleArc(ang.hour, ang.minute);
+  const a=angles(ST.time);
+  setHand('hh',a.h,50);setHand('mh',a.m,68);setHand('sh',a.s,76,5);
+  const lv=LVS[ST.lv];
+  let tp=lv.type==='all'?['ms','hm','hs'][ST.sub]:lv.type;
+  document.getElementById('hh').setAttribute('opacity',(tp==='hs'||tp==='hm')?'1':'.2');
+  document.getElementById('mh').setAttribute('opacity',(tp==='ms'||tp==='hm')?'1':'.2');
+  document.getElementById('sh').setAttribute('opacity',(tp==='ms'||tp==='hs')?'1':'.2');
+  // дуга угла
+  const arc=document.getElementById('arc'),R=32;
+  let a1,a2;
+  if(tp==='ms'){a1=a.m;a2=a.s;}
+  else if(tp==='hs'){a1=a.h;a2=a.s;}
+  else{a1=a.h;a2=a.m;}
+  const r1r=a1*Math.PI/180,r2r=a2*Math.PI/180;
+  const x1=Math.sin(r1r)*R,y1=-Math.cos(r1r)*R,x2=Math.sin(r2r)*R,y2=-Math.cos(r2r)*R;
+  let diff=((a2-a1)%360+360)%360,lg=diff>180?1:0;
+  arc.setAttribute('d',`M0 0 L${x1} ${y1} A${R} ${R} 0 ${lg} 1 ${x2} ${y2}Z`);
 }
 
-// Обновляем HUD
-function updateHUD(){
-  const lv = LEVELS[state.level];
-  document.getElementById('hud-level').textContent = state.level+1;
-  const total = lv.type==='all' ? 3 : lv.qCount;
-  const qi = lv.type==='all' ? state.qIndex*3+state.subQIndex+1 : state.qIndex+1;
-  document.getElementById('hud-q').textContent = qi+'/'+(lv.qCount*(lv.type==='all'?3:1));
-  document.getElementById('hud-coins').textContent = state.coins+' 🪙';
-  const hearts = '❤️'.repeat(state.lives) + '🖤'.repeat(3-state.lives);
-  document.getElementById('hud-lives').textContent = hearts;
-  document.getElementById('q-level-label').textContent = lv.title+' — '+lv.desc;
-
-  // Вопрос
-  let qText='';
-  let type=lv.type;
-  if(type==='all'){const seq=['ms','hm','hs'];type=seq[state.subQIndex];}
-  const t=state.currentTime;
+/* ── HUD ── */
+function updHUD(){
+  const lv=LVS[ST.lv];
+  document.getElementById('h-lv').textContent=ST.lv+1;
+  const tot=lv.type==='all'?lv.qc*3:lv.qc;
+  const cur=lv.type==='all'?ST.qi*3+ST.sub+1:ST.qi+1;
+  document.getElementById('h-q').textContent=cur+'/'+tot;
+  document.getElementById('h-c').textContent=ST.coins+'🪙';
+  document.getElementById('h-l').textContent='❤️'.repeat(ST.lives)+'🖤'.repeat(3-ST.lives);
+  document.getElementById('qlb').textContent=lv.title+' — '+lv.desc;
+  let tp=lv.type==='all'?['ms','hm','hs'][ST.sub]:lv.type;
   const pad=n=>String(n).padStart(2,'0');
-  const timeStr = pad(t.h)+':'+pad(t.m)+':'+pad(t.s);
-  if(type==='ms') qText=`Время: ${timeStr}\nНайди угол между МИНУТНОЙ и СЕКУНДНОЙ стрелками`;
-  else if(type==='hs') qText=`Время: ${timeStr}\nНайди угол между ЧАСОВОЙ и СЕКУНДНОЙ стрелками`;
-  else if(type==='hm') qText=`Время: ${timeStr}\nНайди угол между ЧАСОВОЙ и МИНУТНОЙ стрелками`;
-  document.getElementById('q-text').textContent = qText;
+  const ts=pad(ST.time.h)+':'+pad(ST.time.m)+':'+pad(ST.time.s);
+  let q='';
+  if(tp==='ms')q=`Время ${ts}\nНайди угол между МИНУТНОЙ и СЕКУНДНОЙ`;
+  else if(tp==='hs')q=`Время ${ts}\nНайди угол между ЧАСОВОЙ и СЕКУНДНОЙ`;
+  else q=`Время ${ts}\nНайди угол между ЧАСОВОЙ и МИНУТНОЙ`;
+  document.getElementById('qtx').textContent=q;
 }
 
-// Классики
-function buildHopscotch(){
-  const wrap = document.getElementById('hopscotch-wrap');
-  wrap.innerHTML='';
-  // Классическая схема: 1,2,3,(4+5),(6),(7+8)
-  const layout = [[1],[2],[3],[4,5],[6],[7,8]];
-  layout.forEach(row=>{
-    const div=document.createElement('div');
-    div.className='hops-row';
-    row.forEach(num=>{
-      const cell=document.createElement('div');
-      cell.className='hop-cell';
-      cell.id='hop-'+num;
-      cell.textContent=num;
-      if(num<=state.hopsCompleted) cell.classList.add('done');
-      else if(num===state.hopsCompleted+1) cell.classList.add('active');
-      div.appendChild(cell);
+/* ── КЛАССИКИ ── */
+function buildHops(){
+  const w=document.getElementById('hops');
+  w.innerHTML='';
+  // схема классиков: 1 | 2 | 3 | 4 5 | 6 | 7 8
+  const rows=[[1],[2],[3],[4,5],[6],[7,8]];
+  rows.forEach(row=>{
+    const d=document.createElement('div');d.className='hops-row';
+    row.forEach(n=>{
+      const c=document.createElement('div');c.className='hop';c.id='hop'+n;c.textContent=n;
+      if(n<=ST.hops)c.classList.add('done');
+      else if(n===ST.hops+1)c.classList.add('act');
+      d.appendChild(c);
     });
-    wrap.appendChild(div);
+    w.appendChild(d);
   });
 }
 
-// ───── ЗАПУСК ИГРЫ ─────
+/* ── КНОПКИ ВАРИАНТОВ ── */
+function renderChoices(){
+  const ans=correctAngle();
+  const opts=genChoices(ans);
+  correctIdx=opts.indexOf(ans);
+  for(let i=0;i<4;i++){
+    const b=document.getElementById('c'+i);
+    b.textContent=opts[i]+'°';
+    b.className='choice-btn';
+    b.disabled=false;
+  }
+}
+
+/* ── СТАРТ ── */
 function startGame(){
-  initAudio();
-  state = { level:0, qIndex:0, coins:0, lives:3, hopsCompleted:0,
-            currentTime:randomTime(), subQIndex:0, answers:[] };
-  showScreen('game-screen');
-  drawClockTicks();
-  buildHopscotch();
-  updateHUD(); renderClock();
-  document.getElementById('answer-input').value='';
-  document.getElementById('feedback').textContent='';
+  initA();
+  ST={lv:0,qi:0,sub:0,coins:0,lives:3,hops:0,time:rndTime()};
+  showS('game-screen');
+  drawTicks();buildHops();updHUD();renderClock();renderChoices();
+  document.getElementById('fb').textContent='';
   document.getElementById('hint-text').textContent='';
 }
 
-// ───── ПРОВЕРКА ОТВЕТА ─────
-function checkAnswer(){
-  initAudio();
-  const input = document.getElementById('answer-input');
-  const val = parseFloat(input.value);
-  if(isNaN(val) || val<0 || val>360){
-    showFeedback('Введи число от 0 до 360!','wrong'); return;
-  }
-  const correct = getCorrectAnswer();
-  // Допуск ±1°
-  const ok = Math.abs(val-correct) <= 1.0;
+/* ── ВЫБОР ОТВЕТА ── */
+let locked=false;
+function pick(idx){
+  if(locked)return;
+  initA();
+  const btn=document.getElementById('c'+idx);
+  const ok=(idx===correctIdx);
   if(ok){
-    playSfx('correct');
-    const lv=LEVELS[state.level];
-    state.coins += lv.coinsPerQ;
-    showFeedback('✓ ВЕРНО! Ответ: '+correct+'°','correct');
-    document.getElementById('hud-coins').textContent=state.coins+' 🪙';
-    setTimeout(()=>advanceQuestion(), 900);
-  } else {
-    playSfx('wrong');
-    state.lives--;
-    showFeedback('✗ НЕВЕРНО! Ответ был: '+correct+'°','wrong');
-    document.getElementById('hud-lives').textContent='❤️'.repeat(Math.max(0,state.lives))+'🖤'.repeat(3-Math.max(0,state.lives));
-    if(state.lives<=0){
-      setTimeout(()=>gameOver(), 1000);
-    } else {
-      setTimeout(()=>advanceQuestion(), 1200);
-    }
+    locked=true;
+    sfx('ok');
+    btn.classList.add('correct');
+    ST.coins+=LVS[ST.lv].cp;
+    showFb('✓ ВЕРНО!','ok');
+    setTimeout(advance,900);
+  }else{
+    sfx('no');
+    btn.classList.add('wrong');
+    // подсвечиваем правильный
+    document.getElementById('c'+correctIdx).classList.add('correct');
+    ST.lives--;
+    const ans=document.querySelectorAll('.choice-btn')[correctIdx].textContent;
+    showFb('✗ НЕВЕРНО! Ответ: '+ans,'bad');
+    // блокируем все
+    for(let i=0;i<4;i++)document.getElementById('c'+i).disabled=true;
+    locked=true;
+    if(ST.lives<=0){setTimeout(gameOver,1100);}
+    else{setTimeout(advance,1300);}
   }
-  input.value='';
+  document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
+}
+
+function advance(){
+  locked=false;
+  document.getElementById('fb').textContent='';
   document.getElementById('hint-text').textContent='';
-}
-
-function advanceQuestion(){
-  document.getElementById('feedback').textContent='';
-  const lv=LEVELS[state.level];
-
+  const lv=LVS[ST.lv];
   if(lv.type==='all'){
-    // В уровне 4: 3 суб-вопроса на каждый вопрос
-    if(state.subQIndex<2){
-      state.subQIndex++;
-    } else {
-      state.subQIndex=0;
-      state.qIndex++;
-      if(state.qIndex>=lv.qCount){
-        levelComplete(); return;
-      }
-      state.currentTime=randomTime();
-    }
-  } else {
-    state.qIndex++;
-    if(state.qIndex>=lv.qCount){
-      levelComplete(); return;
-    }
-    state.currentTime=randomTime();
+    if(ST.sub<2){ST.sub++;}
+    else{ST.sub=0;ST.qi++;if(ST.qi>=lv.qc){levelDone();return;}ST.time=rndTime();}
+  }else{
+    ST.qi++;if(ST.qi>=lv.qc){levelDone();return;}ST.time=rndTime();
   }
-
-  // Прыжок на классиках
-  state.hopsCompleted = Math.min(TOTAL_HOPS,
-    Math.floor((state.level/4)*TOTAL_HOPS + (state.qIndex/(lv.qCount))*HOPS_PER_LEVEL[state.level])
-  );
-  buildHopscotch();
-  updateHUD(); renderClock();
-  document.getElementById('answer-input').focus();
+  // обновляем прыжки пропорционально прогрессу внутри уровня
+  const hopStart=ST.lv===0?0:HOP_AFTER[ST.lv-1];
+  const hopEnd=HOP_AFTER[ST.lv];
+  const tot=lv.type==='all'?lv.qc*3:lv.qc;
+  const cur=lv.type==='all'?ST.qi*3+ST.sub:ST.qi;
+  ST.hops=Math.min(hopEnd, hopStart+Math.floor(cur/(tot)*(hopEnd-hopStart)));
+  buildHops();updHUD();renderClock();renderChoices();
 }
 
-function levelComplete(){
-  playSfx('levelup');
-  // Завершаем все прыжки уровня
-  const hopsBefore = [0,1,3,5];
-  const hopsAfter  = [1,3,5,8];
-  state.hopsCompleted = hopsAfter[state.level];
-  buildHopscotch();
-
-  if(state.level>=3){
-    // Победа
-    showScreen('win-screen');
-    document.getElementById('win-info').innerHTML =
-      `Монет собрано: <b>${state.coins} 🪙</b><br>Жизней осталось: <b>${state.lives}</b><br>Классики пройдены!`;
+function levelDone(){
+  sfx('up');
+  ST.hops=HOP_AFTER[ST.lv];buildHops();
+  if(ST.lv>=3){
+    showS('win-screen');
+    document.getElementById('wi').innerHTML='Монет: <b>'+ST.coins+'🪙</b><br>Жизней: <b>'+ST.lives+'</b><br>Классики пройдены полностью!';
     return;
   }
-
-  showScreen('result-screen');
-  document.getElementById('result-title').textContent = LEVELS[state.level].title+' ПРОЙДЕН!';
-  document.getElementById('result-info').innerHTML =
-    `Монет: <b>${state.coins} 🪙</b> &nbsp;|&nbsp; Жизней: <b>${state.lives}</b>`;
+  showS('result-screen');
+  document.getElementById('rt').textContent=LVS[ST.lv].title+' ПРОЙДЕН!';
+  document.getElementById('ri').innerHTML='Монет: <b>'+ST.coins+'🪙</b> &nbsp;|&nbsp; Жизней: <b>'+ST.lives+'</b>';
 }
-
 function nextLevel(){
-  state.level++;
-  state.qIndex=0; state.subQIndex=0;
-  state.currentTime=randomTime();
-  showScreen('game-screen');
-  updateHUD(); renderClock(); buildHopscotch();
-  document.getElementById('answer-input').value='';
-  document.getElementById('feedback').textContent='';
+  ST.lv++;ST.qi=0;ST.sub=0;ST.time=rndTime();locked=false;
+  showS('game-screen');updHUD();renderClock();renderChoices();buildHops();
+  document.getElementById('fb').textContent='';
   document.getElementById('hint-text').textContent='';
 }
-
 function gameOver(){
-  showScreen('gameover-screen');
-  document.getElementById('gameover-info').innerHTML =
-    `Уровень: <b>${state.level+1}</b><br>Монет накоплено: <b>${state.coins} 🪙</b>`;
+  showS('gameover-screen');
+  document.getElementById('gi').innerHTML='Уровень: <b>'+(ST.lv+1)+'</b><br>Монет: <b>'+ST.coins+'🪙</b>';
 }
 
-// ───── ПОДСКАЗКА ─────
+/* ── ПОДСКАЗКА ── */
 function useHint(){
-  initAudio();
-  if(state.coins<15){
-    showFeedback('Недостаточно монет! Нужно 15 🪙','wrong'); return;
-  }
-  state.coins-=15;
-  document.getElementById('hud-coins').textContent=state.coins+' 🪙';
-  const ang=handAngles(state.currentTime);
-  const lv=LEVELS[state.level];
-  let type=lv.type;
-  if(type==='all'){const seq=['ms','hm','hs'];type=seq[state.subQIndex];}
-  let hint='';
-  const pad=n=>n.toFixed(2);
-  if(type==='ms') hint=`Мин: ${pad(ang.minute)}° | Сек: ${pad(ang.second)}° | Разность: ${getCorrectAnswer()}°`;
-  else if(type==='hs') hint=`Час: ${pad(ang.hour)}° | Сек: ${pad(ang.second)}° | Разность: ${getCorrectAnswer()}°`;
-  else if(type==='hm') hint=`Час: ${pad(ang.hour)}° | Мин: ${pad(ang.minute)}° | Разность: ${getCorrectAnswer()}°`;
-  document.getElementById('hint-text').textContent='💡 '+hint;
+  initA();
+  if(ST.coins<15){showFb('Нужно 15🪙!','bad');return;}
+  ST.coins-=15;document.getElementById('h-c').textContent=ST.coins+'🪙';
+  const a=angles(ST.time),lv=LVS[ST.lv];
+  let tp=lv.type==='all'?['ms','hm','hs'][ST.sub]:lv.type;
+  const p=v=>v.toFixed(1);
+  let h='';
+  if(tp==='ms')h=`Мин:${p(a.m)}° Сек:${p(a.s)}° → ${correctAngle()}°`;
+  else if(tp==='hs')h=`Час:${p(a.h)}° Сек:${p(a.s)}° → ${correctAngle()}°`;
+  else h=`Час:${p(a.h)}° Мин:${p(a.m)}° → ${correctAngle()}°`;
+  document.getElementById('hint-text').textContent='💡 '+h;
 }
 
-// ───── ВСПОМОГАТЕЛЬНЫЕ ─────
-function showFeedback(msg, cls){
-  const el=document.getElementById('feedback');
-  el.textContent=msg; el.className='feedback '+cls;
-}
-
-function showScreen(id){
+/* ── ВСПОМОГАТЕЛЬНЫЕ ── */
+function showFb(msg,cls){const e=document.getElementById('fb');e.textContent=msg;e.className='fb '+cls;}
+function showS(id){
   ['menu-screen','game-screen','result-screen','gameover-screen','win-screen']
     .forEach(s=>document.getElementById(s).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
+function goMenu(){showS('menu-screen');}
 
-function goMenu(){ showScreen('menu-screen'); }
-
-// Фокус на input при нажатии любой цифры в игре
-document.addEventListener('keydown', e=>{
-  if(document.getElementById('game-screen').classList.contains('hidden')) return;
-  const inp=document.getElementById('answer-input');
-  if(document.activeElement!==inp && /^[0-9.]$/.test(e.key)){
-    inp.focus();
-  }
-});
-
-// Первый клик инициирует аудио
-document.body.addEventListener('click', initAudio, {once:true});
-
-// Рисуем деления при загрузке
-drawClockTicks();
+document.body.addEventListener('click',initA,{once:true});
+drawTicks();
 </script>
 </body>
 </html>
