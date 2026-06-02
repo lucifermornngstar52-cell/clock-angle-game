@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Угол Стрелок</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+  :root {
+    --green: #00ff41;
+    --darkgreen: #008f11;
+    --bg: #0d0d0d;
+    --panel: rgba(0,20,0,0.85);
+    --border: rgba(0,255,65,0.3);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ── МАТРИЦА-ФОН ── */
+  #matrix-canvas {
+    position: fixed; top:0; left:0; z-index: 0;
+    opacity: 0.18; pointer-events: none;
+  }
+
+  /* ── ОВЕРЛЕЙ ── */
+  .screen {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6);
+  }
+  .screen.hidden { display: none; }
+
+  /* ── ЧАСЫ РЕАЛЬНОГО ВРЕМЕНИ ── */
+  #real-clock {
+    position: fixed; top: 12px; left: 16px; z-index: 100;
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem; color: var(--green);
+    text-shadow: 0 0 8px var(--green);
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 6px;
+    letter-spacing: 2px;
+  }
+
+  /* ── ГЛАВНОЕ МЕНЮ ── */
+  #menu-screen {
+    gap: 24px;
+  }
+  .menu-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    font-weight: 900;
+    color: var(--green);
+    text-shadow: 0 0 20px var(--green), 0 0 40px var(--green);
+    text-align: center;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+    animation: flicker 4s infinite;
+  }
+  .menu-sub {
+    font-size: 0.75rem; color: var(--darkgreen);
+    letter-spacing: 3px; margin-bottom: 16px;
+    text-align: center;
+  }
+  .btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    background: transparent;
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 12px 40px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    min-width: 220px;
+    text-align: center;
+  }
+  .btn::before {
+    content:''; position:absolute; inset:0;
+    background: var(--green); opacity:0; transition:opacity 0.2s;
+  }
+  .btn:hover::before { opacity: 0.12; }
+  .btn:hover {
+    box-shadow: 0 0 16px var(--green), inset 0 0 8px rgba(0,255,65,0.1);
+    text-shadow: 0 0 8px var(--green);
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn.disabled { opacity: 0.35; cursor: default; }
+  .btn.disabled:hover::before { opacity: 0; }
+  .btn.disabled:hover { box-shadow: none; text-shadow: none; }
+
+  /* Звук */
+  .volume-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 4px;
+  }
+  .volume-row label { font-size: 0.75rem; color: var(--darkgreen); letter-spacing:1px; }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    width: 130px; height: 3px;
+    background: var(--darkgreen); border-radius:2px; outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:14px; height:14px;
+    background: var(--green); border-radius:50%;
+    box-shadow: 0 0 6px var(--green); cursor:pointer;
+  }
+  .vol-val { font-size:0.75rem; min-width:28px; text-align:right; }
+
+  /* ── ИГРОВОЙ ЭКРАН ── */
+  #game-screen {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+
+  #game-left {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px;
+    width: 340px; flex-shrink: 0;
+    padding: 20px 16px;
+  }
+
+  #game-right {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-end;
+    padding: 20px 20px 16px;
+    gap: 12px;
+    max-width: 480px;
+  }
+
+  /* HUD */
+  .hud-row {
+    display: flex; gap: 12px; align-items: center;
+    width: 100%; justify-content: space-between;
+  }
+  .hud-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    text-align: center;
+    flex: 1;
+  }
+  .hud-box .lbl { color: var(--darkgreen); font-size: 0.6rem; letter-spacing:1px; }
+  .hud-box .val { color: var(--green); font-size: 1rem; text-shadow: 0 0 6px var(--green); }
+  .lives-ico { font-size: 1.1rem; }
+
+  /* ВОПРОС */
+  .question-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    width: 100%;
+    text-align: center;
+  }
+  .question-box .q-level {
+    font-size: 0.6rem; color: var(--darkgreen); letter-spacing:2px; margin-bottom:4px;
+  }
+  .question-box .q-text {
+    font-size: 0.95rem; color: var(--green);
+    text-shadow: 0 0 6px var(--green);
+    line-height: 1.4;
+  }
+
+  /* ЧАСЫ-SVG */
+  #clock-svg-wrap {
+    position: relative;
+  }
+  #clock-svg-wrap svg {
+    filter: drop-shadow(0 0 12px rgba(0,255,65,0.5));
+  }
+
+  /* ОТВЕТ */
+  .answer-area {
+    width: 100%;
+    display: flex; flex-direction: column; gap: 10px;
+    align-items: center;
+  }
+  .answer-row {
+    display: flex; gap: 8px; align-items: center; width: 100%;
+  }
+  .answer-row input[type=number] {
+    flex: 1;
+    background: rgba(0,20,0,0.8);
+    border: 1px solid var(--green);
+    border-radius: 6px;
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.2rem;
+    padding: 10px 14px;
+    outline: none;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+  .answer-row input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none; }
+  .answer-row input:focus { box-shadow: 0 0 10px rgba(0,255,65,0.4); }
+
+  .btn-ok {
+    background: rgba(0,255,65,0.15);
+    border: 1px solid var(--green);
+    border-radius: 6px;
+    color: var(--green);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    padding: 10px 22px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .btn-ok:hover { background: rgba(0,255,65,0.28); box-shadow: 0 0 12px var(--green); }
+
+  .btn-hint {
+    background: transparent;
+    border: 1px solid rgba(255,200,0,0.5);
+    border-radius: 6px;
+    color: rgba(255,200,0,0.9);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    padding: 7px 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .btn-hint:hover { background: rgba(255,200,0,0.1); box-shadow: 0 0 8px rgba(255,200,0,0.4); }
+
+  /* ОБРАТНАЯ СВЯЗЬ */
+  .feedback {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem; height: 22px;
+    text-align: center; letter-spacing: 2px;
+  }
+  .feedback.correct { color: #00ff41; text-shadow: 0 0 10px #00ff41; }
+  .feedback.wrong   { color: #ff3131; text-shadow: 0 0 10px #ff3131; }
+
+  /* КЛАССИКИ */
+  #hopscotch-wrap {
+    width: 100%; display: flex; flex-direction: column; align-items: center;
+    gap: 0; margin-top: 4px;
+  }
+  .hops-row { display: flex; gap: 6px; margin-bottom: 4px; }
+  .hop-cell {
+    width: 40px; height: 40px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace; font-size: 0.7rem;
+    color: var(--darkgreen); transition: all 0.4s;
+    background: rgba(0,10,0,0.6);
+  }
+  .hop-cell.done {
+    border-color: var(--green);
+    background: rgba(0,255,65,0.12);
+    color: var(--green);
+    box-shadow: 0 0 8px rgba(0,255,65,0.4);
+  }
+  .hop-cell.active {
+    border-color: #0ff;
+    background: rgba(0,255,255,0.15);
+    color: #0ff;
+    box-shadow: 0 0 12px rgba(0,255,255,0.5);
+    animation: pulse 0.8s infinite;
+  }
+
+  /* ЭКРАН КОНЦА УРОВНЯ / КОНЦА ИГРЫ */
+  #result-screen { gap: 18px; }
+  #gameover-screen { gap: 18px; }
+  .result-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.4rem,4vw,2.2rem); font-weight:900;
+    text-shadow: 0 0 20px var(--green);
+    text-align: center; letter-spacing: 3px;
+  }
+  .result-info { font-size:0.85rem; color: var(--darkgreen); text-align:center; line-height:1.8; }
+
+  /* ── АНИМАЦИИ ── */
+  @keyframes flicker {
+    0%,95%,100% { opacity:1; }
+    96% { opacity:0.6; }
+    97% { opacity:1; }
+    98% { opacity:0.4; }
+    99% { opacity:1; }
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  /* скан-линии */
+  body::after {
+    content:''; position:fixed; inset:0; z-index:1; pointer-events:none;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+    );
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+<div id="real-clock">00:00:00</div>
+
+<!-- ── ГЛАВНОЕ МЕНЮ ── -->
+<div class="screen" id="menu-screen">
+  <div class="menu-title">&gt; УГОЛ СТРЕЛОК_</div>
+  <div class="menu-sub">// CLOCK ANGLE CRACKER v1.0 //</div>
+  <button class="btn" onclick="startGame()">[ ИГРАТЬ ]</button>
+  <button class="btn disabled">[ ДРУГИЕ ИГРЫ ]<br><span style="font-size:0.65rem;opacity:0.5">// в разработке //</span></button>
+  <div class="volume-row" style="margin-top:12px;">
+    <label>МУЗЫКА</label>
+    <input type="range" id="vol-music" min="0" max="100" value="40" oninput="setMusicVol(this.value)">
+    <span class="vol-val" id="vol-music-val">40%</span>
+  </div>
+  <div class="volume-row">
+    <label>ЗВУКИ</label>
+    <input type="range" id="vol-sfx" min="0" max="100" value="70" oninput="setSfxVol(this.value)">
+    <span class="vol-val" id="vol-sfx-val">70%</span>
+  </div>
+</div>
+
+<!-- ── ИГРА ── -->
+<div class="screen hidden" id="game-screen">
+  <div id="game-left">
+    <!-- HUD -->
+    <div class="hud-row">
+      <div class="hud-box">
+        <div class="lbl">УРОВЕНЬ</div>
+        <div class="val" id="hud-level">1</div>
+      </div>
+      <div class="hud-box">
+        <div class="lbl">ВОПРОС</div>
+        <div class="val" id="hud-q">1/5</div>
+      </div>
+      <div class="hud-box">
+        <div class="lbl">МОНЕТЫ</div>
+        <div class="val" id="hud-coins">0 🪙</div>
+      </div>
+      <div class="hud-box">
+        <div class="lbl">ЖИЗНИ</div>
+        <div class="val" id="hud-lives">❤️❤️❤️</div>
+      </div>
+    </div>
+
+    <!-- ВОПРОС -->
+    <div class="question-box">
+      <div class="q-level" id="q-level-label">УРОВЕНЬ 1 — МИНУТНАЯ И СЕКУНДНАЯ</div>
+      <div class="q-text" id="q-text">Найди угол между минутной и секундной стрелками</div>
+    </div>
+
+    <!-- ЧАСЫ -->
+    <div id="clock-svg-wrap">
+      <svg id="clock-svg" width="240" height="240" viewBox="-120 -120 240 240">
+        <!-- фон -->
+        <circle r="118" fill="rgba(0,10,0,0.9)" stroke="#00ff41" stroke-width="2"/>
+        <circle r="114" fill="none" stroke="rgba(0,255,65,0.15)" stroke-width="1"/>
+        <!-- деления -->
+        <g id="ticks"></g>
+        <!-- стрелки -->
+        <line id="hand-hour"   x1="0" y1="0" x2="0" y2="-60"  stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/>
+        <line id="hand-minute" x1="0" y1="0" x2="0" y2="-82"  stroke="#00ff41" stroke-width="3" stroke-linecap="round"/>
+        <line id="hand-second" x1="0" y1="6" x2="0" y2="-90"  stroke="#00cfff" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- центр -->
+        <circle r="5" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
+        <!-- метки угла -->
+        <path id="angle-arc" fill="rgba(255,255,0,0.08)" stroke="rgba(255,255,0,0.5)" stroke-width="1.5" d=""/>
+        <!-- цифры -->
+        <g id="clock-nums"></g>
+      </svg>
+    </div>
+
+    <!-- ПОДСКАЗКА ПОД ЧАСАМИ -->
+    <div id="hint-text" style="font-size:0.7rem;color:rgba(255,200,0,0.8);text-align:center;min-height:18px;"></div>
+
+  </div>
+
+  <div id="game-right">
+    <!-- КЛАССИКИ -->
+    <div style="width:100%">
+      <div style="font-size:0.6rem;color:var(--darkgreen);letter-spacing:2px;margin-bottom:6px;text-align:center;">// КЛАССИКИ //</div>
+      <div id="hopscotch-wrap"></div>
+    </div>
+
+    <!-- ОТВЕТ -->
+    <div class="answer-area">
+      <div class="feedback" id="feedback"></div>
+      <div class="answer-row">
+        <input type="number" id="answer-input" placeholder="°" min="0" max="360"
+               onkeydown="if(event.key==='Enter') checkAnswer()">
+        <button class="btn-ok" onclick="checkAnswer()">OK</button>
+      </div>
+      <button class="btn-hint" onclick="useHint()">💡 ПОДСКАЗКА (-15 🪙)</button>
+    </div>
+
+    <button class="btn" style="margin-top:4px;padding:8px 20px;font-size:0.75rem;" onclick="goMenu()">← МЕНЮ</button>
+  </div>
+</div>
+
+<!-- ── КОНЕЦ УРОВНЯ ── -->
+<div class="screen hidden" id="result-screen">
+  <div class="result-title" id="result-title">УРОВЕНЬ ПРОЙДЕН!</div>
+  <div class="result-info" id="result-info"></div>
+  <button class="btn" onclick="nextLevel()">[ СЛЕДУЮЩИЙ УРОВЕНЬ ]</button>
+  <button class="btn" style="margin-top:4px;" onclick="goMenu()">[ МЕНЮ ]</button>
+</div>
+
+<!-- ── КОНЕЦ ИГРЫ ── -->
+<div class="screen hidden" id="gameover-screen">
+  <div class="result-title" style="color:#ff3131;text-shadow:0 0 20px #ff3131;">ИГРА ОКОНЧЕНА</div>
+  <div class="result-info" id="gameover-info"></div>
+  <button class="btn" onclick="startGame()">[ ЗАНОВО ]</button>
+  <button class="btn" style="margin-top:4px;" onclick="goMenu()">[ МЕНЮ ]</button>
+</div>
+
+<!-- ── ПОБЕДА ── -->
+<div class="screen hidden" id="win-screen">
+  <div class="result-title" style="color:#ffd700;text-shadow:0 0 20px #ffd700;animation:flicker 2s infinite;">🏆 ВЫ ПОБЕДИЛИ! 🏆</div>
+  <div class="result-info" id="win-info"></div>
+  <button class="btn" onclick="startGame()">[ ИГРАТЬ СНОВА ]</button>
+  <button class="btn" style="margin-top:4px;" onclick="goMenu()">[ МЕНЮ ]</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  МАТРИЦА — фоновый код
+// ═══════════════════════════════════════════════════════
+(function(){
+  const c = document.getElementById('matrix-canvas');
+  const ctx = c.getContext('2d');
+  function resize(){ c.width=window.innerWidth; c.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ01アβ∂∑∏∞≠≈∫Ωλ#@$%^&*();:{}|<>?/\\'.split('');
+  const cols = () => Math.floor(c.width/14);
+  let drops = Array.from({length:cols()},()=>Math.random()*c.height/14|0);
+  setInterval(()=>{
+    if(drops.length !== cols()) drops = Array.from({length:cols()},()=>0);
+    ctx.fillStyle='rgba(13,13,13,0.07)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#00ff41'; ctx.font='12px Share Tech Mono';
+    drops.forEach((y,i)=>{
+      const ch = chars[Math.random()*chars.length|0];
+      ctx.fillText(ch, i*14, y*14);
+      if(y*14>c.height && Math.random()>0.975) drops[i]=0;
+      drops[i]++;
+    });
+  }, 50);
+})();
+
+// ═══════════════════════════════════════════════════════
+//  РЕАЛЬНЫЕ ЧАСЫ
+// ═══════════════════════════════════════════════════════
+function updateRealClock(){
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('real-clock').textContent =
+    pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+}
+setInterval(updateRealClock, 1000); updateRealClock();
+
+// ═══════════════════════════════════════════════════════
+//  АУДИО
+// ═══════════════════════════════════════════════════════
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx, musicGain, sfxGain, musicOsc;
+let musicVolume = 0.4, sfxVolume = 0.7;
+
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new AudioCtx();
+  musicGain = audioCtx.createGain(); musicGain.gain.value = musicVolume * 0.3;
+  sfxGain   = audioCtx.createGain(); sfxGain.gain.value   = sfxVolume;
+  musicGain.connect(audioCtx.destination);
+  sfxGain.connect(audioCtx.destination);
+  startMusic();
+}
+
+function startMusic(){
+  // Электронная ambient музыка из осциляторов
+  const notes = [110,138.6,164.8,196,220,261.6,329.6];
+  let i=0;
+  function playNote(){
+    if(!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.connect(g); g.connect(musicGain);
+    o.type = 'sine';
+    o.frequency.value = notes[i%notes.length];
+    g.gain.setValueAtTime(0,audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0.5,audioCtx.currentTime+0.5);
+    g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+2.5);
+    o.start(audioCtx.currentTime); o.stop(audioCtx.currentTime+2.8);
+    i++;
+  }
+  setInterval(playNote, 1400);
+
+  // Бас-ритм
+  setInterval(()=>{
+    if(!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.connect(g); g.connect(musicGain);
+    o.type='square'; o.frequency.value=55;
+    g.gain.setValueAtTime(0.3,audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.15);
+    o.start(audioCtx.currentTime); o.stop(audioCtx.currentTime+0.18);
+  }, 800);
+}
+
+function playSfx(type){
+  if(!audioCtx) return;
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.connect(g); g.connect(sfxGain);
+  if(type==='correct'){
+    o.frequency.setValueAtTime(523,audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(1047,audioCtx.currentTime+0.2);
+    g.gain.setValueAtTime(0.4,audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.3);
+    o.start(); o.stop(audioCtx.currentTime+0.3);
+  } else if(type==='wrong'){
+    o.type='sawtooth'; o.frequency.setValueAtTime(200,audioCtx.currentTime);
+    o.frequency.linearRampToValueAtTime(80,audioCtx.currentTime+0.3);
+    g.gain.setValueAtTime(0.4,audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.35);
+    o.start(); o.stop(audioCtx.currentTime+0.35);
+  } else if(type==='levelup'){
+    [523,659,784,1047].forEach((f,i)=>{
+      const oo=audioCtx.createOscillator(), gg=audioCtx.createGain();
+      oo.connect(gg); gg.connect(sfxGain);
+      oo.frequency.value=f; gg.gain.setValueAtTime(0.3,audioCtx.currentTime+i*0.12);
+      gg.gain.linearRampToValueAtTime(0,audioCtx.currentTime+i*0.12+0.2);
+      oo.start(audioCtx.currentTime+i*0.12); oo.stop(audioCtx.currentTime+i*0.12+0.25);
+    });
+  }
+}
+
+function setMusicVol(v){ musicVolume=v/100; document.getElementById('vol-music-val').textContent=v+'%'; if(musicGain) musicGain.gain.value=musicVolume*0.3; }
+function setSfxVol(v){ sfxVolume=v/100; document.getElementById('vol-sfx-val').textContent=v+'%'; if(sfxGain) sfxGain.gain.value=sfxVolume; }
+
+// ═══════════════════════════════════════════════════════
+//  ЛОГИКА ИГРЫ
+// ═══════════════════════════════════════════════════════
+const LEVELS = [
+  { title:'УРОВЕНЬ 1', desc:'МИНУТНАЯ И СЕКУНДНАЯ', type:'ms', qCount:5, coinsPerQ:1 },
+  { title:'УРОВЕНЬ 2', desc:'ЧАСОВАЯ И СЕКУНДНАЯ',  type:'hs', qCount:5, coinsPerQ:2 },
+  { title:'УРОВЕНЬ 3', desc:'ЧАСОВАЯ И МИНУТНАЯ',   type:'hm', qCount:5, coinsPerQ:3 },
+  { title:'УРОВЕНЬ 4', desc:'ВСЕ СТРЕЛКИ',          type:'all', qCount:3, coinsPerQ:4 },
+];
+
+// Классики: 1ур→1 прыжок, 2ур→3, 3ур→5, 4ур→7 (накопительно)
+const HOPS_PER_LEVEL = [1,2,2,3]; // прибавка за каждый уровень
+const TOTAL_HOPS = 8;
+
+let state = {
+  level: 0, qIndex: 0,
+  coins: 0, lives: 3,
+  hopsCompleted: 0,
+  currentTime: null,
+  subQIndex: 0, // для уровня 4
+  answers: [],  // для уровня 4
+};
+
+// Генерируем случайное время
+function randomTime(){
+  return {
+    h: Math.floor(Math.random()*12),
+    m: Math.floor(Math.random()*60),
+    s: Math.floor(Math.random()*60),
+  };
+}
+
+// Точный расчёт углов стрелок (в градусах, от 12 часов по часовой)
+function handAngles(t){
+  // Секундная: 6° за сек
+  const second = t.s * 6;
+  // Минутная: 6° за мин + 0.1° за сек
+  const minute = t.m * 6 + t.s * 0.1;
+  // Часовая: 30° за час + 0.5° за мин + 1/120° за сек
+  const hour   = (t.h % 12) * 30 + t.m * 0.5 + t.s / 120;
+  return { second, minute, hour };
+}
+
+// Угол между двумя стрелками (меньший, 0-180)
+function angleBetween(a1, a2){
+  let diff = Math.abs(a1 - a2) % 360;
+  if(diff > 180) diff = 360 - diff;
+  return diff;
+}
+
+// Округляем до 1 знака
+function round1(x){ return Math.round(x*10)/10; }
+
+// Получаем правильный ответ для текущего состояния
+function getCorrectAnswer(){
+  const lv = LEVELS[state.level];
+  const ang = handAngles(state.currentTime);
+  let type = lv.type;
+  if(type === 'all'){
+    const seq = ['ms','hm','hs'];
+    type = seq[state.subQIndex];
+  }
+  if(type==='ms') return round1(angleBetween(ang.minute, ang.second));
+  if(type==='hs') return round1(angleBetween(ang.hour,   ang.second));
+  if(type==='hm') return round1(angleBetween(ang.hour,   ang.minute));
+}
+
+// Рисуем циферблат
+function drawClockTicks(){
+  const g = document.getElementById('ticks');
+  const n = document.getElementById('clock-nums');
+  g.innerHTML=''; n.innerHTML='';
+  for(let i=0;i<60;i++){
+    const ang = i*6; const rad=ang*Math.PI/180;
+    const isMaj = i%5===0;
+    const r1=isMaj?96:100, r2=110;
+    const x1=Math.sin(rad)*r1, y1=-Math.cos(rad)*r1;
+    const x2=Math.sin(rad)*r2, y2=-Math.cos(rad)*r2;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    line.setAttribute('stroke', isMaj ? '#00ff41' : 'rgba(0,255,65,0.3)');
+    line.setAttribute('stroke-width', isMaj ? '2' : '1');
+    g.appendChild(line);
+    if(isMaj){
+      const num = i/5||12;
+      const nr=82; const tx=Math.sin(rad)*nr, ty=-Math.cos(rad)*nr;
+      const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',tx); t.setAttribute('y',ty);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
+      t.setAttribute('fill','rgba(0,255,65,0.6)');
+      t.setAttribute('font-size','9');
+      t.setAttribute('font-family','Orbitron,monospace');
+      t.textContent=num;
+      n.appendChild(t);
+    }
+  }
+}
+
+function setHandAngle(id, deg){
+  const el = document.getElementById(id);
+  const rad = deg*Math.PI/180;
+  const len = id==='hand-hour' ? 60 : id==='hand-minute' ? 82 : 90;
+  const tailLen = id==='hand-second' ? 6 : 0;
+  el.setAttribute('x1', tailLen ? -Math.sin(rad)*tailLen : 0);
+  el.setAttribute('y1', tailLen ?  Math.cos(rad)*tailLen : 0);
+  el.setAttribute('x2',  Math.sin(rad)*len);
+  el.setAttribute('y2', -Math.cos(rad)*len);
+}
+
+function drawAngleArc(ang1, ang2){
+  // Рисуем дугу угла между двумя стрелками
+  const arc = document.getElementById('angle-arc');
+  const r = 38;
+  const a1r = ang1*Math.PI/180, a2r = ang2*Math.PI/180;
+  const x1=Math.sin(a1r)*r, y1=-Math.cos(a1r)*r;
+  const x2=Math.sin(a2r)*r, y2=-Math.cos(a2r)*r;
+  let diff = ((ang2-ang1)%360+360)%360;
+  const large = diff>180?1:0;
+  // sweep зависит от направления
+  arc.setAttribute('d',`M 0 0 L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`);
+}
+
+function renderClock(){
+  if(!state.currentTime) return;
+  const ang = handAngles(state.currentTime);
+  setHandAngle('hand-hour',   ang.hour);
+  setHandAngle('hand-minute', ang.minute);
+  setHandAngle('hand-second', ang.second);
+
+  // Подсвечиваем нужные стрелки
+  const lv = LEVELS[state.level];
+  let type = lv.type;
+  if(type==='all'){
+    const seq=['ms','hm','hs']; type=seq[state.subQIndex];
+  }
+  document.getElementById('hand-hour').setAttribute('opacity',   (type==='hm'||type==='hs'||type==='all') ? '1' : '0.2');
+  document.getElementById('hand-minute').setAttribute('opacity', (type==='ms'||type==='hm'||type==='all') ? '1' : '0.2');
+  document.getElementById('hand-second').setAttribute('opacity', (type==='ms'||type==='hs'||type==='all') ? '1' : '0.2');
+
+  // Дуга угла
+  if(type==='ms') drawAngleArc(ang.minute, ang.second);
+  else if(type==='hs') drawAngleArc(ang.hour, ang.second);
+  else if(type==='hm') drawAngleArc(ang.hour, ang.minute);
+}
+
+// Обновляем HUD
+function updateHUD(){
+  const lv = LEVELS[state.level];
+  document.getElementById('hud-level').textContent = state.level+1;
+  const total = lv.type==='all' ? 3 : lv.qCount;
+  const qi = lv.type==='all' ? state.qIndex*3+state.subQIndex+1 : state.qIndex+1;
+  document.getElementById('hud-q').textContent = qi+'/'+(lv.qCount*(lv.type==='all'?3:1));
+  document.getElementById('hud-coins').textContent = state.coins+' 🪙';
+  const hearts = '❤️'.repeat(state.lives) + '🖤'.repeat(3-state.lives);
+  document.getElementById('hud-lives').textContent = hearts;
+  document.getElementById('q-level-label').textContent = lv.title+' — '+lv.desc;
+
+  // Вопрос
+  let qText='';
+  let type=lv.type;
+  if(type==='all'){const seq=['ms','hm','hs'];type=seq[state.subQIndex];}
+  const t=state.currentTime;
+  const pad=n=>String(n).padStart(2,'0');
+  const timeStr = pad(t.h)+':'+pad(t.m)+':'+pad(t.s);
+  if(type==='ms') qText=`Время: ${timeStr}\nНайди угол между МИНУТНОЙ и СЕКУНДНОЙ стрелками`;
+  else if(type==='hs') qText=`Время: ${timeStr}\nНайди угол между ЧАСОВОЙ и СЕКУНДНОЙ стрелками`;
+  else if(type==='hm') qText=`Время: ${timeStr}\nНайди угол между ЧАСОВОЙ и МИНУТНОЙ стрелками`;
+  document.getElementById('q-text').textContent = qText;
+}
+
+// Классики
+function buildHopscotch(){
+  const wrap = document.getElementById('hopscotch-wrap');
+  wrap.innerHTML='';
+  // Классическая схема: 1,2,3,(4+5),(6),(7+8)
+  const layout = [[1],[2],[3],[4,5],[6],[7,8]];
+  layout.forEach(row=>{
+    const div=document.createElement('div');
+    div.className='hops-row';
+    row.forEach(num=>{
+      const cell=document.createElement('div');
+      cell.className='hop-cell';
+      cell.id='hop-'+num;
+      cell.textContent=num;
+      if(num<=state.hopsCompleted) cell.classList.add('done');
+      else if(num===state.hopsCompleted+1) cell.classList.add('active');
+      div.appendChild(cell);
+    });
+    wrap.appendChild(div);
+  });
+}
+
+// ───── ЗАПУСК ИГРЫ ─────
+function startGame(){
+  initAudio();
+  state = { level:0, qIndex:0, coins:0, lives:3, hopsCompleted:0,
+            currentTime:randomTime(), subQIndex:0, answers:[] };
+  showScreen('game-screen');
+  drawClockTicks();
+  buildHopscotch();
+  updateHUD(); renderClock();
+  document.getElementById('answer-input').value='';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('hint-text').textContent='';
+}
+
+// ───── ПРОВЕРКА ОТВЕТА ─────
+function checkAnswer(){
+  initAudio();
+  const input = document.getElementById('answer-input');
+  const val = parseFloat(input.value);
+  if(isNaN(val) || val<0 || val>360){
+    showFeedback('Введи число от 0 до 360!','wrong'); return;
+  }
+  const correct = getCorrectAnswer();
+  // Допуск ±1°
+  const ok = Math.abs(val-correct) <= 1.0;
+  if(ok){
+    playSfx('correct');
+    const lv=LEVELS[state.level];
+    state.coins += lv.coinsPerQ;
+    showFeedback('✓ ВЕРНО! Ответ: '+correct+'°','correct');
+    document.getElementById('hud-coins').textContent=state.coins+' 🪙';
+    setTimeout(()=>advanceQuestion(), 900);
+  } else {
+    playSfx('wrong');
+    state.lives--;
+    showFeedback('✗ НЕВЕРНО! Ответ был: '+correct+'°','wrong');
+    document.getElementById('hud-lives').textContent='❤️'.repeat(Math.max(0,state.lives))+'🖤'.repeat(3-Math.max(0,state.lives));
+    if(state.lives<=0){
+      setTimeout(()=>gameOver(), 1000);
+    } else {
+      setTimeout(()=>advanceQuestion(), 1200);
+    }
+  }
+  input.value='';
+  document.getElementById('hint-text').textContent='';
+}
+
+function advanceQuestion(){
+  document.getElementById('feedback').textContent='';
+  const lv=LEVELS[state.level];
+
+  if(lv.type==='all'){
+    // В уровне 4: 3 суб-вопроса на каждый вопрос
+    if(state.subQIndex<2){
+      state.subQIndex++;
+    } else {
+      state.subQIndex=0;
+      state.qIndex++;
+      if(state.qIndex>=lv.qCount){
+        levelComplete(); return;
+      }
+      state.currentTime=randomTime();
+    }
+  } else {
+    state.qIndex++;
+    if(state.qIndex>=lv.qCount){
+      levelComplete(); return;
+    }
+    state.currentTime=randomTime();
+  }
+
+  // Прыжок на классиках
+  state.hopsCompleted = Math.min(TOTAL_HOPS,
+    Math.floor((state.level/4)*TOTAL_HOPS + (state.qIndex/(lv.qCount))*HOPS_PER_LEVEL[state.level])
+  );
+  buildHopscotch();
+  updateHUD(); renderClock();
+  document.getElementById('answer-input').focus();
+}
+
+function levelComplete(){
+  playSfx('levelup');
+  // Завершаем все прыжки уровня
+  const hopsBefore = [0,1,3,5];
+  const hopsAfter  = [1,3,5,8];
+  state.hopsCompleted = hopsAfter[state.level];
+  buildHopscotch();
+
+  if(state.level>=3){
+    // Победа
+    showScreen('win-screen');
+    document.getElementById('win-info').innerHTML =
+      `Монет собрано: <b>${state.coins} 🪙</b><br>Жизней осталось: <b>${state.lives}</b><br>Классики пройдены!`;
+    return;
+  }
+
+  showScreen('result-screen');
+  document.getElementById('result-title').textContent = LEVELS[state.level].title+' ПРОЙДЕН!';
+  document.getElementById('result-info').innerHTML =
+    `Монет: <b>${state.coins} 🪙</b> &nbsp;|&nbsp; Жизней: <b>${state.lives}</b>`;
+}
+
+function nextLevel(){
+  state.level++;
+  state.qIndex=0; state.subQIndex=0;
+  state.currentTime=randomTime();
+  showScreen('game-screen');
+  updateHUD(); renderClock(); buildHopscotch();
+  document.getElementById('answer-input').value='';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('hint-text').textContent='';
+}
+
+function gameOver(){
+  showScreen('gameover-screen');
+  document.getElementById('gameover-info').innerHTML =
+    `Уровень: <b>${state.level+1}</b><br>Монет накоплено: <b>${state.coins} 🪙</b>`;
+}
+
+// ───── ПОДСКАЗКА ─────
+function useHint(){
+  initAudio();
+  if(state.coins<15){
+    showFeedback('Недостаточно монет! Нужно 15 🪙','wrong'); return;
+  }
+  state.coins-=15;
+  document.getElementById('hud-coins').textContent=state.coins+' 🪙';
+  const ang=handAngles(state.currentTime);
+  const lv=LEVELS[state.level];
+  let type=lv.type;
+  if(type==='all'){const seq=['ms','hm','hs'];type=seq[state.subQIndex];}
+  let hint='';
+  const pad=n=>n.toFixed(2);
+  if(type==='ms') hint=`Мин: ${pad(ang.minute)}° | Сек: ${pad(ang.second)}° | Разность: ${getCorrectAnswer()}°`;
+  else if(type==='hs') hint=`Час: ${pad(ang.hour)}° | Сек: ${pad(ang.second)}° | Разность: ${getCorrectAnswer()}°`;
+  else if(type==='hm') hint=`Час: ${pad(ang.hour)}° | Мин: ${pad(ang.minute)}° | Разность: ${getCorrectAnswer()}°`;
+  document.getElementById('hint-text').textContent='💡 '+hint;
+}
+
+// ───── ВСПОМОГАТЕЛЬНЫЕ ─────
+function showFeedback(msg, cls){
+  const el=document.getElementById('feedback');
+  el.textContent=msg; el.className='feedback '+cls;
+}
+
+function showScreen(id){
+  ['menu-screen','game-screen','result-screen','gameover-screen','win-screen']
+    .forEach(s=>document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function goMenu(){ showScreen('menu-screen'); }
+
+// Фокус на input при нажатии любой цифры в игре
+document.addEventListener('keydown', e=>{
+  if(document.getElementById('game-screen').classList.contains('hidden')) return;
+  const inp=document.getElementById('answer-input');
+  if(document.activeElement!==inp && /^[0-9.]$/.test(e.key)){
+    inp.focus();
+  }
+});
+
+// Первый клик инициирует аудио
+document.body.addEventListener('click', initAudio, {once:true});
+
+// Рисуем деления при загрузке
+drawClockTicks();
+</script>
+</body>
+</html>
