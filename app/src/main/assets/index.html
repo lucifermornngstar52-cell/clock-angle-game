@@ -204,6 +204,16 @@
 </style>
 </head>
 <body>
+<!-- ══ MATHOPOLY OVERLAY ══ -->
+<div id="mathopoly-overlay" style="position:fixed;inset:0;z-index:500;display:none;background:#0a0a1a;">
+  <iframe id="mathopoly-frame" src="mathopoly.html"
+    style="width:100%;height:calc(100% - 40px);border:none;"></iframe>
+  <button onclick="closeMathopoly()" style="position:fixed;bottom:0;left:0;right:0;height:40px;
+    font-family:'Orbitron',monospace;font-size:.65rem;background:rgba(5,5,20,.97);
+    border:none;border-top:1px solid rgba(123,47,255,.3);color:rgba(255,255,255,.4);
+    cursor:pointer;letter-spacing:2px;">← НАЗАД В NUMBRA</button>
+</div>
+
 <canvas id="mc"></canvas>
 <div id="rc">00:00:00</div>
 <div id="ach-toast"></div>
