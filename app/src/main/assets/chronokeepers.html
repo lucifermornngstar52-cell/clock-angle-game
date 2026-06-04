@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Хранители Времени</title>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+:root{
+  --c1:#00f5ff;--c2:#7b2fff;--c3:#ff00aa;--c4:#00ff88;
+  --bg:#04040f;--panel:rgba(4,4,20,.97);--border:rgba(0,245,255,.2);
+  --gold:#ffd700;--red:#ff3131;--green:#00ff88;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Share Tech Mono',monospace;overflow:hidden;}
+
+/* CANVAS BG */
+#bgCanvas{position:fixed;inset:0;z-index:0;opacity:.35;pointer-events:none;}
+.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);}
+
+/* SCREENS */
+.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:14px;overflow-y:auto;}
+.screen.hidden{display:none!important;}
+
+/* ── ЛОББИ ── */
+#sLobby{gap:10px;background:radial-gradient(ellipse at 50% 20%,rgba(123,47,255,.2),transparent 70%);}
+.logo{font-family:'Orbitron',monospace;font-size:clamp(1.1rem,5vw,1.6rem);font-weight:900;
+  color:var(--c1);text-shadow:0 0 20px var(--c1),0 0 40px var(--c2);text-align:center;
+  letter-spacing:3px;line-height:1.3;animation:flicker 4s infinite;}
+.logo-sub{font-size:.55rem;color:rgba(0,245,255,.5);letter-spacing:4px;text-align:center;}
+@keyframes flicker{0%,95%,100%{opacity:1;}96%{opacity:.85;}97%{opacity:1;}98%{opacity:.9;}}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:16px;max-width:360px;width:100%;}
+.lbl{font-size:.5rem;color:var(--c2);letter-spacing:3px;margin-bottom:6px;text-transform:uppercase;}
+.inp{width:100%;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;
+  color:#fff;font-family:'Share Tech Mono',monospace;font-size:1rem;padding:10px 12px;
+  letter-spacing:3px;text-transform:uppercase;outline:none;margin-bottom:10px;}
+.inp:focus{border-color:var(--c1);}
+.btn{font-family:'Orbitron',monospace;font-size:.75rem;border-radius:8px;padding:12px;
+  cursor:pointer;letter-spacing:2px;width:100%;text-align:center;transition:all .2s;border:2px solid;
+  background:transparent;}
+.btn-cyan{border-color:var(--c1);color:var(--c1);}
+.btn-cyan:active{background:rgba(0,245,255,.15);}
+.btn-purple{border-color:var(--c2);color:var(--c2);}
+.btn-purple:active{background:rgba(123,47,255,.2);}
+.btn-gold{border-color:var(--gold);color:var(--gold);}
+.btn-gold:active{background:rgba(255,215,0,.15);}
+.btn-green{border-color:var(--green);color:var(--green);}
+.btn-green:active{background:rgba(0,255,136,.15);}
+.btn-red{border-color:var(--red);color:var(--red);}
+.btn-gray{border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.3);font-size:.6rem;}
+.divider{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.2);font-size:.55rem;margin:6px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
+.status{font-size:.6rem;text-align:center;min-height:14px;letter-spacing:1px;margin-top:6px;}
+.ok{color:var(--green);}.err{color:var(--red);}.wait{color:var(--c1);animation:blink .9s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ── ОЖИДАНИЕ ── */
+#sWait{gap:16px;background:radial-gradient(ellipse at 50% 50%,rgba(0,245,255,.1),transparent 70%);}
+.code-display{font-family:'Orbitron',monospace;font-size:2.5rem;color:var(--gold);
+  text-shadow:0 0 30px var(--gold);letter-spacing:12px;text-align:center;}
+.players-list{width:100%;max-width:340px;display:flex;flex-direction:column;gap:6px;}
+.player-slot{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:.75rem;}
+.player-slot.filled{border-color:var(--green);}
+.picon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;}
+
+/* ── ИСТОРИЯ ── */
+#sStory{background:radial-gradient(ellipse at 50% 30%,rgba(123,47,255,.25),var(--bg) 70%);
+  gap:0;justify-content:center;}
+.story-box{max-width:380px;width:100%;text-align:center;padding:20px;}
+.story-title{font-family:'Orbitron',monospace;font-size:1rem;color:var(--gold);
+  text-shadow:0 0 15px var(--gold);letter-spacing:3px;margin-bottom:16px;}
+.story-text{font-size:.72rem;color:rgba(255,255,255,.85);line-height:2;letter-spacing:.5px;}
+.story-text b{color:var(--c1);}
+.story-bar{width:100%;height:3px;background:rgba(255,255,255,.1);border-radius:2px;
+  margin-top:20px;overflow:hidden;}
+.story-fill{height:100%;background:linear-gradient(90deg,var(--c2),var(--c1));
+  width:0%;transition:width .1s linear;}
+
+/* ── ИГРОВОЕ ПОЛЕ ── */
+#sGame{padding:0;justify-content:flex-start;background:var(--bg);}
+
+/* HUD */
+.hud{position:fixed;top:0;left:0;right:0;z-index:50;
+  background:rgba(2,2,12,.98);border-bottom:1px solid var(--border);
+  padding:6px 10px;display:flex;align-items:center;gap:6px;}
+.hud-player{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.hud-name{font-size:.48rem;color:rgba(255,255,255,.5);letter-spacing:1px;text-transform:uppercase;}
+.hud-clock{font-family:'Orbitron',monospace;font-size:.85rem;font-weight:700;}
+.hud-clock.mine{color:var(--c1);text-shadow:0 0 8px var(--c1);}
+.hud-clock.theirs{color:var(--c3);text-shadow:0 0 8px var(--c3);}
+.hud-crystals{font-size:.65rem;letter-spacing:1px;}
+.hud-vs{font-family:'Orbitron',monospace;font-size:.6rem;color:rgba(255,255,255,.3);}
+
+/* MAIN AREA */
+.game-area{position:fixed;top:72px;left:0;right:0;bottom:0;overflow-y:auto;
+  display:flex;flex-direction:column;align-items:center;padding:10px 12px 12px;}
+
+/* CLOCK VISUAL */
+.clock-visual{position:relative;width:130px;height:130px;margin:4px auto;}
+.clock-svg{width:100%;height:100%;}
+
+/* QUESTION PANEL */
+.q-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:14px;width:100%;max-width:380px;margin-top:6px;}
+.q-level{font-size:.48rem;color:var(--c2);letter-spacing:3px;margin-bottom:6px;}
+.q-text{font-size:.82rem;color:#fff;line-height:1.6;margin-bottom:12px;min-height:40px;}
+.q-answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ans-btn{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;color:#fff;font-family:'Share Tech Mono',monospace;
+  font-size:.75rem;padding:10px 6px;cursor:pointer;text-align:center;transition:all .2s;}
+.ans-btn:active{background:rgba(0,245,255,.1);border-color:var(--c1);}
+.ans-btn.correct{background:rgba(0,255,136,.15);border-color:var(--green);color:var(--green);}
+.ans-btn.wrong{background:rgba(255,49,49,.15);border-color:var(--red);color:var(--red);}
+
+/* CARDS */
+.cards-section{width:100%;max-width:380px;margin-top:8px;}
+.cards-title{font-size:.5rem;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:6px;}
+.cards-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;}
+.cards-row::-webkit-scrollbar{height:2px;}
+.cards-row::-webkit-scrollbar-thumb{background:var(--c2);}
+.time-card{min-width:68px;height:80px;background:var(--panel);
+  border:1px solid var(--c2);border-radius:8px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding:6px;transition:all .2s;flex-shrink:0;}
+.time-card:active{transform:scale(.95);background:rgba(123,47,255,.2);}
+.time-card.magic{border-color:var(--c3);}
+.time-card.magic:active{background:rgba(255,0,170,.15);}
+.card-icon{font-size:1.3rem;}
+.card-label{font-size:.5rem;color:rgba(255,255,255,.7);text-align:center;letter-spacing:.5px;line-height:1.3;}
+.card-empty{font-size:.55rem;color:rgba(255,255,255,.2);text-align:center;padding:10px;}
+
+/* CRYSTALS */
+.crystals-row{display:flex;gap:6px;margin:6px 0;}
+.crystal{font-size:1.2rem;filter:grayscale(1);transition:.3s;}
+.crystal.earned{filter:none;animation:sparkle .4s ease;}
+@keyframes sparkle{0%{transform:scale(1);}50%{transform:scale(1.4);}100%{transform:scale(1);}}
+
+/* TOAST */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.9);border:1px solid var(--c1);border-radius:20px;
+  padding:8px 20px;font-size:.72rem;color:var(--c1);z-index:200;
+  white-space:nowrap;transition:opacity .3s;pointer-events:none;}
+.toast.hidden{opacity:0;}
+
+/* ── ФИНАЛ ── */
+#sEnd{gap:16px;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,0,.2),var(--bg) 70%);}
+.end-title{font-family:'Orbitron',monospace;font-size:clamp(1rem,4vw,1.5rem);font-weight:900;
+  color:var(--gold);text-shadow:0 0 30px var(--gold);text-align:center;letter-spacing:4px;}
+.end-badge{font-size:3rem;animation:float 2s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.end-sub{font-size:.65rem;color:rgba(255,255,255,.6);text-align:center;letter-spacing:2px;}
+.end-stats{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:14px;max-width:320px;width:100%;font-size:.7rem;
+  display:flex;flex-direction:column;gap:8px;}
+.stat-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:6px;}
+
+/* FINAL MISSION */
+#sFinal{gap:10px;background:radial-gradient(ellipse at 50% 50%,rgba(255,0,170,.15),var(--bg) 70%);}
+.final-title{font-family:'Orbitron',monospace;font-size:1rem;color:var(--c3);
+  text-shadow:0 0 20px var(--c3);text-align:center;letter-spacing:3px;}
+.final-clock{font-family:'Orbitron',monospace;font-size:2rem;text-align:center;margin:8px 0;}
+.countdown{font-family:'Orbitron',monospace;font-size:1.4rem;color:var(--red);
+  text-shadow:0 0 15px var(--red);text-align:center;}
+
+/* EFFECT OVERLAY */
+.fx-overlay{position:fixed;inset:0;z-index:100;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;}
+.fx-overlay.show{opacity:1;}
+.fx-text{font-family:'Orbitron',monospace;font-size:1.8rem;font-weight:900;
+  text-shadow:0 0 30px currentColor;text-align:center;animation:zoomIn .4s ease;}
+@keyframes zoomIn{0%{transform:scale(.5);}100%{transform:scale(1);}}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.8);
+  display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-bg.hidden{display:none!important;}
+.modal{background:var(--panel);border:1px solid var(--c2);border-radius:16px;
+  padding:20px;max-width:340px;width:100%;text-align:center;}
+.modal-title{font-family:'Orbitron',monospace;font-size:.85rem;color:var(--c2);
+  letter-spacing:2px;margin-bottom:12px;}
+.modal-text{font-size:.7rem;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:16px;}
+.modal-btns{display:flex;gap:8px;}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<div class="scanlines"></div>
+<div class="toast hidden" id="toast"></div>
+<div class="fx-overlay" id="fxOverlay"><div class="fx-text" id="fxText"></div></div>
+
+<!-- MODAL -->
+<div class="modal-bg hidden" id="modalBg">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-text" id="modalText"></div>
+    <div class="modal-btns" id="modalBtns"></div>
+  </div>
+</div>
+
+<!-- ══ ЛОББИ ══ -->
+<div class="screen" id="sLobby">
+  <div class="logo">⚡ ХРАНИТЕЛИ<br>ВРЕМЕНИ</div>
+  <div class="logo-sub">QUANTUM SHIFT</div>
+  <div class="card" style="margin-top:12px;">
+    <div class="lbl">Ваше имя</div>
+    <input class="inp" id="nameInp" placeholder="ВВЕДИ ИМЯ" maxlength="12">
+    <button class="btn btn-gold" onclick="createRoom()" style="margin-bottom:8px;">⚡ СОЗДАТЬ КОМНАТУ</button>
+    <div class="divider">ИЛИ</div>
+    <div class="lbl" style="margin-top:8px;">Код комнаты</div>
+    <input class="inp" id="codeInp" placeholder="КОД" maxlength="6">
+    <button class="btn btn-cyan" onclick="joinRoom()">🔗 ВОЙТИ В КОМНАТУ</button>
+    <div class="status" id="lobbyStatus"></div>
+  </div>
+  <div style="font-size:.5rem;color:rgba(255,255,255,.15);margin-top:8px;text-align:center;max-width:300px;">
+    Игра для 1–5 классов Казахстана · Математика · Стратегия
+  </div>
+</div>
+
+<!-- ══ ОЖИДАНИЕ ══ -->
+<div class="screen hidden" id="sWait">
+  <div style="font-family:'Orbitron',monospace;font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:3px;margin-bottom:8px;">КОД КОМНАТЫ</div>
+  <div class="code-display" id="roomCodeDisplay">---</div>
+  <div style="font-size:.58rem;color:rgba(255,255,255,.3);margin-bottom:16px;">Передай код другому игроку</div>
+  <div class="players-list" id="playersList"></div>
+  <button class="btn btn-gold" id="startBtn" style="max-width:280px;margin-top:12px;display:none;" onclick="hostStartGame()">▶ НАЧАТЬ ИГРУ</button>
+  <div class="status wait" id="waitStatus">Ожидаем игроков...</div>
+  <button class="btn btn-gray" style="max-width:200px;margin-top:8px;" onclick="leaveRoom()">← ВЫЙТИ</button>
+</div>
+
+<!-- ══ ИСТОРИЯ ══ -->
+<div class="screen hidden" id="sStory">
+  <div class="story-box">
+    <div class="story-title">⏳ КВАНТОВЫЙ СДВИГ</div>
+    <div class="story-text" id="storyText"></div>
+    <div class="story-bar"><div class="story-fill" id="storyFill"></div></div>
+    <div style="font-size:.5rem;color:rgba(255,255,255,.2);margin-top:8px;letter-spacing:2px;" id="storySkip">пропустить через несколько секунд...</div>
+  </div>
+</div>
+
+<!-- ══ ФИНАЛЬНАЯ МИССИЯ ══ -->
+<div class="screen hidden" id="sFinal">
+  <div class="final-title">⚠ ФИНАЛЬНОЕ ИСПЫТАНИЕ</div>
+  <div style="font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:2px;">Синхронизируй Хронометр с 00:00</div>
+  <div class="final-clock" id="finalClock" style="color:var(--c3);text-shadow:0 0 20px var(--c3);">00:00</div>
+  <div class="q-panel" style="max-width:360px;width:100%;">
+    <div class="q-level">ФИНАЛЬНОЕ ЗАДАНИЕ</div>
+    <div class="q-text" id="finalQ"></div>
+    <div class="q-answers" id="finalAnswers"></div>
+  </div>
+  <div style="font-size:.6rem;color:rgba(255,255,255,.3);">Осталось времени:</div>
+  <div class="countdown" id="finalCountdown">60</div>
+</div>
+
+<!-- ══ ИГРА ══ -->
+<div class="screen hidden" id="sGame">
+  <div class="hud">
+    <div class="hud-player">
+      <div class="hud-name" id="hudMyName">ВЫ</div>
+      <div class="hud-clock mine" id="hudMyClock">00:00</div>
+      <div class="hud-crystals" id="hudMyCrystals">💎💎💎💎💎</div>
+    </div>
+    <div class="hud-vs">VS</div>
+    <div class="hud-player">
+      <div class="hud-name" id="hudOpName">СОПЕРНИК</div>
+      <div class="hud-clock theirs" id="hudOpClock">00:00</div>
+      <div class="hud-crystals" id="hudOpCrystals">💎💎💎💎💎</div>
+    </div>
+  </div>
+
+  <div class="game-area" id="gameArea">
+    <!-- Часы -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px;">
+      <div style="text-align:center;">
+        <svg class="clock-svg" viewBox="0 0 130 130" width="110" height="110">
+          <defs>
+            <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <!-- Outer ring -->
+          <circle cx="65" cy="65" r="60" fill="rgba(0,0,0,.8)" stroke="rgba(0,245,255,.4)" stroke-width="2"/>
+          <circle cx="65" cy="65" r="58" fill="none" stroke="rgba(0,245,255,.1)" stroke-width="8"/>
+          <!-- Hour marks -->
+          <g id="hourMarks" stroke="rgba(0,245,255,.6)" stroke-width="2"></g>
+          <!-- Minute hand -->
+          <line id="minHand" x1="65" y1="65" x2="65" y2="20" stroke="#00f5ff" stroke-width="2.5"
+            stroke-linecap="round" filter="url(#glow)" transform="rotate(0 65 65)"/>
+          <!-- Hour hand -->
+          <line id="hrHand" x1="65" y1="65" x2="65" y2="35" stroke="#ff00aa" stroke-width="3.5"
+            stroke-linecap="round" filter="url(#glow)" transform="rotate(0 65 65)"/>
+          <!-- Center dot -->
+          <circle cx="65" cy="65" r="4" fill="#fff" filter="url(#glow)"/>
+          <!-- Digital display -->
+          <rect x="40" y="82" width="50" height="18" rx="4" fill="rgba(0,0,0,.7)" stroke="rgba(0,245,255,.3)" stroke-width="1"/>
+          <text id="clockDigital" x="65" y="95" text-anchor="middle" font-family="Orbitron,monospace"
+            font-size="10" fill="#00f5ff">00:00</text>
+        </svg>
+        <div style="font-size:.48rem;color:rgba(255,255,255,.3);letter-spacing:2px;margin-top:2px;">ВАШ ХРОНОМЕТР</div>
+      </div>
+      <!-- Target -->
+      <div style="text-align:center;">
+        <div style="font-size:.5rem;color:rgba(255,255,255,.3);letter-spacing:2px;margin-bottom:4px;">ЭТАЛОН</div>
+        <div style="font-family:'Orbitron',monospace;font-size:1.4rem;color:var(--gold);
+          text-shadow:0 0 15px var(--gold);">00:00</div>
+        <div style="font-size:.5rem;color:rgba(255,215,0,.4);margin-top:2px;">ЦЕЛЬ</div>
+        <div class="crystals-row" id="crystalRow" style="justify-content:center;margin-top:6px;"></div>
+      </div>
+    </div>
+
+    <!-- Вопрос -->
+    <div class="q-panel" id="qPanel">
+      <div class="q-level" id="qLevel">УРОВЕНЬ 1 — СЕКУНДОМЕР</div>
+      <div class="q-text" id="qText">Загрузка задания...</div>
+      <div class="q-answers" id="qAnswers"></div>
+    </div>
+
+    <!-- Карты времени -->
+    <div class="cards-section">
+      <div class="cards-title">КАРТЫ ВРЕМЕНИ (нажми чтобы использовать)</div>
+      <div class="cards-row" id="cardsRow">
+        <div class="card-empty">Отвечай на вопросы чтобы получать карты</div>
+      </div>
+    </div>
+
+    <!-- Магические карты -->
+    <div class="cards-section" style="margin-top:4px;">
+      <div class="cards-title">КАРТЫ ХРОНО-МАГИИ</div>
+      <div class="cards-row" id="magicRow">
+        <div class="card-empty">Редкие карты появятся со временем</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ФИНАЛ ══ -->
+<div class="screen hidden" id="sEnd">
+  <div class="end-badge" id="endBadge">🏆</div>
+  <div class="end-title" id="endTitle">ПОБЕДА!</div>
+  <div class="end-sub" id="endSub">Главный Хранитель Времени</div>
+  <div class="end-stats" id="endStats"></div>
+  <button class="btn btn-gold" style="max-width:280px;" onclick="resetGame()">🔄 ИГРАТЬ СНОВА</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// BACKGROUND CANVAS
+// ═══════════════════════════════════════════════════════
+const bgC = document.getElementById('bgCanvas');
+const bgCtx = bgC.getContext('2d');
+let particles = [];
+
+function initBg() {
+  bgC.width = window.innerWidth;
+  bgC.height = window.innerHeight;
+  particles = Array.from({length:60}, () => ({
+    x: Math.random()*bgC.width,
+    y: Math.random()*bgC.height,
+    r: Math.random()*1.5+.5,
+    vx: (Math.random()-.5)*.3,
+    vy: (Math.random()-.5)*.3,
+    color: ['#00f5ff','#7b2fff','#ff00aa','#00ff88'][Math.floor(Math.random()*4)],
+    alpha: Math.random()*.6+.2
+  }));
+}
+
+function animBg() {
+  bgCtx.clearRect(0,0,bgC.width,bgC.height);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if(p.x<0) p.x=bgC.width; if(p.x>bgC.width) p.x=0;
+    if(p.y<0) p.y=bgC.height; if(p.y>bgC.height) p.y=0;
+    bgCtx.beginPath();
+    bgCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    bgCtx.fillStyle = p.color;
+    bgCtx.globalAlpha = p.alpha;
+    bgCtx.fill();
+    bgCtx.globalAlpha = 1;
+  });
+  // Grid lines
+  bgCtx.strokeStyle = 'rgba(0,245,255,.03)';
+  bgCtx.lineWidth = 1;
+  for(let x=0;x<bgC.width;x+=40){
+    bgCtx.beginPath();bgCtx.moveTo(x,0);bgCtx.lineTo(x,bgC.height);bgCtx.stroke();
+  }
+  for(let y=0;y<bgC.height;y+=40){
+    bgCtx.beginPath();bgCtx.moveTo(0,y);bgCtx.lineTo(bgC.width,y);bgCtx.stroke();
+  }
+  requestAnimationFrame(animBg);
+}
+initBg(); animBg();
+window.addEventListener('resize', initBg);
+
+// Clock hour marks
+const marks = document.getElementById('hourMarks');
+if(marks) {
+  for(let i=0;i<12;i++) {
+    const a = (i/12)*Math.PI*2 - Math.PI/2;
+    const x1 = 65 + 52*Math.cos(a), y1 = 65 + 52*Math.sin(a);
+    const x2 = 65 + 58*Math.cos(a), y2 = 65 + 58*Math.sin(a);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1);line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2);line.setAttribute('y2',y2);
+    marks.appendChild(line);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════════════════
+const START_TIMES = [{h:4,m:15},{h:18,m:40},{h:9,m:25},{h:22,m:50}];
+const LEVELS = ['УРОВЕНЬ 1 — СЕКУНДОМЕР','УРОВЕНЬ 2 — КАЛЕНДАРЬ','УРОВЕНЬ 3 — ПАРАДОКС'];
+
+let peer, conn;
+let isHost = false;
+let myName = '', opName = '';
+let roomCode = '';
+let players = {}; // {id: {name, time:{h,m}, crystals, cards, magic, score}}
+let myId = '', opId = '';
+let myTime = {h:0,m:0};
+let opTime = {h:0,m:0};
+let myCrystals = 0, opCrystals = 0;
+let myCards = [], myMagic = [];
+let answerLocked = false;
+let currentQ = null;
+let myScore = 0;
+let finalTimer = null;
+let inFinalMission = false;
+
+// ═══════════════════════════════════════════════════════
+// QUESTIONS DATABASE
+// ═══════════════════════════════════════════════════════
+function getQuestions(crystals) {
+  const level = crystals < 2 ? 0 : crystals < 4 ? 1 : 2;
+  const banks = [
+    // LEVEL 1 — Секундомер
+    [
+      {q:'Сколько минут в 1 часе?', a:['60','30','100','45'], correct:0},
+      {q:'Сколько секунд в 1 минуте?', a:['100','60','30','45'], correct:1},
+      {q:'Сколько часов в сутках?', a:['12','36','48','24'], correct:3},
+      {q:'Урок начался в 9:00 и длился 45 минут. Когда он закончился?', a:['9:45','10:00','9:30','10:15'], correct:0},
+      {q:'Сколько минут в 2 часах?', a:['100','90','120','80'], correct:2},
+      {q:'Поезд отправился в 14:30 и ехал 1 час 20 мин. Когда прибыл?', a:['15:50','15:40','15:30','16:00'], correct:0},
+      {q:'От 7:00 до 9:30 прошло...?', a:['2 часа','2,5 часа','3 часа','1,5 часа'], correct:1},
+      {q:'Сколько минут от 10:15 до 11:00?', a:['55','45','50','40'], correct:1},
+      {q:'Школа начинается в 8:00. Дорога 25 мин. Когда выйти из дома?', a:['7:35','7:45','7:30','7:55'], correct:0},
+      {q:'Сколько полных часов в 150 минутах?', a:['1','3','2','4'], correct:2},
+    ],
+    // LEVEL 2 — Календарь
+    [
+      {q:'Сколько дней в феврале невисокосного года?', a:['28','29','30','31'], correct:0},
+      {q:'Какой месяц идёт после июля?', a:['Июнь','Сентябрь','Август','Октябрь'], correct:2},
+      {q:'Сколько месяцев в году?', a:['10','11','12','13'], correct:2},
+      {q:'Если сегодня вторник, какой день будет через 5 дней?', a:['Суббота','Воскресенье','Пятница','Четверг'], correct:1},
+      {q:'Сколько недель в году?', a:['50','51','52','53'], correct:2},
+      {q:'Какой месяц 10-й по счёту?', a:['Сентябрь','Октябрь','Ноябрь','Декабрь'], correct:1},
+      {q:'День Независимости Казахстана — 16 декабря. Это какой месяц?', a:['11-й','12-й','10-й','1-й'], correct:1},
+      {q:'Сколько дней в марте?', a:['28','29','30','31'], correct:3},
+      {q:'Если 1 марта понедельник, какой день 8 марта?', a:['Вторник','Среда','Понедельник','Пятница'], correct:2},
+      {q:'Через сколько дней наступит следующая неделя?', a:['5','7','6','8'], correct:1},
+    ],
+    // LEVEL 3 — Парадокс
+    [
+      {q:'Часы отстают на 20 минут. Они показывают 14:40. Сколько сейчас реально?', a:['14:20','15:00','14:40','15:20'], correct:1},
+      {q:'Если переместиться на 3 часовых пояса вперёд из UTC+5, будет UTC+...?', a:['8','2','6','7'], correct:0},
+      {q:'За 2,5 суток прошло ... часов:', a:['48','60','72','56'], correct:1},
+      {q:'На сколько дней 2024 год длиннее 2023?', a:['0','1','2','7'], correct:1},
+      {q:'Часы идут в 2 раза быстрее. За 1 реальный час они покажут:', a:['30 мин','1 час','2 часа','3 часа'], correct:2},
+      {q:'Ракета летит 1,5 суток. Это сколько часов?', a:['24','30','36','48'], correct:2},
+      {q:'В 3 часа ночи минутная стрелка указывает на...?', a:['3','12','6','9'], correct:1},
+      {q:'Если в Алматы 12:00 (UTC+5), то в Лондоне (UTC+0) сейчас...?', a:['7:00','17:00','12:00','5:00'], correct:0},
+      {q:'Стрелки часов совпадают в 12:00. Когда они снова совпадут примерно?', a:['1:00','1:05','1:06','2:00'], correct:2},
+      {q:'Машина едет 90 км/ч. Через 40 минут проедет...?', a:['40 км','60 км','90 км','50 км'], correct:1},
+    ]
+  ];
+  const bank = banks[level];
+  return {q: bank[Math.floor(Math.random()*bank.length)], level};
+}
+
+// TIME CARDS
+const TIME_CARDS = [
+  {icon:'⏩',label:'+15 мин',delta:{h:0,m:15}},
+  {icon:'⏩⏩',label:'+30 мин',delta:{h:0,m:30}},
+  {icon:'🕐',label:'+1 час',delta:{h:1,m:0}},
+  {icon:'🕑',label:'+2 часа',delta:{h:2,m:0}},
+  {icon:'⏪',label:'-15 мин',delta:{h:0,m:-15}},
+  {icon:'⏪⏪',label:'-30 мин',delta:{h:0,m:-30}},
+  {icon:'🕐',label:'-1 час',delta:{h:-1,m:0}},
+  {icon:'🕑',label:'-2 часа',delta:{h:-2,m:0}},
+  {icon:'🌅',label:'Перемотка\nсуток',delta:{h:12,m:0}},
+  {icon:'🔄',label:'Сброс\nвремени',delta:null,reset:true},
+];
+
+const MAGIC_CARDS = [
+  {icon:'🌀',label:'Временная\nПетля',id:'loop'},
+  {icon:'⚡',label:'Квантовый\nСдвиг',id:'shift'},
+  {icon:'❄️',label:'Заморозка',id:'freeze'},
+  {icon:'🦹',label:'Временной\nВор',id:'steal'},
+  {icon:'💫',label:'Парадокс',id:'paradox'},
+];
+
+// ═══════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════
+function normalizeTime(t) {
+  let total = t.h * 60 + t.m;
+  total = ((total % 1440) + 1440) % 1440;
+  return {h: Math.floor(total/60) % 24, m: total % 60};
+}
+
+function fmtTime(t) {
+  return String(t.h).padStart(2,'0') + ':' + String(t.m).padStart(2,'0');
+}
+
+function timeDiff(t) {
+  let total = t.h * 60 + t.m;
+  // Distance to 00:00 (both directions)
+  return Math.min(total, 1440 - total);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+let toastTimer;
+function showToast(msg, dur=2000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), dur);
+}
+
+function showFx(text, color='#00f5ff', dur=1500) {
+  const ov = document.getElementById('fxOverlay');
+  const ft = document.getElementById('fxText');
+  ft.textContent = text;
+  ft.style.color = color;
+  ov.classList.add('show');
+  setTimeout(() => ov.classList.remove('show'), dur);
+}
+
+function randCode() {
+  return Math.random().toString(36).substr(2,5).toUpperCase();
+}
+
+// ═══════════════════════════════════════════════════════
+// CLOCK RENDERING
+// ═══════════════════════════════════════════════════════
+function updateClockVisual(t) {
+  const minDeg = (t.m / 60) * 360;
+  const hrDeg = ((t.h % 12) / 12) * 360 + (t.m / 60) * 30;
+  document.getElementById('minHand').setAttribute('transform', `rotate(${minDeg} 65 65)`);
+  document.getElementById('hrHand').setAttribute('transform', `rotate(${hrDeg} 65 65)`);
+  document.getElementById('clockDigital').textContent = fmtTime(t);
+  // Color based on distance to 00:00
+  const diff = timeDiff(t);
+  const color = diff < 30 ? '#00ff88' : diff < 120 ? '#ffd700' : '#00f5ff';
+  document.getElementById('clockDigital').setAttribute('fill', color);
+  document.getElementById('minHand').setAttribute('stroke', color);
+}
+
+// ═══════════════════════════════════════════════════════
+// CRYSTALS
+// ═══════════════════════════════════════════════════════
+function updateCrystals() {
+  const row = document.getElementById('crystalRow');
+  row.innerHTML = '';
+  for(let i=0;i<5;i++){
+    const span = document.createElement('span');
+    span.className = 'crystal' + (i < myCrystals ? ' earned' : '');
+    span.textContent = '💎';
+    row.appendChild(span);
+  }
+  // HUD crystals
+  document.getElementById('hudMyCrystals').textContent = '💎'.repeat(myCrystals) + '○'.repeat(5-myCrystals);
+  document.getElementById('hudOpCrystals').textContent = '💎'.repeat(opCrystals) + '○'.repeat(5-opCrystals);
+}
+
+// ═══════════════════════════════════════════════════════
+// CARDS RENDERING
+// ═══════════════════════════════════════════════════════
+function renderCards() {
+  const row = document.getElementById('cardsRow');
+  row.innerHTML = '';
+  if(myCards.length === 0) {
+    row.innerHTML = '<div class="card-empty">Отвечай на вопросы чтобы получать карты</div>';
+  } else {
+    myCards.forEach((cardIdx, i) => {
+      const c = TIME_CARDS[cardIdx];
+      const div = document.createElement('div');
+      div.className = 'time-card';
+      div.innerHTML = `<div class="card-icon">${c.icon}</div><div class="card-label">${c.label}</div>`;
+      div.onclick = () => useTimeCard(i);
+      row.appendChild(div);
+    });
+  }
+  const mrow = document.getElementById('magicRow');
+  mrow.innerHTML = '';
+  if(myMagic.length === 0) {
+    mrow.innerHTML = '<div class="card-empty">Редкие карты появятся со временем</div>';
+  } else {
+    myMagic.forEach((cardId, i) => {
+      const c = MAGIC_CARDS.find(x => x.id === cardId);
+      if(!c) return;
+      const div = document.createElement('div');
+      div.className = 'time-card magic';
+      div.innerHTML = `<div class="card-icon">${c.icon}</div><div class="card-label">${c.label}</div>`;
+      div.onclick = () => useMagicCard(i);
+      mrow.appendChild(div);
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// QUESTION
+// ═══════════════════════════════════════════════════════
+function loadQuestion() {
+  answerLocked = false;
+  const {q, level} = getQuestions(myCrystals);
+  currentQ = q;
+  document.getElementById('qLevel').textContent = LEVELS[level];
+  document.getElementById('qText').textContent = q.q;
+  const ansDiv = document.getElementById('qAnswers');
+  ansDiv.innerHTML = '';
+  q.a.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.textContent = ans;
+    btn.onclick = () => checkAnswer(i);
+    ansDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(idx) {
+  if(answerLocked) return;
+  answerLocked = true;
+  const btns = document.querySelectorAll('.ans-btn');
+  const correct = currentQ.correct === idx;
+  btns[currentQ.correct].classList.add('correct');
+  if(!correct) btns[idx].classList.add('wrong');
+
+  if(correct) {
+    myScore++;
+    showFx('✓ ВЕРНО!', '#00ff88', 800);
+    // Дать карту
+    const cardIdx = Math.floor(Math.random() * TIME_CARDS.length);
+    myCards.push(cardIdx);
+    // Шанс на магическую карту
+    if(Math.random() < 0.2) {
+      const mc = MAGIC_CARDS[Math.floor(Math.random()*MAGIC_CARDS.length)];
+      myMagic.push(mc.id);
+      showToast(`✨ Получена карта: ${mc.label.replace('\n',' ')}`);
+    } else {
+      showToast(`🃏 Карта: ${TIME_CARDS[cardIdx].label.replace('\n',' ')}`);
+    }
+    // Кристалл если подошли к цели
+    const diff = timeDiff(myTime);
+    if(diff < 30) {
+      myCrystals = Math.min(5, myCrystals + 1);
+      showFx('💎 КРИСТАЛЛ!', '#ffd700', 1200);
+      send({type:'crystals', crystals: myCrystals});
+    }
+    renderCards();
+    updateCrystals();
+
+    if(myCrystals >= 5) {
+      setTimeout(startFinalMission, 500);
+      return;
+    }
+  } else {
+    showFx('✗ НЕВЕРНО', '#ff3131', 800);
+  }
+
+  send({type:'score', score: myScore, crystals: myCrystals});
+  setTimeout(loadQuestion, 1200);
+}
+
+// ═══════════════════════════════════════════════════════
+// TIME CARD USAGE
+// ═══════════════════════════════════════════════════════
+function useTimeCard(idx) {
+  if(idx >= myCards.length) return;
+  const cardIdx = myCards[idx];
+  const card = TIME_CARDS[cardIdx];
+  myCards.splice(idx, 1);
+
+  if(card.reset) {
+    myTime = {h:0, m:0};
+    showFx('🔄 СБРОС!', '#ffd700', 1000);
+  } else {
+    myTime = normalizeTime({h: myTime.h + card.delta.h, m: myTime.m + card.delta.m});
+    showToast(card.label.replace('\n',' ') + ' → ' + fmtTime(myTime));
+  }
+
+  updateClockVisual(myTime);
+  document.getElementById('hudMyClock').textContent = fmtTime(myTime);
+  renderCards();
+  send({type:'timeUpdate', time: myTime});
+
+  // Проверяем кристалл
+  const diff = timeDiff(myTime);
+  if(diff === 0) {
+    myCrystals = Math.min(5, myCrystals + 1);
+    showFx('💎 КРИСТАЛЛ!', '#ffd700', 1200);
+    updateCrystals();
+    send({type:'crystals', crystals: myCrystals});
+    if(myCrystals >= 5) setTimeout(startFinalMission, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// MAGIC CARD USAGE
+// ═══════════════════════════════════════════════════════
+function useMagicCard(idx) {
+  if(idx >= myMagic.length) return;
+  const cardId = myMagic[idx];
+  myMagic.splice(idx, 1);
+
+  switch(cardId) {
+    case 'loop':
+      send({type:'magic', effect:'loop'});
+      showFx('🌀 ПЕТЛЯ!', '#ff00aa', 1200);
+      showToast('Отправлена Временная Петля сопернику!');
+      break;
+    case 'shift':
+      const tmp = {...myTime};
+      myTime = {...opTime};
+      opTime = tmp;
+      send({type:'magic', effect:'shift', myTime: opTime, opTime: myTime});
+      updateClockVisual(myTime);
+      document.getElementById('hudMyClock').textContent = fmtTime(myTime);
+      document.getElementById('hudOpClock').textContent = fmtTime(opTime);
+      showFx('⚡ КВАНТОВЫЙ СДВИГ!', '#7b2fff', 1500);
+      break;
+    case 'freeze':
+      send({type:'magic', effect:'freeze'});
+      showFx('❄️ ЗАМОРОЗКА!', '#00f5ff', 1200);
+      showToast('Соперник пропустит ход!');
+      break;
+    case 'steal':
+      send({type:'magic', effect:'steal'});
+      showFx('🦹 ВРЕМЕННОЙ ВОР!', '#ff8c00', 1200);
+      break;
+    case 'paradox':
+      send({type:'magic', effect:'paradox'});
+      const t1 = {...myTime}, t2 = {...opTime};
+      myTime = t2; opTime = t1;
+      updateClockVisual(myTime);
+      document.getElementById('hudMyClock').textContent = fmtTime(myTime);
+      document.getElementById('hudOpClock').textContent = fmtTime(opTime);
+      showFx('💫 ПАРАДОКС!', '#ff00aa', 1500);
+      break;
+  }
+  renderCards();
+  send({type:'timeUpdate', time: myTime});
+}
+
+// ═══════════════════════════════════════════════════════
+// FINAL MISSION
+// ═══════════════════════════════════════════════════════
+let finalQCorrect = 0;
+function startFinalMission() {
+  showScreen('sFinal');
+  inFinalMission = true;
+  finalQCorrect = 0;
+  let timeLeft = 60;
+  document.getElementById('finalCountdown').textContent = timeLeft;
+  document.getElementById('finalClock').textContent = fmtTime(myTime);
+
+  // 3 финальных вопроса подряд
+  loadFinalQuestion();
+
+  finalTimer = setInterval(() => {
+    timeLeft--;
+    document.getElementById('finalCountdown').textContent = timeLeft;
+    if(timeLeft <= 0) {
+      clearInterval(finalTimer);
+      endGame(false, 'Время вышло!');
+    }
+  }, 1000);
+}
+
+const FINAL_QUESTIONS = [
+  {q:'Финал: Сколько минут от 23:30 до 00:30?', a:['30','60','90','120'], correct:1},
+  {q:'Финал: Если часы показывают 24:00, значит это...?', a:['Полночь','Полдень','12:00','6:00'], correct:0},
+  {q:'Финал: За сколько часов стрелка обходит циферблат дважды?', a:['12','24','6','48'], correct:1},
+];
+let fqIdx = 0;
+
+function loadFinalQuestion() {
+  const q = FINAL_QUESTIONS[fqIdx % FINAL_QUESTIONS.length];
+  document.getElementById('finalQ').textContent = q.q;
+  const ans = document.getElementById('finalAnswers');
+  ans.innerHTML = '';
+  q.a.forEach((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.textContent = a;
+    btn.onclick = () => {
+      if(i === q.correct) {
+        btn.classList.add('correct');
+        finalQCorrect++;
+        fqIdx++;
+        if(finalQCorrect >= 3) {
+          clearInterval(finalTimer);
+          setTimeout(() => endGame(true), 800);
+        } else {
+          setTimeout(loadFinalQuestion, 600);
+        }
+      } else {
+        btn.classList.add('wrong');
+        showToast('Неверно! Попробуй ещё.');
+      }
+    };
+    ans.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// END GAME
+// ═══════════════════════════════════════════════════════
+function endGame(win, reason='') {
+  send({type:'gameOver', win: !win}); // сообщаем сопернику что он проиграл
+  clearInterval(finalTimer);
+  showScreen('sEnd');
+  document.getElementById('endBadge').textContent = win ? '🏆' : '💔';
+  document.getElementById('endTitle').textContent = win ? 'ПОБЕДА!' : 'ПОРАЖЕНИЕ';
+  document.getElementById('endSub').textContent = win
+    ? 'Главный Хранитель Времени'
+    : (reason || 'Соперник оказался быстрее');
+
+  document.getElementById('endStats').innerHTML = `
+    <div class="stat-row"><span>💎 Кристаллов</span><span style="color:var(--gold)">${myCrystals}/5</span></div>
+    <div class="stat-row"><span>✓ Правильных ответов</span><span style="color:var(--green)">${myScore}</span></div>
+    <div class="stat-row"><span>⏰ Финальное время</span><span style="color:var(--c1)">${fmtTime(myTime)}</span></div>
+    <div class="stat-row" style="border:none;padding:0;"><span>👤 Соперник</span><span style="color:var(--c3)">${opName}</span></div>
+  `;
+}
+
+function resetGame() {
+  if(conn) conn.close();
+  if(peer) peer.destroy();
+  peer = null; conn = null;
+  myCards = []; myMagic = [];
+  myCrystals = 0; opCrystals = 0;
+  myScore = 0; fqIdx = 0;
+  clearInterval(finalTimer);
+  showScreen('sLobby');
+}
+
+// ═══════════════════════════════════════════════════════
+// NETWORK
+// ═══════════════════════════════════════════════════════
+function send(data) {
+  if(conn && conn.open) conn.send(JSON.stringify(data));
+}
+
+function onMessage(raw) {
+  const msg = JSON.parse(raw);
+  switch(msg.type) {
+    case 'hello':
+      opName = msg.name;
+      opId = msg.id;
+      document.getElementById('hudOpName').textContent = opName;
+      if(isHost) {
+        // Присвоить случайные времена
+        const t1 = START_TIMES[Math.floor(Math.random()*START_TIMES.length)];
+        let t2;
+        do { t2 = START_TIMES[Math.floor(Math.random()*START_TIMES.length)]; }
+        while(t1.h === t2.h && t1.m === t2.m);
+
+        myTime = {...t1}; opTime = {...t2};
+        send({type:'init', myTime: t2, opTime: t1, opName: myName});
+        updatePlayerList();
+        document.getElementById('startBtn').style.display = 'flex';
+        document.getElementById('waitStatus').textContent = opName + ' подключился! Нажми НАЧАТЬ ИГРУ';
+        document.getElementById('waitStatus').className = 'status ok';
+      }
+      break;
+
+    case 'init':
+      myTime = msg.myTime;
+      opTime = msg.opTime;
+      opName = msg.opName;
+      document.getElementById('hudOpName').textContent = opName;
+      // Гость ждёт старт от хоста
+      document.getElementById('waitStatus').textContent = 'Ожидаем старт от хоста...';
+      updatePlayerList();
+      break;
+
+    case 'start':
+      startStory();
+      break;
+
+    case 'timeUpdate':
+      opTime = msg.time;
+      document.getElementById('hudOpClock').textContent = fmtTime(opTime);
+      break;
+
+    case 'crystals':
+      opCrystals = msg.crystals;
+      updateCrystals();
+      break;
+
+    case 'score':
+      opCrystals = msg.crystals;
+      updateCrystals();
+      break;
+
+    case 'magic':
+      handleMagicEffect(msg.effect, msg);
+      break;
+
+    case 'gameOver':
+      clearInterval(finalTimer);
+      endGame(false, 'Соперник победил!');
+      break;
+  }
+}
+
+function handleMagicEffect(effect, msg) {
+  switch(effect) {
+    case 'loop':
+      // Откат времени назад
+      myTime = normalizeTime({h: myTime.h, m: myTime.m + 30});
+      updateClockVisual(myTime);
+      document.getElementById('hudMyClock').textContent = fmtTime(myTime);
+      showFx('🌀 ПЕТЛЯ!', '#ff00aa', 1500);
+      showToast('Соперник применил Временную Петлю!');
+      break;
+    case 'shift':
+      myTime = msg.opTime || myTime;
+      opTime = msg.myTime || opTime;
+      updateClockVisual(myTime);
+      document.getElementById('hudMyClock').textContent = fmtTime(myTime);
+      document.getElementById('hudOpClock').textContent = fmtTime(opTime);
+      showFx('⚡ СДВИГ!', '#7b2fff', 1500);
+      showToast('Квантовый Сдвиг! Ваше время поменялось!');
+      break;
+    case 'freeze':
+      // Блокируем ответы на 5 сек
+      answerLocked = true;
+      showFx('❄️ ЗАМОРОЖЕН!', '#00f5ff', 1500);
+      showToast('Заморозка! Вы не можете отвечать 5 секунд');
+      setTimeout(() => { answerLocked = false; }, 5000);
+      break;
+    case 'steal':
+      if(myCards.length > 0) {
+        const stolen = myCards.splice(Math.floor(Math.random()*myCards.length), 1);
+        renderCards();
+        showFx('🦹 КРАЖА!', '#ff8c00', 1500);
+        showToast('У вас украли карту!');
+      }
+      break;
+    case 'paradox':
+      myTime = msg.myNewTime || opTime;
+      updateClockVisual(myTime);
+      document.getElementById('hudMyClock').textContent = fmtTime(myTime);
+      showFx('💫 ПАРАДОКС!', '#ff00aa', 1500);
+      showToast('Парадокс! Все обменялись временем!');
+      break;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// LOBBY / ROOM
+// ═══════════════════════════════════════════════════════
+function setStatus(id, text, cls='') {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'status ' + cls;
+}
+
+function createRoom() {
+  myName = document.getElementById('nameInp').value.trim().toUpperCase() || 'ИГРОК1';
+  roomCode = randCode();
+  isHost = true;
+  setStatus('lobbyStatus', 'Создаём комнату...', 'wait');
+
+  peer = new Peer('chron-' + roomCode, {debug:0});
+  peer.on('open', id => {
+    myId = id;
+    document.getElementById('roomCodeDisplay').textContent = roomCode;
+    updatePlayerList();
+    showScreen('sWait');
+  });
+  peer.on('connection', c => {
+    conn = c;
+    conn.on('open', () => {
+      conn.send(JSON.stringify({type:'hello', name: myName, id: myId}));
+    });
+    conn.on('data', onMessage);
+    conn.on('close', () => showToast('⚠ Соперник отключился'));
+  });
+  peer.on('error', e => setStatus('lobbyStatus', 'Ошибка: ' + e.type, 'err'));
+}
+
+function joinRoom() {
+  myName = document.getElementById('nameInp').value.trim().toUpperCase() || 'ИГРОК2';
+  roomCode = document.getElementById('codeInp').value.trim().toUpperCase();
+  if(!roomCode) { setStatus('lobbyStatus','Введи код комнаты','err'); return; }
+  isHost = false;
+  setStatus('lobbyStatus','Подключаемся...','wait');
+
+  peer = new Peer(undefined, {debug:0});
+  peer.on('open', id => {
+    myId = id;
+    conn = peer.connect('chron-' + roomCode);
+    conn.on('open', () => {
+      conn.send(JSON.stringify({type:'hello', name: myName, id: myId}));
+      document.getElementById('roomCodeDisplay').textContent = roomCode;
+      updatePlayerList();
+      showScreen('sWait');
+      setStatus('waitStatus','Подключено! Ожидаем хоста...','ok');
+    });
+    conn.on('data', onMessage);
+    conn.on('error', e => setStatus('lobbyStatus','Ошибка подключения','err'));
+    conn.on('close', () => showToast('⚠ Соперник отключился'));
+  });
+  peer.on('error', e => setStatus('lobbyStatus','Комната не найдена: ' + e.type,'err'));
+}
+
+function leaveRoom() {
+  if(conn) conn.close();
+  if(peer) peer.destroy();
+  peer = null; conn = null;
+  showScreen('sLobby');
+}
+
+function updatePlayerList() {
+  const list = document.getElementById('playersList');
+  const colors = ['var(--c1)','var(--c3)'];
+  list.innerHTML = '';
+  const pls = [{name: myName, role:'(вы)'}, {name: opName || '???', role: opName ? '' : 'ожидаем...'}];
+  pls.forEach((p,i) => {
+    const div = document.createElement('div');
+    div.className = 'player-slot' + (p.name !== '???' ? ' filled' : '');
+    div.innerHTML = `<div class="picon" style="background:${colors[i]}22;border:1px solid ${colors[i]};">${p.name[0]||'?'}</div>
+      <div><div style="font-size:.72rem;color:${colors[i]};">${p.name}</div>
+      <div style="font-size:.5rem;color:rgba(255,255,255,.3);">${p.role}</div></div>`;
+    list.appendChild(div);
+  });
+}
+
+function hostStartGame() {
+  if(!conn || !conn.open) { showToast('Нет соединения'); return; }
+  send({type:'start'});
+  startStory();
+}
+
+// ═══════════════════════════════════════════════════════
+// STORY
+// ═══════════════════════════════════════════════════════
+const STORY_TEXT = `После взрыва <b>Квантового Реактора</b> время раскололось на тысячи осколков...
+
+Каждый Хранитель получил повреждённый Хронометр.
+
+Твоя задача — первым привести своё время к <b>00:00</b> и собрать <b>5 Хроно-Кристаллов</b>.
+
+Отвечай на вопросы → получай Карты Времени → используй их стратегически.
+
+Применяй Карты Хроно-Магии чтобы помешать сопернику.
+
+Удачи, <b>Хранитель!</b>`;
+
+function startStory() {
+  showScreen('sStory');
+  document.getElementById('storyText').innerHTML = STORY_TEXT;
+  const fill = document.getElementById('storyFill');
+  let pct = 0;
+  const interval = setInterval(() => {
+    pct += 100/300; // 30 сек * 10 fps
+    fill.style.width = pct + '%';
+    if(pct >= 100) {
+      clearInterval(interval);
+      startMainGame();
+    }
+  }, 100);
+
+  // Пропустить через 5 сек
+  setTimeout(() => {
+    document.getElementById('storySkip').innerHTML =
+      '<span style="cursor:pointer;color:rgba(0,245,255,.4);" onclick="startMainGame()">[ нажми чтобы пропустить ]</span>';
+  }, 5000);
+}
+
+// ═══════════════════════════════════════════════════════
+// MAIN GAME START
+// ═══════════════════════════════════════════════════════
+function startMainGame() {
+  document.getElementById('hudMyName').textContent = myName;
+  document.getElementById('hudOpName').textContent = opName;
+  document.getElementById('hudMyClock').textContent = fmtTime(myTime);
+  document.getElementById('hudOpClock').textContent = fmtTime(opTime);
+  updateClockVisual(myTime);
+  updateCrystals();
+  renderCards();
+  loadQuestion();
+  showScreen('sGame');
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+showScreen('sLobby');
+</script>
+</body>
+</html>
