@@ -239,7 +239,7 @@
   <div class="gmenu-sub">// ВЫБЕРИ РЕЖИМ //</div>
   <button class="btn btn-gold" onclick="startWithIntro()">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]</button>
   <div class="other-label">── ДРУГИЕ ИГРЫ ──</div>
-  <button class="btn dis">[ ИГРА 2 ]<br><span style="font-size:.55rem">пока в разработке</span></button>
+  <button class="btn btn-gold" onclick="openMathopoly()">[ 🎲 MATHOPOLY ]<br><span style="font-size:.55rem">ОНЛАЙН · 2 ИГРОКА</span></button>
   <button class="btn dis">[ ИГРА 3 ]<br><span style="font-size:.55rem">пока в разработке</span></button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:6px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
 </div>
@@ -801,6 +801,15 @@ function showS(id){
   document.getElementById(id).classList.remove('hidden');
 }
 function goMenu(){updMenuCoins();showS('main-menu');}
+
+/* ══ MATHOPOLY ══ */
+function openMathopoly(){
+  document.getElementById('mathopoly-overlay').style.display='block';
+}
+function closeMathopoly(){
+  document.getElementById('mathopoly-overlay').style.display='none';
+  showS('game-menu');
+}
 
 /* ══ INIT ══ */
 document.body.addEventListener('click',initA,{once:true});
