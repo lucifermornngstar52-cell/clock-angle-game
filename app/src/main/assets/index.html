@@ -204,15 +204,7 @@
 </style>
 </head>
 <body>
-<!-- ══ MATHOPOLY OVERLAY ══ -->
-<div id="mathopoly-overlay" style="position:fixed;inset:0;z-index:500;display:none;background:#0a0a1a;">
-  <iframe id="mathopoly-frame" src="mathopoly.html"
-    style="width:100%;height:calc(100% - 40px);border:none;"></iframe>
-  <button onclick="closeMathopoly()" style="position:fixed;bottom:0;left:0;right:0;height:40px;
-    font-family:'Orbitron',monospace;font-size:.65rem;background:rgba(5,5,20,.97);
-    border:none;border-top:1px solid rgba(123,47,255,.3);color:rgba(255,255,255,.4);
-    cursor:pointer;letter-spacing:2px;">← НАЗАД В NUMBRA</button>
-</div>
+<!-- Mathopoly удалён -->
 
 <canvas id="mc"></canvas>
 <div id="rc">00:00:00</div>
@@ -249,7 +241,7 @@
   <div class="gmenu-sub">// ВЫБЕРИ РЕЖИМ //</div>
   <button class="btn btn-gold" onclick="startWithIntro()">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]</button>
   <div class="other-label">── ДРУГИЕ ИГРЫ ──</div>
-  <button class="btn btn-gold" onclick="openMathopoly()">[ 🎲 MATHOPOLY ]<br><span style="font-size:.55rem">ОНЛАЙН · 2 ИГРОКА</span></button>
+  <button class="btn btn-gold" onclick="openVlastelini()">[ 👑 ВЛАСТЕЛИНЫ ВРЕМЕНИ ]<br><span style="font-size:.55rem">ВИКТОРИНА · КАРТОЧКИ</span></button>
   <button class="btn dis">[ ИГРА 3 ]<br><span style="font-size:.55rem">пока в разработке</span></button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:6px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
 </div>
@@ -812,18 +804,352 @@ function showS(id){
 }
 function goMenu(){updMenuCoins();showS('main-menu');}
 
-/* ══ MATHOPOLY ══ */
-function openMathopoly(){
-  document.getElementById('mathopoly-overlay').style.display='block';
-}
-function closeMathopoly(){
-  document.getElementById('mathopoly-overlay').style.display='none';
-  showS('game-menu');
-}
+/* Mathopoly удалён */
 
 /* ══ INIT ══ */
 document.body.addEventListener('click',initA,{once:true});
 drawTicks();updMenuCoins();checkIntro();
+
+/* ══ ВЛАСТЕЛИНИ ВРЕМЕНИ ══ */
+const VL_CARDS = [
+  {cat:'green', pts:1, sector:'🟢 ЗЕЛЁНЫЙ СЕКТОР', q:'Уроки начинаются в 08:30. Урок — 45 мин, перемена — 10 мин. Во сколько закончится 1-й урок и начнётся 2-й?', a:'1-й закончится в 09:15, 2-й начнётся в 09:25'},
+  {cat:'green', pts:1, sector:'🟢 ЗЕЛЁНЫЙ СЕКТОР', q:'Часы показывают 17:45. Сколько минут до 18:00?', a:'15 минут'},
+  {cat:'green', pts:1, sector:'🟢 ЗЕЛЁНЫЙ СЕКТОР', q:'Мультфильм 1 ч 25 мин включили в 15:10. Когда финальные титры?', a:'В 16:35'},
+  {cat:'green', pts:1, sector:'🟢 ЗЕЛЁНЫЙ СЕКТОР', q:'На часах 15:00. Какой угол между стрелками?', a:'90 градусов'},
+  {cat:'yellow', pts:2, sector:'🟡 ЖЁЛТЫЙ СЕКТОР', q:'Сейчас 22:15. Корабль стартует через 3 ч 50 мин. Какое время и какие сутки?', a:'02:05, завтра'},
+  {cat:'yellow', pts:2, sector:'🟡 ЖЁЛТЫЙ СЕКТОР', q:'Замок открывается когда сумма цифр = 10. Сейчас 21:00. Ближайшее время?', a:'21:07 (2+1+0+7=10)'},
+  {cat:'yellow', pts:2, sector:'🟡 ЖЁЛТЫЙ СЕКТОР', q:'Часы отстают 4 мин в сутки. Через сколько дней отставание = 1 час?', a:'15 дней (60÷4=15)'},
+  {cat:'red', pts:3, sector:'🔴 КРАСНЫЙ СЕКТОР', q:'Через 100 часов после полуночи 1 января — какое число и время?', a:'5 января, 04:00 (100ч = 4 суток 4 часа)'},
+  {cat:'red', pts:3, sector:'🔴 КРАСНЫЙ СЕКТОР', q:'Триатлонист финишировал за 10 000 секунд. Переведи в ч/мин/сек.', a:'2 часа 46 минут 40 секунд'},
+  {cat:'red', pts:3, sector:'🔴 КРАСНЫЙ СЕКТОР', q:'Полтрети часа — сколько минут?', a:'10 минут (1/3 ч = 20 мин, ÷2 = 10)'},
+  {cat:'paradox', pts:3, sector:'⚡ ВРЕМЕННОЙ ПАРАДОКС', q:'🪞 Зеркальное время. Часы показывают 19:20, в зеркале стрелки отразились. Какое время?', a:'Около 04:37 — для игры засчитывается «около половины пятого»'},
+  {cat:'paradox', pts:0, sector:'⚡ ВРЕМЕННОЙ ПАРАДОКС', q:'📅 Что дольше: треть века или 350 месяцев?', a:'Треть века — 33 г 4 мес = 400 месяцев. Треть века дольше! (+удвоение баллов)'},
+];
+
+let vlSand = 0;
+let vlDeck = [];
+let vlCurrent = null;
+let vlAnswerShown = false;
+
+function vlShuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+
+function openVlastelini(){
+  document.getElementById('vlastelini-overlay').style.display='block';
+  vlSand = 0;
+  vlDeck = vlShuffle([...VL_CARDS]);
+  vlCurrent = null;
+  vlAnswerShown = false;
+  document.getElementById('vl-sand-val').textContent = '0';
+  document.getElementById('vl-game-sand').textContent = '0';
+  vlTab('browse');
+}
+
+function closeVlastelini(){
+  document.getElementById('vlastelini-overlay').style.display='none';
+}
+
+function vlTab(name){
+  ['browse','game','rules'].forEach(t=>{
+    const el = document.getElementById('vl-tab-'+t);
+    if(el) el.style.display = (t===name)?'block':'none';
+  });
+  document.querySelectorAll('.vl-tab').forEach((b,i)=>{
+    b.classList.toggle('active',['browse','game','rules'][i]===name);
+  });
+}
+
+function vlReveal(btn){
+  const card = btn.closest('.vl-card');
+  const ans = card.querySelector('.vl-answer');
+  if(!ans) return;
+  ans.style.display = 'block';
+  btn.textContent = '[ ✓ ОТВЕТ ОТКРЫТ ]';
+  btn.style.opacity = '.4';
+  btn.disabled = true;
+}
+
+function vlGameDeal(){
+  if(vlDeck.length===0) vlDeck = vlShuffle([...VL_CARDS]);
+  vlCurrent = vlDeck.pop();
+  vlAnswerShown = false;
+
+  const colorMap = {green:'#00ff88',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
+  const c = colorMap[vlCurrent.cat]||'#aaa';
+
+  document.getElementById('vl-card-display').style.borderColor = c;
+  document.getElementById('vl-cd-sector').innerHTML = `<span style="color:${c}">${vlCurrent.sector}</span>`;
+
+  const ptsBadge = document.getElementById('vl-cd-pts');
+  ptsBadge.style.display = 'block';
+  ptsBadge.textContent = vlCurrent.pts>0 ? `+${vlCurrent.pts} ⏳` : '⚡';
+  ptsBadge.style.background = c+'33';
+  ptsBadge.style.color = c;
+
+  document.getElementById('vl-cd-q').textContent = vlCurrent.q;
+  document.getElementById('vl-cd-answer').style.display = 'none';
+  document.getElementById('vl-cd-answer').textContent = '';
+  document.getElementById('vl-cd-reveal-btn').style.display = 'block';
+  document.getElementById('vl-cd-btns').style.display = 'none';
+  document.getElementById('vl-cd-pts-label').textContent = '+'+vlCurrent.pts+' ⏳';
+  document.getElementById('vl-next-btn').style.display = 'none';
+}
+
+function vlGameReveal(){
+  if(!vlCurrent) return;
+  vlAnswerShown = true;
+  document.getElementById('vl-cd-answer').textContent = '✓ ' + vlCurrent.a;
+  document.getElementById('vl-cd-answer').style.display = 'block';
+  document.getElementById('vl-cd-reveal-btn').style.display = 'none';
+  document.getElementById('vl-cd-btns').style.display = 'flex';
+}
+
+function vlGameNext(correct){
+  if(!vlCurrent) return;
+  if(correct && vlCurrent.pts>0){
+    vlSand += vlCurrent.pts;
+    document.getElementById('vl-game-sand').textContent = vlSand;
+    document.getElementById('vl-sand-val').textContent = vlSand;
+  }
+  document.getElementById('vl-cd-btns').style.display = 'none';
+  document.getElementById('vl-next-btn').style.display = 'block';
+  vlCurrent = null;
+}
+
 </script>
+<!-- ══ ВЛАСТЕЛИНИ ВРЕМЕНИ OVERLAY ══ -->
+<div id="vlastelini-overlay" style="position:fixed;inset:0;z-index:600;display:none;background:#07071a;overflow:hidden;font-family:'Orbitron',monospace;">
+
+<style>
+:root{--gr:#00ff88;--yw:#ffd700;--rd:#ff4455;--bg:#07071a;--card:#0d1a2e;--glow:0 0 16px;}
+#vl-wrap{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* HEADER */
+#vl-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 6px;background:#0a0f20;border-bottom:1px solid #1a2a4a;}
+#vl-title{font-size:.85rem;color:var(--yw);letter-spacing:2px;text-shadow:var(--glow) var(--yw);}
+#vl-sand{font-size:.8rem;color:var(--gr);}
+#vl-close-btn{background:none;border:1px solid #ff4455;color:#ff4455;padding:4px 10px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.65rem;cursor:pointer;}
+
+/* SCROLLABLE CONTENT */
+#vl-content{flex:1;overflow-y:auto;padding:10px 12px 80px;-webkit-overflow-scrolling:touch;}
+
+/* SECTOR HEADER */
+.vl-sector{display:flex;align-items:center;gap:8px;margin:12px 0 8px;padding:8px 12px;border-radius:8px;font-size:.78rem;font-weight:700;letter-spacing:1px;}
+.vl-sector.green{background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.4);color:var(--gr);}
+.vl-sector.yellow{background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.4);color:var(--yw);}
+.vl-sector.red{background:rgba(255,68,85,.12);border:1px solid rgba(255,68,85,.4);color:var(--rd);}
+.vl-sector.paradox{background:rgba(120,80,255,.14);border:1px solid rgba(120,80,255,.5);color:#bb88ff;}
+
+/* CARD */
+.vl-card{background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:10px;border:1px solid #1a2a4a;position:relative;overflow:hidden;}
+.vl-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:4px 0 0 4px;}
+.vl-card.green::before{background:var(--gr);}
+.vl-card.yellow::before{background:var(--yw);}
+.vl-card.red::before{background:var(--rd);}
+.vl-card.paradox::before{background:#bb88ff;}
+
+.vl-pts{position:absolute;top:10px;right:12px;font-size:.65rem;padding:3px 7px;border-radius:20px;font-weight:700;}
+.vl-pts.green{background:rgba(0,255,136,.2);color:var(--gr);}
+.vl-pts.yellow{background:rgba(255,215,0,.2);color:var(--yw);}
+.vl-pts.red{background:rgba(255,68,85,.2);color:var(--rd);}
+.vl-pts.paradox{background:rgba(120,80,255,.2);color:#bb88ff;}
+
+.vl-q{font-size:.82rem;color:#ddeeff;line-height:1.45;margin-bottom:10px;padding-right:40px;}
+.vl-ans-btn{width:100%;background:rgba(255,255,255,.04);border:1px solid #1f3050;color:#aabbcc;padding:9px 12px;border-radius:7px;font-size:.75rem;text-align:left;cursor:pointer;font-family:inherit;transition:all .2s;}
+.vl-ans-btn:active{background:rgba(255,255,255,.1);}
+.vl-answer{display:none;margin-top:10px;padding:10px 12px;background:rgba(0,0,0,.25);border-radius:7px;border-left:3px solid;}
+.vl-answer.green{border-color:var(--gr);}
+.vl-answer.yellow{border-color:var(--yw);}
+.vl-answer.red{border-color:var(--rd);}
+.vl-answer.paradox{border-color:#bb88ff;}
+.vl-answer span{font-size:.77rem;color:#cce8ff;line-height:1.5;}
+.vl-answer .vl-ok{color:var(--gr);font-weight:700;font-size:.7rem;margin-right:4px;}
+
+/* ИГРОВОЙ МОДУС */
+#vl-game-mode{display:none;}
+#vl-card-display{background:var(--card);border-radius:14px;margin:10px;padding:20px 16px;min-height:200px;border:2px solid #1a2a4a;position:relative;}
+.vl-cd-sector{font-size:.65rem;letter-spacing:2px;margin-bottom:8px;}
+.vl-cd-pts-badge{position:absolute;top:14px;right:14px;font-size:.75rem;padding:4px 10px;border-radius:20px;font-weight:700;}
+.vl-cd-q{font-size:.92rem;color:#eef4ff;line-height:1.5;margin:12px 0 16px;}
+.vl-cd-reveal{width:100%;padding:12px;background:rgba(255,255,255,.06);border:1px solid #2a3a5a;color:#88aabb;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;}
+.vl-cd-answer{display:none;padding:12px;background:rgba(0,0,0,.3);border-radius:8px;font-size:.8rem;color:#cce8ff;line-height:1.5;margin:8px 0;}
+.vl-cd-btns{display:flex;gap:8px;margin-top:10px;}
+.vl-cd-btns button{flex:1;padding:10px 6px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.65rem;cursor:pointer;border:1px solid;}
+.vl-cd-wrong{background:rgba(255,68,85,.1);border-color:#ff4455;color:#ff4455;}
+.vl-cd-right{background:rgba(0,255,136,.1);border-color:#00ff88;color:#00ff88;}
+
+#vl-sand-display{text-align:center;padding:8px;font-size:.9rem;color:var(--yw);}
+#vl-next-btn{display:none;width:calc(100% - 20px);margin:0 10px;padding:12px;background:rgba(255,215,0,.1);border:1px solid var(--yw);color:var(--yw);border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;}
+
+/* TABS */
+#vl-tabs{display:flex;border-bottom:1px solid #1a2a4a;background:#0a0f20;}
+.vl-tab{flex:1;padding:10px 4px;font-size:.6rem;color:#556;border:none;background:none;font-family:'Orbitron',monospace;cursor:pointer;letter-spacing:.5px;transition:color .2s;border-bottom:2px solid transparent;}
+.vl-tab.active{color:var(--yw);border-bottom-color:var(--yw);}
+</style>
+
+<div id="vl-wrap">
+  <!-- HEADER -->
+  <div id="vl-header">
+    <div id="vl-title">👑 ВЛАСТЕЛИНЫ ВРЕМЕНИ</div>
+    <div id="vl-sand">⏳ <span id="vl-sand-val">0</span> песчинок</div>
+    <button id="vl-close-btn" onclick="closeVlastelini()">✕ ВЫХОД</button>
+  </div>
+
+  <!-- TABS -->
+  <div id="vl-tabs">
+    <button class="vl-tab active" onclick="vlTab('browse')">📚 КАРТОЧКИ</button>
+    <button class="vl-tab" onclick="vlTab('game')">🎮 ИГРА</button>
+    <button class="vl-tab" onclick="vlTab('rules')">📜 ПРАВИЛА</button>
+  </div>
+
+  <!-- ── TAB: КАРТОЧКИ (browse) ── -->
+  <div id="vl-tab-browse" id="vl-content">
+    <div id="vl-content" style="flex:1;overflow-y:auto;padding:10px 12px 80px;-webkit-overflow-scrolling:touch;">
+
+    <!-- ЗЕЛЁНЫЙ СЕКТОР -->
+    <div class="vl-sector green">🟢 ЗЕЛЁНЫЙ СЕКТОР — Обычное время <span style="margin-left:auto;font-size:.65rem;opacity:.7">1 балл</span></div>
+
+    <div class="vl-card green">
+      <div class="vl-pts green">+1 ⏳</div>
+      <div class="vl-q">Уроки начинаются в 08:30. Каждый урок — 45 минут, перемена — 10 минут. Во сколько закончится первый урок и когда начнётся второй?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer green"><span><span class="vl-ok">✓</span>1-й урок закончится в <b>09:15</b>, 2-й начнётся в <b>09:25</b></span></div>
+    </div>
+
+    <div class="vl-card green">
+      <div class="vl-pts green">+1 ⏳</div>
+      <div class="vl-q">Электронные часы показывают 17:45. Сколько минут осталось до шести часов вечера?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer green"><span><span class="vl-ok">✓</span><b>15 минут</b></span></div>
+    </div>
+
+    <div class="vl-card green">
+      <div class="vl-pts green">+1 ⏳</div>
+      <div class="vl-q">Мультфильм длится 1 час 25 минут. Его включили в 15:10. Когда прозвучат финальные титры?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer green"><span><span class="vl-ok">✓</span>В <b>16:35</b></span></div>
+    </div>
+
+    <div class="vl-card green">
+      <div class="vl-pts green">+1 ⏳</div>
+      <div class="vl-q">На часах ровно 15:00. Какой угол образуют часовая и минутная стрелки?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer green"><span><span class="vl-ok">✓</span><b>90 градусов</b></span></div>
+    </div>
+
+    <!-- ЖЁЛТЫЙ СЕКТОР -->
+    <div class="vl-sector yellow">🟡 ЖЁЛТЫЙ СЕКТОР — Временной сдвиг <span style="margin-left:auto;font-size:.65rem;opacity:.7">2 балла</span></div>
+
+    <div class="vl-card yellow">
+      <div class="vl-pts yellow">+2 ⏳</div>
+      <div class="vl-q">Сейчас 22:15. Корабль отправляется через 3 часа 50 минут. Какое время будет на часах в момент старта — и это сегодня или завтра?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer yellow"><span><span class="vl-ok">✓</span><b>02:05, завтра</b></span></div>
+    </div>
+
+    <div class="vl-card yellow">
+      <div class="vl-pts yellow">+2 ⏳</div>
+      <div class="vl-q">Замок открывается когда сумма цифр на часах = 10 (пр: 01:45 → 1+4+5=10). Ближайшее такое время, если сейчас 21:00?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer yellow"><span><span class="vl-ok">✓</span><b>21:07</b> (2+1+0+7=10) или <b>21:16</b></span></div>
+    </div>
+
+    <div class="vl-card yellow">
+      <div class="vl-pts yellow">+2 ⏳</div>
+      <div class="vl-q">Часы отстают на 4 минуты каждые сутки. Через сколько дней они будут отставать ровно на 1 час?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer yellow"><span><span class="vl-ok">✓</span><b>15 дней</b> (60 ÷ 4 = 15)</span></div>
+    </div>
+
+    <!-- КРАСНЫЙ СЕКТОР -->
+    <div class="vl-sector red">🔴 КРАСНЫЙ СЕКТОР — Магический календарь <span style="margin-left:auto;font-size:.65rem;opacity:.7">3 балла</span></div>
+
+    <div class="vl-card red">
+      <div class="vl-pts red">+3 ⏳</div>
+      <div class="vl-q">Какое число будет через 100 часов после полуночи 1 января?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer red"><span><span class="vl-ok">✓</span>100 ч = 4 суток и 4 часа → <b>5 января, 04:00</b></span></div>
+    </div>
+
+    <div class="vl-card red">
+      <div class="vl-pts red">+3 ⏳</div>
+      <div class="vl-q">Триатлонист финишировал за 10 000 секунд. Сколько это часов, минут и секунд?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer red"><span><span class="vl-ok">✓</span><b>2 часа 46 минут 40 секунд</b><br><small style="opacity:.6">10000÷60=166 мин 40 сек; 166÷60=2 ч 46 мин</small></span></div>
+    </div>
+
+    <div class="vl-card red">
+      <div class="vl-pts red">+3 ⏳</div>
+      <div class="vl-q">Полтрети часа — сколько это минут?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer red"><span><span class="vl-ok">✓</span><b>10 минут</b> (1/3 часа = 20 мин; половина = 10)</span></div>
+    </div>
+
+    <!-- ПАРАДОКС -->
+    <div class="vl-sector paradox">⚡ ВРЕМЕННОЙ ПАРАДОКС — Шанс/Риск <span style="margin-left:auto;font-size:.65rem;opacity:.7">×2 или -ход</span></div>
+
+    <div class="vl-card paradox">
+      <div class="vl-pts paradox">⚡ РИСК</div>
+      <div class="vl-q">🪞 <b>Зеркальное время.</b> Часы показывают 19:20, но в зеркале стрелки отразились (минутная и часовая поменялись). Какое время у зеркальных часов?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer paradox"><span><span class="vl-ok">✓</span>Около <b>04:37</b> — минутная (была на «4», 20 мин) стала часовой, часовая (~19 ч) стала минутной (~38 мин). Для игры засчитывается «около половины пятого».</span></div>
+    </div>
+
+    <div class="vl-card paradox">
+      <div class="vl-pts paradox">⚡ РИСК</div>
+      <div class="vl-q">📅 <b>Век живи — век учись.</b> Что дольше: треть века или 350 месяцев?</div>
+      <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+      <div class="vl-answer paradox"><span><span class="vl-ok">✓</span><b>Треть века</b> — это 33 года 4 месяца = <b>400 месяцев</b>. Треть века дольше!</span></div>
+    </div>
+
+    </div><!-- /vl-content -->
+  </div><!-- /vl-tab-browse -->
+
+  <!-- ── TAB: ИГРА (game mode) ── -->
+  <div id="vl-tab-game" style="display:none;flex:1;overflow-y:auto;padding-bottom:20px;">
+    <div id="vl-sand-display">⏳ Песок времени: <b id="vl-game-sand">0</b></div>
+    <div id="vl-card-display">
+      <div class="vl-cd-sector" id="vl-cd-sector">—</div>
+      <div class="vl-pts-badge vl-cd-pts-badge" id="vl-cd-pts" style="display:none"></div>
+      <div class="vl-cd-q" id="vl-cd-q">Нажми «Следующая карта» чтобы начать!</div>
+      <button class="vl-cd-reveal" id="vl-cd-reveal-btn" onclick="vlGameReveal()" style="display:none">[ 👁 ОТКРЫТЬ ОТВЕТ ]</button>
+      <div class="vl-cd-answer" id="vl-cd-answer"></div>
+      <div class="vl-cd-btns" id="vl-cd-btns" style="display:none">
+        <button class="vl-cd-btns vl-cd-wrong" onclick="vlGameNext(false)">✗ НЕВЕРНО<br><span style="font-size:.6rem">+0 ⏳</span></button>
+        <button class="vl-cd-btns vl-cd-right" onclick="vlGameNext(true)" id="vl-cd-right-btn">✓ ВЕРНО<br><span id="vl-cd-pts-label">+1 ⏳</span></button>
+      </div>
+    </div>
+    <button id="vl-next-btn" onclick="vlGameDeal()" style="display:block;width:calc(100% - 20px);margin:10px;padding:13px;background:rgba(255,215,0,.1);border:1px solid #ffd700;color:#ffd700;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ 🎴 СЛЕДУЮЩАЯ КАРТА ]</button>
+    <div style="text-align:center;padding:0 12px 10px;font-size:.6rem;color:#334;line-height:1.6;">Карты перемешаны случайно · Отвечайте и собирайте Песок Времени ⏳</div>
+  </div>
+
+  <!-- ── TAB: ПРАВИЛА ── -->
+  <div id="vl-tab-rules" style="display:none;flex:1;overflow-y:auto;padding:12px 14px 40px;">
+    <div style="color:#aabbcc;font-size:.78rem;line-height:1.7;font-family:inherit;">
+      <div style="color:#ffd700;font-size:.85rem;margin-bottom:10px;letter-spacing:1px;">📜 ПРАВИЛА ИГРЫ</div>
+
+      <div style="color:#00ff88;margin:10px 0 4px;font-size:.72rem;">🎯 ЦЕЛЬ</div>
+      Собрать как можно больше <b style="color:#ffd700">Песка Времени ⏳</b> — жетонов за правильные ответы. Победит тот, у кого их больше к финишу.
+
+      <div style="color:#00ff88;margin:12px 0 4px;font-size:.72rem;">🎴 РЕЖИМЫ</div>
+      <b>📚 Карточки</b> — все вопросы открыты, можно изучать и проверять ответы. Идеально для подготовки.<br><br>
+      <b>🎮 Игра</b> — карты перемешаны, карта открывается одна за раз. Ответил верно — получаешь песчинки, нет — 0.
+
+      <div style="color:#00ff88;margin:12px 0 4px;font-size:.72rem;">🟢🟡🔴 СЕКТОРЫ</div>
+      <b style="color:#00ff88">Зелёный</b> — базовый уровень, +1 ⏳ за ответ<br>
+      <b style="color:#ffd700">Жёлтый</b> — нестандартное мышление, +2 ⏳<br>
+      <b style="color:#ff4455">Красный</b> — сложная логика и большие промежутки, +3 ⏳<br>
+      <b style="color:#bb88ff">⚡ Парадокс</b> — риск-карты: ×2 баллов или теряешь ход!
+
+      <div style="color:#00ff88;margin:12px 0 4px;font-size:.72rem;">🎲 КАК ИГРАТЬ ЗА СТОЛОМ</div>
+      Нарисуй поле в виде циферблата на ватмане. 60 делений = 60 клеток. Игроки — «стрелки». Бросай кубик, двигайся вперёд и тяни карту соответствующего цвета сектора.<br><br>
+      Поля: <b>1-20 клетки</b> = 🟢, <b>21-40</b> = 🟡, <b>41-55</b> = 🔴, <b>особые поля</b> (12, 24, 36, 48, 60) = ⚡ Парадокс.
+
+      <div style="color:#ffd700;margin:16px 0 6px;font-size:.72rem;text-align:center;opacity:.5;">— ВЛАСТЕЛИНЫ ВРЕМЕНИ —</div>
+    </div>
+  </div>
+
+</div><!-- /vl-wrap -->
+</div><!-- /vlastelini-overlay -->
+
 </body>
 </html>
