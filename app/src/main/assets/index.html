@@ -242,7 +242,7 @@
   <button class="btn btn-gold" onclick="startWithIntro()">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]</button>
   <div class="other-label">── ДРУГИЕ ИГРЫ ──</div>
   <button class="btn btn-gold" onclick="showS('vl-menu')">[ 👑 ВЛАСТЕЛИНЫ ВРЕМЕНИ ]<br><span style="font-size:.55rem">ВИКТОРИНА · КАРТОЧКИ</span></button>
-  <button class="btn dis">[ ИГРА 3 ]<br><span style="font-size:.55rem">пока в разработке</span></button>
+  <button class="btn btn-gold" onclick="showS('hk-menu')">[ ⚗️ ХРАНИТЕЛИ ВРЕМЕНИ ]<br><span style="font-size:.55rem">КВАНТОВЫЙ СДВИГ</span></button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:6px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
 </div>
 
@@ -390,6 +390,186 @@
     Поля: <b>1–20</b> = 🟢, <b>21–40</b> = 🟡, <b>41–55</b> = 🔴, особые (12, 24, 36, 48, 60) = ⚡ Парадокс.
   </div>
   <button class="btn" style="margin-top:16px;border-color:var(--dg);color:var(--dg);" onclick="showS('vl-menu')">[ ← НАЗАД ]</button>
+</div>
+
+
+<!-- ══ ХРАНИТЕЛИ ВРЕМЕНИ — МЕНЮ ══ -->
+<div class="screen hidden" id="hk-menu">
+  <div class="gmenu-title" style="font-size:.75rem;line-height:1.3;">⚗️ ХРАНИТЕЛИ ВРЕМЕНИ<br><span style="font-size:.55rem;color:#88aabb;letter-spacing:1px;">QUANTUM SHIFT</span></div>
+  <div class="gmenu-sub">// РЕАКТОР ВЗОРВАЛСЯ · СТАБИЛИЗИРУЙ ВРЕМЯ //</div>
+  <button class="btn btn-gold" onclick="showS('hk-game');hkGameReset()">[ 🎮 ИГРАТЬ ]</button>
+  <button class="btn btn-gold" onclick="showS('hk-cards')">[ 📋 МИССИИ ]</button>
+  <button class="btn btn-gold" onclick="showS('hk-rules')">[ 📜 ПРАВИЛА ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:8px;" onclick="showS('game-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<!-- ══ ХРАНИТЕЛИ — МИССИИ (карточки) ══ -->
+<div class="screen hidden" id="hk-cards" style="overflow-y:auto;padding-bottom:60px;">
+  <div class="gmenu-title" style="font-size:.8rem;padding:12px 0 4px;">📋 КАРТЫ МИССИЙ</div>
+
+  <div class="vl-sector green">⏱ СЕКУНДОМЕР — Простой уровень <span style="margin-left:auto;font-size:.6rem;opacity:.7">+1 💎</span></div>
+
+  <div class="vl-card green">
+    <div class="vl-pts green">+1 💎</div>
+    <div class="vl-q">⚡ <b>Временной прыжок.</b> Портал закроется через 3 ч 45 мин. Сейчас 22:30. Когда закроется портал?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer green"><span><b>02:15</b> — следующего дня</span></div>
+  </div>
+
+  <div class="vl-card green">
+    <div class="vl-pts green">+1 💎</div>
+    <div class="vl-q">🔧 <b>Сбой хронометра.</b> Часы спешат на 7 минут каждые 3 часа. Выставили 12:00. Что покажут в 21:00?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer green"><span>За 9 часов = 3 интервала × 7 мин = +21 мин → <b>21:21</b></span></div>
+  </div>
+
+  <div class="vl-card green">
+    <div class="vl-pts green">+1 💎</div>
+    <div class="vl-q">🌀 <b>Петля аномалии.</b> Время идёт вспять. Сейчас 14:00, через 2 ч 20 мин «вперёд» — какое время на обратных часах?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer green"><span>14:00 − 2:20 = <b>11:40</b></span></div>
+  </div>
+
+  <div class="vl-sector yellow">📅 КАЛЕНДАРЬ — Средний уровень <span style="margin-left:auto;font-size:.6rem;opacity:.7">+2 💎</span></div>
+
+  <div class="vl-card yellow">
+    <div class="vl-pts yellow">+2 💎</div>
+    <div class="vl-q">✈️ <b>Часовые пояса.</b> Вылет из Токио (GMT+9) в 14:00. Полёт 8 часов. Местное время в Лондоне (GMT+0)?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer yellow"><span>14:00 + 8ч = 22:00 (Токио) → 22:00 − 9ч = <b>13:00 Лондон</b></span></div>
+  </div>
+
+  <div class="vl-card yellow">
+    <div class="vl-pts yellow">+2 💎</div>
+    <div class="vl-q">📆 <b>Высокосный парадокс.</b> 28 февраля 2024 года + 3 дня. Какое число? (2024 — високосный?)</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer yellow"><span>2024 — високосный → <b>2 марта 2024</b></span></div>
+  </div>
+
+  <div class="vl-card yellow">
+    <div class="vl-pts yellow">+2 💎</div>
+    <div class="vl-q">🌍 <b>Синхронизация.</b> В Алма-Ате 20:00 (GMT+5). Какое время сейчас в Нью-Йорке (GMT−5)?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer yellow"><span>20:00 − 10ч = <b>10:00</b></span></div>
+  </div>
+
+  <div class="vl-sector red">🌌 ПАРАДОКС — Сложный уровень <span style="margin-left:auto;font-size:.6rem;opacity:.7">+3 💎</span></div>
+
+  <div class="vl-card red">
+    <div class="vl-pts red">+3 💎</div>
+    <div class="vl-q">⚙️ <b>Квантовые сутки.</b> В этой аномалии сутки длятся 30 часов. Сейчас «18:00». Сколько «обычных» минут прошло с полуночи?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer red"><span>18 × 60 = <b>1080 минут</b> (то же самое — часы те же, только суток в них 30)</span></div>
+  </div>
+
+  <div class="vl-card red">
+    <div class="vl-pts red">+3 💎</div>
+    <div class="vl-q">🔄 <b>Обратный реактор.</b> Реактор считает время назад: старт в 23:59, финиш через 4 ч 01 мин. Какое время на реакторе?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer red"><span>23:59 − 4:01 = <b>19:58</b></span></div>
+  </div>
+
+  <div class="vl-card red">
+    <div class="vl-pts red">+3 💎</div>
+    <div class="vl-q">🧮 <b>Перегрузка хронометра.</b> Часы показывают 99:99. Переведи в нормальные сутки, часы и минуты.</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer red"><span>99ч 99мин = 99ч + 1ч 39мин = 100ч 39мин = 4 суток 4ч 39мин → <b>04:39 на 5-е сутки</b></span></div>
+  </div>
+
+  <div class="vl-sector paradox">🃏 ХРОНО-МАГИЯ — Карты действий <span style="margin-left:auto;font-size:.6rem;opacity:.7">спецэффект</span></div>
+
+  <div class="vl-card paradox">
+    <div class="vl-pts paradox">🔁</div>
+    <div class="vl-q">⏪ <b>Временная петля.</b> Заставь соперника вычесть 45 минут из своего хронометра — и он решает задачу заново.</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ КАК ИГРАТЬ ]</button>
+    <div class="vl-answer paradox"><span>Сыграй эту карту в свой ход — выбери соперника, он откатывается на −45 мин и отвечает на новую задачу.</span></div>
+  </div>
+
+  <div class="vl-card paradox">
+    <div class="vl-pts paradox">😵</div>
+    <div class="vl-q">✈️ <b>Джетлаг.</b> Соперник решает следующую задачу не глядя на свои часы — только в уме.</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ КАК ИГРАТЬ ]</button>
+    <div class="vl-answer paradox"><span>Соперник переворачивает хронометр и решает задачу на память. Ошибся — теряет ход.</span></div>
+  </div>
+
+  <div class="vl-card paradox">
+    <div class="vl-pts paradox">🕰️</div>
+    <div class="vl-q">⏩ <b>Перевод стрелок.</b> Укради минуты у лидера — перепиши его прогресс на свой хронометр.</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ КАК ИГРАТЬ ]</button>
+    <div class="vl-answer paradox"><span>Укради от 15 до 60 минут у игрока с наибольшим прогрессом. Его хронометр откатывается, твой — вперёд.</span></div>
+  </div>
+
+  <button class="btn" style="margin:14px 0 6px;border-color:var(--dg);color:var(--dg);" onclick="showS('hk-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<!-- ══ ХРАНИТЕЛИ — ИГРА ══ -->
+<div class="screen hidden" id="hk-game">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#0a0f20;border-bottom:1px solid #1a2a4a;">
+    <span style="font-size:.65rem;color:#556;font-family:'Orbitron',monospace;letter-spacing:1px;">КВАНТОВЫЙ СДВИГ</span>
+    <span style="font-size:.82rem;color:#00ff88;">💎 <b id="hk-crystals">0</b> кристалла</span>
+    <button onclick="showS('hk-menu')" style="background:none;border:1px solid #334;color:#556;padding:3px 9px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.6rem;cursor:pointer;">✕</button>
+  </div>
+  <div style="overflow-y:auto;padding:10px 12px 20px;">
+    <div id="hk-chrono-bar" style="display:flex;justify-content:space-between;padding:8px 12px;background:#0d1a2e;border-radius:8px;margin-bottom:10px;font-size:.72rem;">
+      <span style="color:#556;">🕰️ Хронометр:</span>
+      <span id="hk-chrono-display" style="color:#ffd700;font-weight:700;">—</span>
+    </div>
+    <div id="hk-card-display" style="background:#0d1a2e;border-radius:12px;padding:16px;margin-bottom:10px;border:2px solid #1a2a4a;position:relative;min-height:180px;">
+      <div id="hk-cd-sector" style="font-size:.65rem;letter-spacing:2px;margin-bottom:6px;color:#556;">—</div>
+      <div id="hk-cd-pts" style="position:absolute;top:12px;right:12px;font-size:.72rem;padding:3px 9px;border-radius:20px;display:none;font-weight:700;"></div>
+      <div id="hk-cd-q" style="font-size:.86rem;color:#ddeeff;line-height:1.5;margin:8px 0 14px;padding-right:44px;">Нажми «Следующая миссия» чтобы начать!</div>
+      <button id="hk-cd-reveal" onclick="hkGameReveal()" style="display:none;width:100%;padding:10px;background:rgba(255,255,255,.05);border:1px solid #2a3a5a;color:#88aabb;border-radius:7px;font-family:'Orbitron',monospace;font-size:.7rem;cursor:pointer;">[ 👁 ОТКРЫТЬ ОТВЕТ ]</button>
+      <div id="hk-cd-ans" style="display:none;padding:10px;background:rgba(0,0,0,.3);border-radius:7px;font-size:.78rem;color:#cce8ff;line-height:1.5;margin-top:8px;border-left:3px solid #00ff88;"></div>
+      <div id="hk-cd-btns" style="display:none;gap:8px;margin-top:10px;">
+        <button onclick="hkGameNext(false)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #ff4455;background:rgba(255,68,85,.1);color:#ff4455;width:48%">✗ НЕВЕРНО<br>+0 💎</button>
+        <button onclick="hkGameNext(true)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #00ff88;background:rgba(0,255,136,.1);color:#00ff88;width:48%" id="hk-right-btn">✓ ВЕРНО<br><span id="hk-pts-lbl">+1 💎</span></button>
+      </div>
+    </div>
+    <button id="hk-deal-btn" onclick="hkGameDeal()" style="width:100%;padding:13px;background:rgba(0,255,136,.08);border:1px solid #00ff88;color:#00ff88;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ ⚗️ СЛЕДУЮЩАЯ МИССИЯ ]</button>
+    <div id="hk-win-msg" style="display:none;text-align:center;padding:20px 12px;font-size:.9rem;color:#ffd700;">
+      🏆 ХРОНОМЕТР СИНХРОНИЗИРОВАН!<br>
+      <span style="font-size:.7rem;color:#aabbcc;">Ты собрал 5 Хроно-кристаллов и стабилизировал время.<br>Реактор перезапущен. Мир спасён. ⚗️</span><br>
+      <button onclick="hkGameReset()" style="margin-top:12px;padding:10px 20px;background:rgba(255,215,0,.1);border:1px solid #ffd700;color:#ffd700;border-radius:8px;font-family:'Orbitron',monospace;font-size:.68rem;cursor:pointer;">[ 🔄 ИГРАТЬ СНОВА ]</button>
+    </div>
+    <div style="text-align:center;padding:8px 0 0;font-size:.58rem;color:#334;">Собери 5 кристаллов 💎 → Хронометр синхронизирован!</div>
+  </div>
+</div>
+
+<!-- ══ ХРАНИТЕЛИ — ПРАВИЛА ══ -->
+<div class="screen hidden" id="hk-rules" style="overflow-y:auto;padding:14px 16px 60px;">
+  <div class="gmenu-title" style="font-size:.8rem;padding:10px 0 6px;">📜 ПРАВИЛА</div>
+  <div style="color:#aabbcc;font-size:.78rem;line-height:1.8;font-family:inherit;">
+    <div style="color:#00ff88;font-size:.72rem;margin:8px 0 3px;">⚗️ СЕТТИНГ</div>
+    Вы — учёные-хрононавты. Временной реактор взорвался. Мир застрял в петлях. Цель — починить Хронометры и стабилизировать время раньше соперников.
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎯 ЦЕЛЬ</div>
+    Первым собрать <b style="color:#ffd700">5 Хроно-кристаллов 💎</b> за правильные ответы — или синхронизировать Хронометр с Эталоном (<b>00:00</b>).
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 СТАРТ</div>
+    Каждый игрок начинает с <b>поломанными часами</b> — случайное время (04:15, 18:40...). Нужно привести их к 00:00, решая задачи.
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">⏱🗓🌌 УРОВНИ</div>
+    <b style="color:#00ff88">Секундомер</b> — часы и минуты в пределах суток, +1 💎<br>
+    <b style="color:#ffd700">Календарь</b> — дни, недели, часовые пояса, +2 💎<br>
+    <b style="color:#ff4455">Парадокс</b> — время вспять, нестандартные правила, +3 💎<br>
+    <b style="color:#bb88ff">🃏 Хроно-магия</b> — мешают соперникам или помогают себе
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🃏 КАРТЫ ХРОНО-МАГИИ</div>
+    <b>⏪ Временная петля</b> — соперник −45 мин и решает заново<br>
+    <b>😵 Джетлаг</b> — соперник решает задачу вслепую (без часов)<br>
+    <b>⏩ Перевод стрелок</b> — кражу минут у лидера себе
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🏆 ПОБЕДА</div>
+    Первым собрать 5 💎 — или синхронизировать хронометр с 00:00. Остальные могут доиграть до конца колоды для финального счёта.
+
+    <div style="margin-top:18px;padding:12px;background:rgba(0,255,136,.06);border-radius:8px;border:1px solid rgba(0,255,136,.2);text-align:center;font-size:.72rem;color:#88ddaa;line-height:1.7;">
+      <b style="color:#ffd700">— ЭПИЛОГ —</b><br>
+      Реактор перезапущен. Петли времени закрыты.<br>
+      Хрононавты возвращаются домой — каждый в своё время.<br>
+      <span style="opacity:.6;font-size:.65rem;">Главное — не забудьте перевести часы на зимнее время.</span>
+    </div>
+  </div>
+  <button class="btn" style="margin-top:14px;border-color:var(--dg);color:var(--dg);" onclick="showS('hk-menu')">[ ← НАЗАД ]</button>
 </div>
 
 
@@ -945,7 +1125,7 @@ function useHint(){
 function updMenuCoins(){document.getElementById('menu-coins').textContent='💰 '+SAVE.coins+' монет';}
 function showFb(msg,cls){const e=document.getElementById('fb');e.textContent=msg;e.className='fb '+cls;}
 function showS(id){
-  ['intro-screen','main-menu','game-menu','vl-menu','vl-cards','vl-game','vl-rules','game-screen','result-screen','gameover-screen','win-screen']
+  ['intro-screen','main-menu','game-menu','vl-menu','vl-cards','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','result-screen','gameover-screen','win-screen']
     .forEach(s=>document.getElementById(s).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
@@ -1102,6 +1282,94 @@ function vlGameNext2(correct){
   document.getElementById('vl-cd-btns2').style.display = 'none';
   document.getElementById('vl-deal-btn').style.display = 'block';
   vl2Current = null;
+}
+
+
+/* ══ ХРАНИТЕЛИ ВРЕМЕНИ — ИГРА ══ */
+const HK_CARDS = [
+  {cat:'green', pts:1, sector:'⏱ СЕКУНДОМЕР', q:'⚡ Временной прыжок. Портал закроется через 3 ч 45 мин. Сейчас 22:30. Когда?', a:'02:15 — следующего дня'},
+  {cat:'green', pts:1, sector:'⏱ СЕКУНДОМЕР', q:'🔧 Сбой хронометра. Часы спешат на 7 мин каждые 3 ч. Выставили 12:00. Что покажут в 21:00?', a:'21:21 (3 интервала × 7 мин = +21 мин)'},
+  {cat:'green', pts:1, sector:'⏱ СЕКУНДОМЕР', q:'🌀 Время вспять. Сейчас 14:00, откат на 2 ч 20 мин. Какое время?', a:'11:40'},
+  {cat:'yellow', pts:2, sector:'📅 КАЛЕНДАРЬ', q:'✈️ Вылет Токио (GMT+9) в 14:00, полёт 8 ч. Местное время в Лондоне (GMT+0)?', a:'13:00 (14+8=22 Токио → 22−9=13 Лондон)'},
+  {cat:'yellow', pts:2, sector:'📅 КАЛЕНДАРЬ', q:'📆 28 февраля 2024 + 3 дня. Какое число? (2024 — високосный?)', a:'2 марта 2024 (2024 — високосный)'},
+  {cat:'yellow', pts:2, sector:'📅 КАЛЕНДАРЬ', q:'🌍 В Алма-Ате 20:00 (GMT+5). Какое время в Нью-Йорке (GMT−5)?', a:'10:00 (20:00 − 10ч)'},
+  {cat:'red', pts:3, sector:'🌌 ПАРАДОКС', q:'⚙️ Квантовые сутки (30 ч). Сейчас «18:00». Сколько обычных минут с полуночи?', a:'1080 минут (18×60)'},
+  {cat:'red', pts:3, sector:'🌌 ПАРАДОКС', q:'🔄 Реактор считает назад: старт 23:59, финиш через 4 ч 01 мин. Время на реакторе?', a:'19:58'},
+  {cat:'red', pts:3, sector:'🌌 ПАРАДОКС', q:'🧮 Хронометр показывает 99:99. Переведи в сутки + часы + минуты.', a:'4 суток 4 ч 39 мин → 04:39 на 5-е сутки'},
+  {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'⏪ Временная петля! Назови любой час на часах — соперник откатывается на −45 мин.', a:'Спецкарта: выбери соперника, он решает новую задачу с −45 мин'},
+  {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'😵 Джетлаг! Следующий соперник решает задачу без часов — только в уме.', a:'Спецкарта: переверни хронометр соперника. Ошибся — теряет ход'},
+  {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'⏩ Перевод стрелок! Укради от 15 до 60 минут у лидера.', a:'Спецкарта: бери минуты у того кто ближе к победе'},
+];
+const HK_COLOR = {green:'#00ff88',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
+let hkCrystals = 0, hkDeck = [], hkCurrent = null;
+const HK_WIN = 5;
+
+const HK_CHRONOS = ['04:15','07:30','18:40','22:55','11:20','03:45','16:10','09:05'];
+
+function hkGameReset(){
+  hkCrystals = 0; hkDeck = []; hkCurrent = null;
+  document.getElementById('hk-crystals').textContent = '0';
+  const chrono = HK_CHRONOS[Math.floor(Math.random()*HK_CHRONOS.length)];
+  document.getElementById('hk-chrono-display').textContent = chrono + ' → 00:00';
+  document.getElementById('hk-cd-q').textContent = 'Нажми «Следующая миссия» чтобы начать!';
+  document.getElementById('hk-cd-sector').textContent = '—';
+  document.getElementById('hk-cd-sector').style.color = '#556';
+  document.getElementById('hk-cd-pts').style.display = 'none';
+  document.getElementById('hk-cd-reveal').style.display = 'none';
+  document.getElementById('hk-cd-ans').style.display = 'none';
+  document.getElementById('hk-cd-btns').style.display = 'none';
+  document.getElementById('hk-deal-btn').style.display = 'block';
+  document.getElementById('hk-win-msg').style.display = 'none';
+  document.getElementById('hk-card-display').style.borderColor = '#1a2a4a';
+}
+
+function hkGameDeal(){
+  if(hkDeck.length === 0) hkDeck = HK_CARDS.slice().sort(()=>Math.random()-.5);
+  hkCurrent = hkDeck.pop();
+  const c = HK_COLOR[hkCurrent.cat]||'#aaa';
+  document.getElementById('hk-card-display').style.borderColor = c;
+  document.getElementById('hk-cd-sector').innerHTML = '<span style="color:'+c+'">'+hkCurrent.sector+'</span>';
+  const pts = document.getElementById('hk-cd-pts');
+  pts.style.display = 'block';
+  pts.textContent = hkCurrent.pts > 0 ? '+'+hkCurrent.pts+' 💎' : '🃏';
+  pts.style.background = c+'33'; pts.style.color = c;
+  document.getElementById('hk-cd-q').textContent = hkCurrent.q;
+  document.getElementById('hk-pts-lbl').textContent = '+'+hkCurrent.pts+' 💎';
+  document.getElementById('hk-cd-ans').style.display = 'none';
+  document.getElementById('hk-cd-ans').style.borderColor = c;
+  document.getElementById('hk-cd-reveal').style.display = hkCurrent.pts > 0 ? 'block' : 'none';
+  document.getElementById('hk-cd-btns').style.display = 'none';
+  document.getElementById('hk-deal-btn').style.display = 'none';
+  // Спецкарты сразу показывают ответ
+  if(hkCurrent.pts === 0){
+    document.getElementById('hk-cd-ans').textContent = hkCurrent.a;
+    document.getElementById('hk-cd-ans').style.display = 'block';
+    document.getElementById('hk-deal-btn').style.display = 'block';
+  }
+}
+
+function hkGameReveal(){
+  if(!hkCurrent) return;
+  document.getElementById('hk-cd-ans').textContent = '✓ '+hkCurrent.a;
+  document.getElementById('hk-cd-ans').style.display = 'block';
+  document.getElementById('hk-cd-reveal').style.display = 'none';
+  document.getElementById('hk-cd-btns').style.display = 'flex';
+}
+
+function hkGameNext(correct){
+  if(!hkCurrent) return;
+  if(correct && hkCurrent.pts > 0){
+    hkCrystals += hkCurrent.pts;
+    document.getElementById('hk-crystals').textContent = hkCrystals;
+  }
+  document.getElementById('hk-cd-btns').style.display = 'none';
+  hkCurrent = null;
+  if(hkCrystals >= HK_WIN){
+    document.getElementById('hk-deal-btn').style.display = 'none';
+    document.getElementById('hk-win-msg').style.display = 'block';
+  } else {
+    document.getElementById('hk-deal-btn').style.display = 'block';
+  }
 }
 
 </script>
