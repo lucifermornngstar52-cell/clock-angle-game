@@ -6,141 +6,143 @@
 <title>Угол Стрелок</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-  :root {
-    --green:#00ff41; --dg:#008f11; --bg:#0a0a0a;
-    --panel:rgba(0,18,0,0.92); --border:rgba(0,255,65,0.25);
-  }
+  :root{--g:#00ff41;--dg:#008f11;--bg:#0a0a0a;--panel:rgba(0,18,0,0.93);--border:rgba(0,255,65,0.25);}
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{width:100%;height:100%;background:var(--bg);color:var(--green);
-    font-family:'Share Tech Mono',monospace;overflow:hidden;}
-
-  /* матрица */
+  html,body{width:100%;height:100%;background:var(--bg);color:var(--g);font-family:'Share Tech Mono',monospace;overflow:hidden;}
   #mc{position:fixed;inset:0;z-index:0;opacity:.13;pointer-events:none;}
-
-  /* скан-линии */
   body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
     background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);}
 
-  /* экраны */
   .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;padding:16px;}
+    align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
   .screen.hidden{display:none!important;}
 
-  /* часы реального времени */
   #rc{position:fixed;top:10px;left:12px;z-index:100;font-family:'Orbitron',monospace;
-    font-size:.85rem;color:var(--green);text-shadow:0 0 8px var(--green);
+    font-size:.85rem;color:var(--g);text-shadow:0 0 8px var(--g);
     background:rgba(0,0,0,.6);border:1px solid var(--border);
     padding:3px 10px;border-radius:6px;letter-spacing:2px;}
 
-  /* ══════ МЕНЮ ══════ */
-  #menu-screen{gap:18px;}
-  .mtitle{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,6vw,2.2rem);
-    font-weight:900;color:var(--green);text-shadow:0 0 20px var(--green),0 0 40px var(--green);
-    text-align:center;letter-spacing:4px;animation:flicker 5s infinite;}
-  .msub{font-size:.7rem;color:var(--dg);letter-spacing:3px;text-align:center;}
-  .btn{font-family:'Share Tech Mono',monospace;font-size:.95rem;background:transparent;
-    border:1px solid var(--green);color:var(--green);padding:12px 0;cursor:pointer;
-    letter-spacing:2px;text-transform:uppercase;width:100%;max-width:280px;text-align:center;
-    transition:all .2s;border-radius:4px;}
+  /* МЕНЮ */
+  #menu-screen{gap:12px;}
+  .mtitle{font-family:'Orbitron',monospace;font-size:clamp(1.3rem,5.5vw,2rem);
+    font-weight:900;color:var(--g);text-shadow:0 0 20px var(--g),0 0 40px var(--g);
+    text-align:center;letter-spacing:4px;animation:flicker 5s infinite;margin-bottom:4px;}
+  .msub{font-size:.65rem;color:var(--dg);letter-spacing:3px;text-align:center;margin-bottom:6px;}
+
+  /* Монеты в меню */
+  .menu-coins{font-family:'Orbitron',monospace;font-size:1rem;color:var(--g);
+    text-shadow:0 0 8px var(--g);background:var(--panel);
+    border:1px solid var(--border);border-radius:8px;padding:6px 20px;
+    letter-spacing:2px;margin-bottom:4px;}
+
+  .btn{font-family:'Share Tech Mono',monospace;font-size:.9rem;background:transparent;
+    border:1px solid var(--g);color:var(--g);padding:11px 0;cursor:pointer;
+    letter-spacing:2px;text-transform:uppercase;width:100%;max-width:300px;
+    text-align:center;transition:all .2s;border-radius:4px;}
   .btn:active{background:rgba(0,255,65,.15);}
   .btn.dis{opacity:.3;pointer-events:none;}
-  .vrow{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;}
-  .vrow label{font-size:.7rem;color:var(--dg);letter-spacing:1px;min-width:56px;}
-  input[type=range]{-webkit-appearance:none;flex:1;height:3px;
-    background:var(--dg);border-radius:2px;outline:none;}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
-    background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);cursor:pointer;}
-  .vv{font-size:.7rem;min-width:30px;text-align:right;}
 
-  /* ══════ ИГРА (вертикальный layout) ══════ */
-  #game-screen{
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:flex-start;
-    gap:0;padding:8px 10px 8px;
-    overflow-y:auto;overflow-x:hidden;
-  }
+  /* ИГРА */
+  #game-screen{display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-start;gap:0;padding:8px 10px 8px;overflow-y:auto;overflow-x:hidden;}
 
-  /* HUD */
-  .hud{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:100%;margin-top:36px;}
-  .hbox{background:var(--panel);border:1px solid var(--border);border-radius:5px;
-    padding:4px 6px;text-align:center;}
-  .hbox .lb{font-size:.5rem;color:var(--dg);letter-spacing:1px;}
-  .hbox .vl{font-size:.85rem;color:var(--green);text-shadow:0 0 5px var(--green);}
+  .hud{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;width:100%;margin-top:38px;}
+  .hbox{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:4px 4px;text-align:center;}
+  .hbox .lb{font-size:.48rem;color:var(--dg);letter-spacing:1px;}
+  .hbox .vl{font-size:.8rem;color:var(--g);text-shadow:0 0 5px var(--g);}
 
-  /* Вопрос */
   .qbox{background:var(--panel);border:1px solid var(--border);border-radius:7px;
-    padding:8px 12px;width:100%;text-align:center;margin-top:6px;}
-  .qlb{font-size:.55rem;color:var(--dg);letter-spacing:1px;margin-bottom:2px;}
-  .qtx{font-size:.8rem;color:var(--green);line-height:1.4;}
+    padding:7px 10px;width:100%;text-align:center;margin-top:5px;}
+  .qlb{font-size:.5rem;color:var(--dg);letter-spacing:1px;margin-bottom:2px;}
+  .qtx{font-size:.78rem;color:var(--g);line-height:1.4;}
 
-  /* Часы */
-  .clock-wrap{margin:6px 0;flex-shrink:0;}
+  .clock-wrap{margin:5px 0;flex-shrink:0;}
   .clock-wrap svg{filter:drop-shadow(0 0 10px rgba(0,255,65,.45));}
 
-  /* Варианты ответа */
   .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:4px;}
-  .choice-btn{
-    background:rgba(0,18,0,.9);
-    border:1px solid var(--border);
-    border-radius:6px;
-    color:var(--green);
-    font-family:'Orbitron',monospace;
-    font-size:.95rem;
-    padding:14px 8px;
-    cursor:pointer;
-    text-align:center;
-    letter-spacing:1px;
-    transition:all .15s;
-  }
+  .choice-btn{background:rgba(0,18,0,.9);border:1px solid var(--border);border-radius:6px;
+    color:var(--g);font-family:'Orbitron',monospace;font-size:.9rem;
+    padding:13px 8px;cursor:pointer;text-align:center;letter-spacing:1px;transition:all .15s;}
   .choice-btn:active{transform:scale(.96);}
   .choice-btn.correct{border-color:#00ff41;background:rgba(0,255,65,.18);
     box-shadow:0 0 12px rgba(0,255,65,.5);color:#fff;}
   .choice-btn.wrong{border-color:#ff3131;background:rgba(255,49,49,.15);
     box-shadow:0 0 12px rgba(255,49,49,.4);color:#ff3131;}
 
-  /* Обратная связь */
-  .fb{font-family:'Orbitron',monospace;font-size:.8rem;text-align:center;
-    min-height:20px;margin-top:4px;letter-spacing:1px;}
+  .fb{font-family:'Orbitron',monospace;font-size:.78rem;text-align:center;
+    min-height:18px;margin-top:3px;letter-spacing:1px;}
   .fb.ok{color:#00ff41;text-shadow:0 0 8px #00ff41;}
   .fb.bad{color:#ff3131;text-shadow:0 0 8px #ff3131;}
 
-  /* Подсказка текст */
-  #hint-text{font-size:.65rem;color:rgba(255,200,0,.85);text-align:center;
-    min-height:16px;margin-top:2px;padding:0 4px;}
+  #hint-text{font-size:.62rem;color:rgba(255,200,0,.85);text-align:center;min-height:14px;margin-top:2px;padding:0 4px;}
 
-  /* Нижние кнопки */
-  .bot-row{display:flex;gap:8px;width:100%;margin-top:6px;}
-  .hbtn{flex:1;background:transparent;border:1px solid rgba(255,200,0,.5);
-    border-radius:6px;color:rgba(255,200,0,.9);font-family:'Share Tech Mono',monospace;
-    font-size:.72rem;padding:10px 4px;cursor:pointer;letter-spacing:.5px;}
+  .bot-row{display:flex;gap:6px;width:100%;margin-top:5px;}
+  .hbtn{flex:1;background:transparent;border:1px solid rgba(255,200,0,.5);border-radius:6px;
+    color:rgba(255,200,0,.9);font-family:'Share Tech Mono',monospace;
+    font-size:.68rem;padding:9px 4px;cursor:pointer;letter-spacing:.5px;}
   .hbtn:active{background:rgba(255,200,0,.1);}
-  .mbtn{flex:.7;background:transparent;border:1px solid var(--border);
-    border-radius:6px;color:var(--dg);font-family:'Share Tech Mono',monospace;
-    font-size:.7rem;padding:10px 4px;cursor:pointer;}
+  .mbtn{flex:.6;background:transparent;border:1px solid var(--border);border-radius:6px;
+    color:var(--dg);font-family:'Share Tech Mono',monospace;font-size:.68rem;padding:9px 4px;cursor:pointer;}
   .mbtn:active{background:rgba(0,255,65,.07);}
 
-  /* Классики */
-  .hops-wrap{width:100%;display:flex;flex-direction:column;align-items:center;
-    gap:3px;margin-top:6px;}
-  .hops-label{font-size:.55rem;color:var(--dg);letter-spacing:2px;margin-bottom:2px;}
-  .hops-row{display:flex;gap:5px;}
-  .hop{width:34px;height:34px;border:2px solid var(--border);border-radius:4px;
+  .hops-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:5px;}
+  .hops-label{font-size:.5rem;color:var(--dg);letter-spacing:2px;margin-bottom:2px;}
+  .hops-row{display:flex;gap:4px;}
+  .hop{width:32px;height:32px;border:2px solid var(--border);border-radius:4px;
     display:flex;align-items:center;justify-content:center;
-    font-family:'Orbitron',monospace;font-size:.65rem;color:var(--dg);
+    font-family:'Orbitron',monospace;font-size:.62rem;color:var(--dg);
     background:rgba(0,10,0,.6);transition:all .35s;}
-  .hop.done{border-color:var(--green);background:rgba(0,255,65,.12);
-    color:var(--green);box-shadow:0 0 7px rgba(0,255,65,.35);}
+  .hop.done{border-color:var(--g);background:rgba(0,255,65,.12);color:var(--g);box-shadow:0 0 7px rgba(0,255,65,.35);}
   .hop.act{border-color:#0ff;background:rgba(0,255,255,.13);color:#0ff;
     box-shadow:0 0 10px rgba(0,255,255,.45);animation:pulse .9s infinite;}
 
-  /* Результат / конец */
-  #result-screen,#gameover-screen,#win-screen{gap:16px;}
-  .rtitle{font-family:'Orbitron',monospace;font-size:clamp(1.2rem,5vw,2rem);
-    font-weight:900;text-align:center;letter-spacing:2px;
-    text-shadow:0 0 16px var(--green);}
-  .rinfo{font-size:.8rem;color:var(--dg);text-align:center;line-height:1.9;}
+  /* РЕЗУЛЬТАТ */
+  #result-screen,#gameover-screen,#win-screen{gap:14px;}
+  .rtitle{font-family:'Orbitron',monospace;font-size:clamp(1.1rem,4.5vw,1.8rem);
+    font-weight:900;text-align:center;letter-spacing:2px;text-shadow:0 0 16px var(--g);}
+  .rinfo{font-size:.78rem;color:var(--dg);text-align:center;line-height:1.9;}
 
-  /* анимации */
+  /* ПОПАП (звук / достижения) */
+  .popup-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);
+    display:flex;align-items:center;justify-content:center;padding:20px;}
+  .popup-overlay.hidden{display:none!important;}
+  .popup{background:rgba(0,15,0,.97);border:1px solid var(--g);border-radius:10px;
+    padding:20px 18px;width:100%;max-width:340px;max-height:80vh;
+    overflow-y:auto;display:flex;flex-direction:column;gap:12px;}
+  .popup-title{font-family:'Orbitron',monospace;font-size:1rem;color:var(--g);
+    text-shadow:0 0 10px var(--g);text-align:center;letter-spacing:2px;}
+  .popup-close{align-self:flex-end;background:transparent;border:1px solid var(--border);
+    border-radius:5px;color:var(--dg);font-family:'Share Tech Mono',monospace;
+    font-size:.75rem;padding:5px 12px;cursor:pointer;letter-spacing:1px;}
+  .popup-close:active{background:rgba(0,255,65,.1);}
+
+  /* Ползунки в попапе */
+  .vrow{display:flex;align-items:center;gap:10px;width:100%;}
+  .vrow label{font-size:.7rem;color:var(--dg);letter-spacing:1px;min-width:58px;}
+  input[type=range]{-webkit-appearance:none;flex:1;height:3px;background:var(--dg);border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+    background:var(--g);border-radius:50%;box-shadow:0 0 6px var(--g);cursor:pointer;}
+  .vv{font-size:.7rem;min-width:32px;text-align:right;}
+
+  /* Достижения */
+  .ach-item{display:flex;align-items:center;gap:10px;padding:8px 10px;
+    background:rgba(0,10,0,.7);border:1px solid var(--border);border-radius:6px;}
+  .ach-item.unlocked{border-color:var(--g);background:rgba(0,255,65,.08);}
+  .ach-icon{font-size:1.2rem;min-width:28px;text-align:center;}
+  .ach-info{flex:1;}
+  .ach-name{font-size:.75rem;color:var(--g);letter-spacing:.5px;}
+  .ach-item:not(.unlocked) .ach-name{color:var(--dg);}
+  .ach-desc{font-size:.6rem;color:var(--dg);margin-top:1px;}
+  .ach-check{font-size:1rem;min-width:20px;text-align:right;}
+
+  /* Уведомление о достижении */
+  #ach-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:300;
+    background:rgba(0,20,0,.95);border:1px solid var(--g);border-radius:8px;
+    padding:8px 18px;font-family:'Orbitron',monospace;font-size:.72rem;
+    color:var(--g);text-shadow:0 0 8px var(--g);text-align:center;letter-spacing:1px;
+    pointer-events:none;opacity:0;transition:opacity .4s;white-space:nowrap;}
+  #ach-toast.show{opacity:1;}
+
   @keyframes flicker{0%,94%,100%{opacity:1;}95%{opacity:.5;}97%{opacity:.3;}99%{opacity:1;}}
   @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.09);}}
 </style>
@@ -148,76 +150,58 @@
 <body>
 <canvas id="mc"></canvas>
 <div id="rc">00:00:00</div>
+<div id="ach-toast"></div>
 
 <!-- ══ МЕНЮ ══ -->
 <div class="screen" id="menu-screen">
   <div class="mtitle">&gt; УГОЛ СТРЕЛОК_</div>
-  <div class="msub">// CLOCK ANGLE CRACKER v2.0 //</div>
+  <div class="msub">// CLOCK ANGLE CRACKER v3.0 //</div>
+  <div class="menu-coins" id="menu-coins">💰 0 монет</div>
   <button class="btn" onclick="startGame()">[ ИГРАТЬ ]</button>
-  <button class="btn dis">[ ДРУГИЕ ИГРЫ ]<br><span style="font-size:.6rem;opacity:.4">// в разработке //</span></button>
-  <div class="vrow">
-    <label>МУЗЫКА</label>
-    <input type="range" id="vm" min="0" max="100" value="40" oninput="setMV(this.value)">
-    <span class="vv" id="vml">40%</span>
-  </div>
-  <div class="vrow">
-    <label>ЗВУКИ</label>
-    <input type="range" id="vs" min="0" max="100" value="70" oninput="setSV(this.value)">
-    <span class="vv" id="vsl">70%</span>
-  </div>
+  <button class="btn" onclick="openAch()">[ 🏆 ДОСТИЖЕНИЯ ]</button>
+  <button class="btn" onclick="openSound()">[ 🔊 НАСТРОЙКИ ЗВУКА ]</button>
+  <button class="btn dis">[ ДРУГИЕ ИГРЫ ]<br><span style="font-size:.58rem;opacity:.4">// в разработке //</span></button>
 </div>
 
 <!-- ══ ИГРА ══ -->
 <div class="screen hidden" id="game-screen">
-  <!-- HUD -->
   <div class="hud">
     <div class="hbox"><div class="lb">УРОВЕНЬ</div><div class="vl" id="h-lv">1</div></div>
     <div class="hbox"><div class="lb">ВОПРОС</div><div class="vl" id="h-q">1/5</div></div>
     <div class="hbox"><div class="lb">МОНЕТЫ</div><div class="vl" id="h-c">0🪙</div></div>
     <div class="hbox"><div class="lb">ЖИЗНИ</div><div class="vl" id="h-l">❤️❤️❤️</div></div>
   </div>
-
-  <!-- Вопрос -->
   <div class="qbox">
-    <div class="qlb" id="qlb">УРОВЕНЬ 1 — МИНУТНАЯ И СЕКУНДНАЯ</div>
-    <div class="qtx" id="qtx">Найди угол между стрелками</div>
+    <div class="qlb" id="qlb">УРОВЕНЬ 1</div>
+    <div class="qtx" id="qtx">Найди угол</div>
   </div>
-
-  <!-- Часы -->
   <div class="clock-wrap">
-    <svg id="clk" width="200" height="200" viewBox="-100 -100 200 200">
-      <circle r="98" fill="rgba(0,10,0,.95)" stroke="#00ff41" stroke-width="2"/>
-      <circle r="93" fill="none" stroke="rgba(0,255,65,.1)" stroke-width="1"/>
-      <g id="ticks"></g>
-      <g id="nums"></g>
+    <svg id="clk" width="190" height="190" viewBox="-95 -95 190 190">
+      <circle r="93" fill="rgba(0,10,0,.95)" stroke="#00ff41" stroke-width="2"/>
+      <circle r="88" fill="none" stroke="rgba(0,255,65,.1)" stroke-width="1"/>
+      <g id="ticks"></g><g id="nums"></g>
       <path id="arc" fill="rgba(255,255,0,.07)" stroke="rgba(255,255,0,.5)" stroke-width="1.5" d=""/>
-      <line id="hh" x1="0" y1="0" x2="0" y2="-50" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/>
-      <line id="mh" x1="0" y1="0" x2="0" y2="-68" stroke="#00ff41" stroke-width="3" stroke-linecap="round"/>
-      <line id="sh" x1="0" y1="5" x2="0" y2="-76" stroke="#00cfff" stroke-width="1.5" stroke-linecap="round"/>
-      <circle r="4.5" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
+      <line id="hh" x1="0" y1="0" x2="0" y2="-47" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/>
+      <line id="mh" x1="0" y1="0" x2="0" y2="-64" stroke="#00ff41" stroke-width="3" stroke-linecap="round"/>
+      <line id="sh" x1="0" y1="5" x2="0" y2="-72" stroke="#00cfff" stroke-width="1.5" stroke-linecap="round"/>
+      <circle r="4" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
     </svg>
   </div>
-
-  <!-- Варианты ответа -->
   <div class="choices" id="choices">
     <button class="choice-btn" id="c0" onclick="pick(0)">—</button>
     <button class="choice-btn" id="c1" onclick="pick(1)">—</button>
     <button class="choice-btn" id="c2" onclick="pick(2)">—</button>
     <button class="choice-btn" id="c3" onclick="pick(3)">—</button>
   </div>
-
   <div class="fb" id="fb"></div>
   <div id="hint-text"></div>
-
-  <!-- Классики -->
   <div class="hops-wrap">
     <div class="hops-label">// КЛАССИКИ //</div>
     <div id="hops"></div>
   </div>
-
-  <!-- Нижние кнопки -->
   <div class="bot-row">
     <button class="hbtn" onclick="useHint()">💡 ПОДСКАЗКА (-15🪙)</button>
+    <button class="mbtn" onclick="openSound()">🔊</button>
     <button class="mbtn" onclick="goMenu()">← МЕНЮ</button>
   </div>
 </div>
@@ -226,7 +210,7 @@
 <div class="screen hidden" id="result-screen">
   <div class="rtitle" id="rt">УРОВЕНЬ ПРОЙДЕН!</div>
   <div class="rinfo" id="ri"></div>
-  <button class="btn" onclick="nextLevel()">[ СЛЕДУЮЩИЙ УРОВЕНЬ ]</button>
+  <button class="btn" id="next-btn" onclick="nextLevel()">[ СЛЕДУЮЩИЙ УРОВЕНЬ ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
 </div>
 
@@ -234,7 +218,7 @@
 <div class="screen hidden" id="gameover-screen">
   <div class="rtitle" style="color:#ff3131;text-shadow:0 0 18px #ff3131;">ИГРА ОКОНЧЕНА</div>
   <div class="rinfo" id="gi"></div>
-  <button class="btn" onclick="startGame()">[ ЗАНОВО ]</button>
+  <button class="btn" onclick="restartGame()">[ ЗАНОВО ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
 </div>
 
@@ -242,12 +226,41 @@
 <div class="screen hidden" id="win-screen">
   <div class="rtitle" style="color:#ffd700;text-shadow:0 0 20px #ffd700;animation:flicker 2s infinite;">🏆 ВЫ ПОБЕДИЛИ! 🏆</div>
   <div class="rinfo" id="wi"></div>
-  <button class="btn" onclick="startGame()">[ ИГРАТЬ СНОВА ]</button>
+  <button class="btn" onclick="restartGame()">[ ИГРАТЬ СНОВА ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
 </div>
 
+<!-- ══ ПОПАП ЗВУК ══ -->
+<div class="popup-overlay hidden" id="sound-popup">
+  <div class="popup">
+    <div class="popup-title">🔊 НАСТРОЙКИ ЗВУКА</div>
+    <div class="vrow">
+      <label>МУЗЫКА</label>
+      <input type="range" id="vm" min="0" max="100" value="40" oninput="setMV(this.value)">
+      <span class="vv" id="vml">40%</span>
+    </div>
+    <div class="vrow">
+      <label>ЗВУКИ</label>
+      <input type="range" id="vs" min="0" max="100" value="70" oninput="setSV(this.value)">
+      <span class="vv" id="vsl">70%</span>
+    </div>
+    <button class="popup-close" onclick="closeSound()">ЗАКРЫТЬ</button>
+  </div>
+</div>
+
+<!-- ══ ПОПАП ДОСТИЖЕНИЯ ══ -->
+<div class="popup-overlay hidden" id="ach-popup">
+  <div class="popup">
+    <div class="popup-title">🏆 ДОСТИЖЕНИЯ</div>
+    <div id="ach-list"></div>
+    <button class="popup-close" onclick="closeAch()">ЗАКРЫТЬ</button>
+  </div>
+</div>
+
 <script>
-/* ── МАТРИЦА ── */
+/* ══════════════════════════════════════════
+   МАТРИЦА
+══════════════════════════════════════════ */
 (()=>{
   const c=document.getElementById('mc'),x=c.getContext('2d');
   const resize=()=>{c.width=innerWidth;c.height=innerHeight;};
@@ -261,20 +274,98 @@
     x.fillStyle='#00ff41';x.font='11px Share Tech Mono';
     dr.forEach((y,i)=>{
       x.fillText(ch[Math.random()*ch.length|0],i*13,y*13);
-      if(y*13>c.height&&Math.random()>.975)dr[i]=0;
-      dr[i]++;
+      if(y*13>c.height&&Math.random()>.975)dr[i]=0;dr[i]++;
     });
   },55);
 })();
 
-/* ── РЕАЛЬНЫЕ ЧАСЫ ── */
+/* ══════════════════════════════════════════
+   РЕАЛЬНЫЕ ЧАСЫ
+══════════════════════════════════════════ */
 setInterval(()=>{
   const n=new Date(),p=v=>String(v).padStart(2,'0');
   document.getElementById('rc').textContent=p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());
 },1000);
 
-/* ── АУДИО ── */
-let AC,MG,SG;let mv=.4,sv=.7;
+/* ══════════════════════════════════════════
+   СОХРАНЕНИЕ (localStorage)
+══════════════════════════════════════════ */
+function saveData(){
+  localStorage.setItem('cag_coins', SAVE.coins);
+  localStorage.setItem('cag_ach', JSON.stringify(SAVE.ach));
+  localStorage.setItem('cag_lv_cnt', JSON.stringify(SAVE.lvCount));
+}
+function loadData(){
+  SAVE.coins = parseInt(localStorage.getItem('cag_coins')||'0');
+  try{ SAVE.ach = JSON.parse(localStorage.getItem('cag_ach')||'[]'); }catch(e){ SAVE.ach=[]; }
+  try{ SAVE.lvCount = JSON.parse(localStorage.getItem('cag_lv_cnt')||'[0,0,0,0]'); }catch(e){ SAVE.lvCount=[0,0,0,0]; }
+}
+
+const SAVE = { coins:0, ach:[], lvCount:[0,0,0,0] };
+loadData();
+// Добавляем 500 монет для теста если ещё не давали
+if(!localStorage.getItem('cag_test500')){
+  SAVE.coins+=500;
+  localStorage.setItem('cag_test500','1');
+  saveData();
+}
+
+/* ══════════════════════════════════════════
+   ДОСТИЖЕНИЯ
+══════════════════════════════════════════ */
+const ACHIEVEMENTS = [
+  { id:'lv1',    icon:'🕵️', name:'Помощник хакера',          desc:'Пройди 1 уровень',             cond:s=>s.lvCount[0]>=1 },
+  { id:'lv2',    icon:'💻', name:'Начинающий хакер',          desc:'Пройди 2 уровень',             cond:s=>s.lvCount[1]>=1 },
+  { id:'lv3',    icon:'🔐', name:'Хакер',                     desc:'Пройди 3 уровень',             cond:s=>s.lvCount[2]>=1 },
+  { id:'lv4',    icon:'🧠', name:'Хакер профессионал',        desc:'Пройди 4 уровень',             cond:s=>s.lvCount[3]>=1 },
+  { id:'lv1x10', icon:'⏰', name:'Путешественник во времени', desc:'Пройди 1 уровень 10 раз',      cond:s=>s.lvCount[0]>=10 },
+  { id:'lv2x10', icon:'🌀', name:'Спец по путешествиям',      desc:'Пройди 2 уровень 10 раз',      cond:s=>s.lvCount[1]>=10 },
+  { id:'lv3x10', icon:'🌌', name:'Мастер путешествий',        desc:'Пройди 3 уровень 10 раз',      cond:s=>s.lvCount[2]>=10 },
+  { id:'lv4x10', icon:'👑', name:'Повелитель времени',        desc:'Пройди 4 уровень 10 раз',      cond:s=>s.lvCount[3]>=10 },
+];
+
+function checkAchievements(){
+  ACHIEVEMENTS.forEach(a=>{
+    if(!SAVE.ach.includes(a.id) && a.cond(SAVE)){
+      SAVE.ach.push(a.id);
+      saveData();
+      showAchToast(a.icon+' '+a.name);
+    }
+  });
+}
+
+let toastTimer=null;
+function showAchToast(msg){
+  const t=document.getElementById('ach-toast');
+  t.textContent='🏆 '+msg;
+  t.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+function openAch(){
+  const list=document.getElementById('ach-list');
+  list.innerHTML='';
+  ACHIEVEMENTS.forEach(a=>{
+    const done=SAVE.ach.includes(a.id);
+    const div=document.createElement('div');
+    div.className='ach-item'+(done?' unlocked':'');
+    div.innerHTML=`<div class="ach-icon">${a.icon}</div>
+      <div class="ach-info">
+        <div class="ach-name">${a.name}</div>
+        <div class="ach-desc">${a.desc}</div>
+      </div>
+      <div class="ach-check">${done?'✅':'⬜'}</div>`;
+    list.appendChild(div);
+  });
+  document.getElementById('ach-popup').classList.remove('hidden');
+}
+function closeAch(){ document.getElementById('ach-popup').classList.add('hidden'); }
+
+/* ══════════════════════════════════════════
+   АУДИО
+══════════════════════════════════════════ */
+let AC,MG,SG; let mv=.4,sv=.7;
 function initA(){
   if(AC)return;
   AC=new(window.AudioContext||window.webkitAudioContext)();
@@ -322,33 +413,34 @@ function sfx(t){
     });
   }
 }
-function setMV(v){mv=v/100;document.getElementById('vml').textContent=v+'%';if(MG)MG.gain.value=mv*.25;}
-function setSV(v){sv=v/100;document.getElementById('vsl').textContent=v+'%';if(SG)SG.gain.value=sv;}
+function setMV(v){ mv=v/100; document.getElementById('vml').textContent=v+'%'; if(MG)MG.gain.value=mv*.25; }
+function setSV(v){ sv=v/100; document.getElementById('vsl').textContent=v+'%'; if(SG)SG.gain.value=sv; }
+function openSound(){ document.getElementById('sound-popup').classList.remove('hidden'); }
+function closeSound(){ document.getElementById('sound-popup').classList.add('hidden'); }
 
-/* ── ЛОГИКА ── */
+/* ══════════════════════════════════════════
+   УРОВНИ
+   Монеты: ур1=1/вопр(макс5), ур2=2/вопр(макс10),
+           ур3=4/вопр(макс20), ур4=10/вопр(макс30 за 3 вопр)
+══════════════════════════════════════════ */
 const LVS=[
-  {title:'УРОВЕНЬ 1',desc:'МИНУТНАЯ И СЕКУНДНАЯ',type:'ms',qc:5,cp:1},
-  {title:'УРОВЕНЬ 2',desc:'ЧАСОВАЯ И СЕКУНДНАЯ', type:'hs',qc:5,cp:2},
-  {title:'УРОВЕНЬ 3',desc:'ЧАСОВАЯ И МИНУТНАЯ',  type:'hm',qc:5,cp:3},
-  {title:'УРОВЕНЬ 4',desc:'ВСЕ СТРЕЛКИ',         type:'all',qc:3,cp:4},
+  {title:'УРОВЕНЬ 1',desc:'МИНУТНАЯ И СЕКУНДНАЯ',type:'ms', qc:5, cp:1},
+  {title:'УРОВЕНЬ 2',desc:'ЧАСОВАЯ И СЕКУНДНАЯ', type:'hs', qc:5, cp:2},
+  {title:'УРОВЕНЬ 3',desc:'ЧАСОВАЯ И МИНУТНАЯ',  type:'hm', qc:5, cp:4},
+  {title:'УРОВЕНЬ 4',desc:'ВСЕ СТРЕЛКИ',         type:'all',qc:3, cp:10},
 ];
-// Классики: после каждого уровня прыгаем вперёд
 const HOP_AFTER=[1,3,5,8];
 
 let ST={};
-let correctIdx=0; // индекс правильного варианта среди 4 кнопок
+let correctIdx=0, locked=false;
 
-function rndTime(){return{h:Math.floor(Math.random()*12),m:Math.floor(Math.random()*60),s:Math.floor(Math.random()*60)};}
+function rndTime(){ return{h:Math.floor(Math.random()*12),m:Math.floor(Math.random()*60),s:Math.floor(Math.random()*60)}; }
 
 function angles(t){
-  return{
-    s:t.s*6,
-    m:t.m*6+t.s*.1,
-    h:(t.h%12)*30+t.m*.5+t.s/120,
-  };
+  return{ s:t.s*6, m:t.m*6+t.s*.1, h:(t.h%12)*30+t.m*.5+t.s/120 };
 }
-function angBetween(a,b){let d=Math.abs(a-b)%360;return d>180?360-d:d;}
-function r1(x){return Math.round(x*10)/10;}
+function angBetween(a,b){ let d=Math.abs(a-b)%360; return d>180?360-d:d; }
+function r1(x){ return Math.round(x*10)/10; }
 
 function correctAngle(){
   const lv=LVS[ST.lv],a=angles(ST.time);
@@ -358,30 +450,32 @@ function correctAngle(){
   return r1(angBetween(a.h,a.m));
 }
 
-/* Генерируем 4 варианта: 1 правильный + 3 близких случайных */
 function genChoices(correct){
   const opts=new Set([correct]);
-  while(opts.size<4){
-    // смещение от 5 до 40 градусов
-    let delta=(Math.floor(Math.random()*8)+1)*5;
-    if(Math.random()>.5)delta=-delta;
-    let v=r1((correct+delta+360)%360);
-    if(v>180)v=r1(360-v); // угол всегда 0-180
+  let tries=0;
+  while(opts.size<4&&tries<50){
+    tries++;
+    let delta=(Math.floor(Math.random()*8)+1)*5*(Math.random()>.5?1:-1);
+    let v=r1(((correct+delta)%360+360)%360);
+    if(v>180)v=r1(360-v);
     if(v>=0&&v<=180)opts.add(v);
   }
-  const arr=Array.from(opts);
-  // перемешиваем
+  // если всё ещё мало — добиваем
+  const fallback=[15,30,45,60,75,90,105,120,135,150];
+  let fi=0;
+  while(opts.size<4){ opts.add(fallback[fi++%fallback.length]); }
+  const arr=Array.from(opts).slice(0,4);
   for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
   return arr;
 }
 
-/* ── РЕНДЕР ЦИФЕРБЛАТА ── */
+/* ── ЦИФЕРБЛАТ ── */
 function drawTicks(){
   const tg=document.getElementById('ticks'),ng=document.getElementById('nums');
   tg.innerHTML='';ng.innerHTML='';
   for(let i=0;i<60;i++){
     const r=i*6*Math.PI/180,maj=i%5===0;
-    const r1v=maj?77:82,r2v=90;
+    const r1v=maj?72:77,r2v=85;
     const line=document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute('x1',Math.sin(r)*r1v);line.setAttribute('y1',-Math.cos(r)*r1v);
     line.setAttribute('x2',Math.sin(r)*r2v);line.setAttribute('y2',-Math.cos(r)*r2v);
@@ -389,11 +483,11 @@ function drawTicks(){
     line.setAttribute('stroke-width',maj?'2':'1');
     tg.appendChild(line);
     if(maj){
-      const num=i/5||12,nr=67;
+      const num=i/5||12,nr=62;
       const t=document.createElementNS('http://www.w3.org/2000/svg','text');
       t.setAttribute('x',Math.sin(r)*nr);t.setAttribute('y',-Math.cos(r)*nr+3.5);
       t.setAttribute('text-anchor','middle');t.setAttribute('fill','rgba(0,255,65,.55)');
-      t.setAttribute('font-size','8');t.setAttribute('font-family','Orbitron,monospace');
+      t.setAttribute('font-size','7.5');t.setAttribute('font-family','Orbitron,monospace');
       t.textContent=num;ng.appendChild(t);
     }
   }
@@ -407,18 +501,15 @@ function setHand(id,deg,lenY,tailY=0){
 }
 function renderClock(){
   const a=angles(ST.time);
-  setHand('hh',a.h,50);setHand('mh',a.m,68);setHand('sh',a.s,76,5);
+  setHand('hh',a.h,47);setHand('mh',a.m,64);setHand('sh',a.s,72,5);
   const lv=LVS[ST.lv];
   let tp=lv.type==='all'?['ms','hm','hs'][ST.sub]:lv.type;
   document.getElementById('hh').setAttribute('opacity',(tp==='hs'||tp==='hm')?'1':'.2');
   document.getElementById('mh').setAttribute('opacity',(tp==='ms'||tp==='hm')?'1':'.2');
   document.getElementById('sh').setAttribute('opacity',(tp==='ms'||tp==='hs')?'1':'.2');
-  // дуга угла
-  const arc=document.getElementById('arc'),R=32;
+  const arc=document.getElementById('arc'),R=30;
   let a1,a2;
-  if(tp==='ms'){a1=a.m;a2=a.s;}
-  else if(tp==='hs'){a1=a.h;a2=a.s;}
-  else{a1=a.h;a2=a.m;}
+  if(tp==='ms'){a1=a.m;a2=a.s;}else if(tp==='hs'){a1=a.h;a2=a.s;}else{a1=a.h;a2=a.m;}
   const r1r=a1*Math.PI/180,r2r=a2*Math.PI/180;
   const x1=Math.sin(r1r)*R,y1=-Math.cos(r1r)*R,x2=Math.sin(r2r)*R,y2=-Math.cos(r2r)*R;
   let diff=((a2-a1)%360+360)%360,lg=diff>180?1:0;
@@ -432,7 +523,7 @@ function updHUD(){
   const tot=lv.type==='all'?lv.qc*3:lv.qc;
   const cur=lv.type==='all'?ST.qi*3+ST.sub+1:ST.qi+1;
   document.getElementById('h-q').textContent=cur+'/'+tot;
-  document.getElementById('h-c').textContent=ST.coins+'🪙';
+  document.getElementById('h-c').textContent=SAVE.coins+'🪙';
   document.getElementById('h-l').textContent='❤️'.repeat(ST.lives)+'🖤'.repeat(3-ST.lives);
   document.getElementById('qlb').textContent=lv.title+' — '+lv.desc;
   let tp=lv.type==='all'?['ms','hm','hs'][ST.sub]:lv.type;
@@ -447,9 +538,7 @@ function updHUD(){
 
 /* ── КЛАССИКИ ── */
 function buildHops(){
-  const w=document.getElementById('hops');
-  w.innerHTML='';
-  // схема классиков: 1 | 2 | 3 | 4 5 | 6 | 7 8
+  const w=document.getElementById('hops');w.innerHTML='';
   const rows=[[1],[2],[3],[4,5],[6],[7,8]];
   rows.forEach(row=>{
     const d=document.createElement('div');d.className='hops-row';
@@ -463,7 +552,7 @@ function buildHops(){
   });
 }
 
-/* ── КНОПКИ ВАРИАНТОВ ── */
+/* ── ВАРИАНТЫ ── */
 function renderChoices(){
   const ans=correctAngle();
   const opts=genChoices(ans);
@@ -476,45 +565,55 @@ function renderChoices(){
   }
 }
 
-/* ── СТАРТ ── */
+/* ══ СТАРТ ══ */
 function startGame(){
   initA();
-  ST={lv:0,qi:0,sub:0,coins:0,lives:3,hops:0,time:rndTime()};
+  locked=false;
+  ST={lv:0,qi:0,sub:0,lives:3,hops:0,time:rndTime()};
   showS('game-screen');
   drawTicks();buildHops();updHUD();renderClock();renderChoices();
   document.getElementById('fb').textContent='';
   document.getElementById('hint-text').textContent='';
+  updMenuCoins();
 }
 
-/* ── ВЫБОР ОТВЕТА ── */
-let locked=false;
+/* ПЕРЕЗАПУСК (без сброса монет) */
+function restartGame(){
+  initA();
+  locked=false;
+  ST={lv:0,qi:0,sub:0,lives:3,hops:0,time:rndTime()};
+  showS('game-screen');
+  buildHops();updHUD();renderClock();renderChoices();
+  document.getElementById('fb').textContent='';
+  document.getElementById('hint-text').textContent='';
+}
+
+/* ══ ВЫБОР ОТВЕТА ══ */
 function pick(idx){
   if(locked)return;
   initA();
-  const btn=document.getElementById('c'+idx);
   const ok=(idx===correctIdx);
   if(ok){
     locked=true;
     sfx('ok');
-    btn.classList.add('correct');
-    ST.coins+=LVS[ST.lv].cp;
-    showFb('✓ ВЕРНО!','ok');
+    document.getElementById('c'+idx).classList.add('correct');
+    SAVE.coins+=LVS[ST.lv].cp;
+    saveData();
+    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
+    document.getElementById('h-c').textContent=SAVE.coins+'🪙';
     setTimeout(advance,900);
   }else{
     sfx('no');
-    btn.classList.add('wrong');
-    // подсвечиваем правильный
+    document.getElementById('c'+idx).classList.add('wrong');
     document.getElementById('c'+correctIdx).classList.add('correct');
-    ST.lives--;
-    const ans=document.querySelectorAll('.choice-btn')[correctIdx].textContent;
-    showFb('✗ НЕВЕРНО! Ответ: '+ans,'bad');
-    // блокируем все
     for(let i=0;i<4;i++)document.getElementById('c'+i).disabled=true;
+    ST.lives--;
+    showFb('✗ НЕВЕРНО!','bad');
+    document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
     locked=true;
-    if(ST.lives<=0){setTimeout(gameOver,1100);}
-    else{setTimeout(advance,1300);}
+    if(ST.lives<=0){ setTimeout(gameOver,1100); }
+    else{ setTimeout(advance,1200); }
   }
-  document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
 }
 
 function advance(){
@@ -528,43 +627,54 @@ function advance(){
   }else{
     ST.qi++;if(ST.qi>=lv.qc){levelDone();return;}ST.time=rndTime();
   }
-  // обновляем прыжки пропорционально прогрессу внутри уровня
   const hopStart=ST.lv===0?0:HOP_AFTER[ST.lv-1];
   const hopEnd=HOP_AFTER[ST.lv];
   const tot=lv.type==='all'?lv.qc*3:lv.qc;
   const cur=lv.type==='all'?ST.qi*3+ST.sub:ST.qi;
-  ST.hops=Math.min(hopEnd, hopStart+Math.floor(cur/(tot)*(hopEnd-hopStart)));
+  ST.hops=Math.min(hopEnd,hopStart+Math.floor(cur/tot*(hopEnd-hopStart)));
   buildHops();updHUD();renderClock();renderChoices();
 }
 
 function levelDone(){
   sfx('up');
   ST.hops=HOP_AFTER[ST.lv];buildHops();
+  // Считаем прохождение уровня
+  SAVE.lvCount[ST.lv]++;
+  saveData();
+  checkAchievements();
   if(ST.lv>=3){
     showS('win-screen');
-    document.getElementById('wi').innerHTML='Монет: <b>'+ST.coins+'🪙</b><br>Жизней: <b>'+ST.lives+'</b><br>Классики пройдены полностью!';
-    return;
+    document.getElementById('wi').innerHTML='Монет всего: <b>'+SAVE.coins+'🪙</b><br>Жизней: <b>'+ST.lives+'</b><br>Классики пройдены!';
+    updMenuCoins();return;
   }
   showS('result-screen');
+  // Показываем следующий уровень только если он есть
+  const nb=document.getElementById('next-btn');
+  nb.style.display=ST.lv<3?'':'none';
   document.getElementById('rt').textContent=LVS[ST.lv].title+' ПРОЙДЕН!';
-  document.getElementById('ri').innerHTML='Монет: <b>'+ST.coins+'🪙</b> &nbsp;|&nbsp; Жизней: <b>'+ST.lives+'</b>';
+  document.getElementById('ri').innerHTML='Монет всего: <b>'+SAVE.coins+'🪙</b><br>Жизней: <b>'+ST.lives+'</b>';
+  updMenuCoins();
 }
+
 function nextLevel(){
   ST.lv++;ST.qi=0;ST.sub=0;ST.time=rndTime();locked=false;
   showS('game-screen');updHUD();renderClock();renderChoices();buildHops();
   document.getElementById('fb').textContent='';
   document.getElementById('hint-text').textContent='';
 }
+
 function gameOver(){
   showS('gameover-screen');
-  document.getElementById('gi').innerHTML='Уровень: <b>'+(ST.lv+1)+'</b><br>Монет: <b>'+ST.coins+'🪙</b>';
+  document.getElementById('gi').innerHTML='Уровень: <b>'+(ST.lv+1)+'</b><br>Монет всего: <b>'+SAVE.coins+'🪙</b>';
+  updMenuCoins();
 }
 
 /* ── ПОДСКАЗКА ── */
 function useHint(){
   initA();
-  if(ST.coins<15){showFb('Нужно 15🪙!','bad');return;}
-  ST.coins-=15;document.getElementById('h-c').textContent=ST.coins+'🪙';
+  if(SAVE.coins<15){showFb('Нужно 15🪙!','bad');return;}
+  SAVE.coins-=15;saveData();
+  document.getElementById('h-c').textContent=SAVE.coins+'🪙';
   const a=angles(ST.time),lv=LVS[ST.lv];
   let tp=lv.type==='all'?['ms','hm','hs'][ST.sub]:lv.type;
   const p=v=>v.toFixed(1);
@@ -576,16 +686,18 @@ function useHint(){
 }
 
 /* ── ВСПОМОГАТЕЛЬНЫЕ ── */
+function updMenuCoins(){ document.getElementById('menu-coins').textContent='💰 '+SAVE.coins+' монет'; }
 function showFb(msg,cls){const e=document.getElementById('fb');e.textContent=msg;e.className='fb '+cls;}
 function showS(id){
   ['menu-screen','game-screen','result-screen','gameover-screen','win-screen']
     .forEach(s=>document.getElementById(s).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
-function goMenu(){showS('menu-screen');}
+function goMenu(){ updMenuCoins(); showS('menu-screen'); }
 
 document.body.addEventListener('click',initA,{once:true});
 drawTicks();
+updMenuCoins();
 </script>
 </body>
 </html>
