@@ -402,7 +402,7 @@ function loadData(){
   try{SAVE.lvCount=JSON.parse(localStorage.getItem('cag_lv_cnt')||'[0,0,0,0]');}catch(e){SAVE.lvCount=[0,0,0,0];}
 }
 loadData();
-if(!localStorage.getItem('cag_test500')){SAVE.coins+=500;localStorage.setItem('cag_test500','1');saveData();}
+// стартовый бонус 500 монет отключён
 
 /* ══ ИНТРО ══ */
 function checkIntro(){showS('main-menu');}
