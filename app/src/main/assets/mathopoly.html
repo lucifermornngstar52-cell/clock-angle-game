@@ -233,13 +233,29 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 
 <!-- ФИНИШ -->
 <div class="screen hidden" id="end-screen">
-  <div class="end-title" id="etitle" style="color:var(--gold);">🏆 ПОБЕДА!</div>
-  <div class="end-box">
-    <div class="end-row"><span>Победитель</span><span id="ewinner" style="color:var(--gold);">—</span></div>
-    <div class="end-row"><span id="en0">P1</span><span id="es0" style="color:var(--purple);">0</span></div>
-    <div class="end-row"><span id="en1">P2</span><span id="es1" style="color:var(--cyan);">0</span></div>
+  <div style="width:100%;max-width:400px;overflow-y:auto;padding-bottom:20px;">
+    <div class="fin-winner" id="fin-winner-block">
+      <div class="fi">🎓</div>
+      <div class="ft">ПОЗДРАВЛЯЕМ!</div>
+      <div style="font-size:.65rem;color:rgba(255,255,255,.5);letter-spacing:1px;margin-bottom:4px;">С ОКОНЧАНИЕМ ШКОЛЫ</div>
+      <div class="fn" id="ewinner">—</div>
+      <div class="fd" id="winner-desc"></div>
+      <div class="fin-scores" id="fin-scores"></div>
+    </div>
+    <div class="fin-loser" id="fin-loser-block">
+      <div class="li2">📚</div>
+      <div class="lt">ВТОРОЙ ГОД</div>
+      <div class="ln" id="eloser">—</div>
+      <div class="ld" id="loser-desc"></div>
+      <div class="topics-t">// ТЕМЫ ДЛЯ ПОВТОРЕНИЯ //</div>
+      <div class="topics-w">
+        <span class="ttag">Алгебра</span><span class="ttag">Геометрия</span>
+        <span class="ttag">Физика</span><span class="ttag">Тригонометрия</span>
+        <span class="ttag">Уравнения</span><span class="ttag">Статистика</span>
+      </div>
+    </div>
+    <button class="mbtn btn-gold" style="max-width:100%;margin-top:12px;padding:14px 0;" onclick="goMenu()">[ 🏠 В МЕНЮ ]</button>
   </div>
-  <button class="mbtn btn-gold" style="max-width:280px;" onclick="goMenu()">[ 🏠 В МЕНЮ ]</button>
 </div>
 
 <script>
@@ -482,8 +498,20 @@ function onData(msg){
 // ═══════════════════════════════════════════════
 function startGame(){
   if(!boardBuilt){ buildBoard(); boardBuilt=true; }
-  showS('game-screen');
-  renderAll();
+  showS('rules-screen');
+  let cd=30;
+  const el=document.getElementById('rules-cd');
+  if(el) el.textContent=cd;
+  const t=setInterval(()=>{
+    cd--;
+    const e2=document.getElementById('rules-cd');
+    if(e2) e2.textContent=cd;
+    if(cd<=0){
+      clearInterval(t);
+      showS('game-screen');
+      renderAll();
+    }
+  },1000);
 }
 
 // Хост синхронизирует состояние гостю
@@ -718,13 +746,31 @@ function showEnd(gs){
   stopQT();
   document.getElementById('qmodal').classList.add('hidden');
   const p=gs.players;
-  const w=p[0].score>p[1].score?p[0].name:p[1].score>p[0].score?p[1].name:'НИЧЬЯ';
-  document.getElementById('etitle').textContent=w==='НИЧЬЯ'?'🤝 НИЧЬЯ!':'🏆 '+w+' ПОБЕДИЛ!';
-  document.getElementById('ewinner').textContent=w;
-  document.getElementById('en0').textContent=p[0].name;
-  document.getElementById('en1').textContent=p[1].name;
-  document.getElementById('es0').textContent=p[0].score+' pts';
-  document.getElementById('es1').textContent=p[1].score+' pts';
+  const isDraw=p[0].score===p[1].score;
+  const wi=p[0].score>=p[1].score?0:1;
+  const li=wi===0?1:0;
+  const wBlock=document.getElementById('fin-winner-block');
+  const lBlock=document.getElementById('fin-loser-block');
+  if(isDraw){
+    wBlock.style.borderColor='var(--cyan)';
+    wBlock.querySelector('.fi').textContent='🤝';
+    wBlock.querySelector('.ft').textContent='НИЧЬЯ!';
+    document.getElementById('ewinner').textContent=p[0].name+' и '+p[1].name;
+    document.getElementById('winner-desc').textContent='Оба показали одинаковый результат — оба заслуживают аттестата зрелости!';
+    lBlock.style.display='none';
+  } else {
+    document.getElementById('ewinner').textContent='🎓 '+p[wi].name;
+    document.getElementById('winner-desc').textContent=
+      p[wi].name+' блестяще справился с испытанием! Набрано '+p[wi].score+' очков — аттестат зрелости заслужен!';
+    document.getElementById('eloser').textContent='📚 '+p[li].name;
+    document.getElementById('loser-desc').textContent=
+      p[li].name+' — набрано '+p[li].score+' очков. Придётся остаться на второй год и как следует подтянуть школьную программу перед следующей попыткой.';
+    lBlock.style.display='';
+  }
+  const sc=document.getElementById('fin-scores');
+  sc.innerHTML=
+    '<div class="fin-sc"><div class="sn">'+p[0].name+'</div><div class="sv" style="color:var(--purple)">'+p[0].score+' pts</div></div>'+
+    '<div class="fin-sc"><div class="sn">'+p[1].name+'</div><div class="sv" style="color:var(--cyan)">'+p[1].score+' pts</div></div>';
   showS('end-screen');
 }
 
