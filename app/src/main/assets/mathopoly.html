@@ -344,16 +344,30 @@ function joinRoom(){
 }
 
 function setupConn(){
+  // Навешиваем data сразу — чтобы не пропустить сообщения
+  conn.on('data',onMsg);
+  conn.on('close',()=>{toast('Соперник отключился'); showS('lobby');});
   conn.on('open',()=>{
+    if(myIdx===1){
+      // Гость: отправляем hello хосту и показываем ожидание
+      send({type:'hello',name:myName});
+      showS('waiting');
+      document.getElementById('code-show').textContent=roomCode;
+      document.getElementById('wstatus').textContent='✅ Подключено!';
+    } else {
+      // Хост: соединение установлено — обновляем UI ожидания
+      document.getElementById('wstatus').textContent='⏳ Ожидаем имя игрока...';
+    }
+  });
+  // Если соединение уже открыто (race condition в PeerJS) — дублируем логику
+  if(conn.open){
     if(myIdx===1){
       send({type:'hello',name:myName});
       showS('waiting');
       document.getElementById('code-show').textContent=roomCode;
       document.getElementById('wstatus').textContent='✅ Подключено!';
     }
-  });
-  conn.on('data',onMsg);
-  conn.on('close',()=>{toast('Соперник отключился'); showS('lobby');});
+  }
 }
 
 function send(msg){ if(conn&&conn.open) conn.send(msg); }
