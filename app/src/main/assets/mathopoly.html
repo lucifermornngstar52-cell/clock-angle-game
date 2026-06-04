@@ -470,8 +470,14 @@ function onData(msg){
     case 'sync': // хост→гость: синхронизация состояния
       GS=msg.gs;
       renderAll();
-      if(GS.phase==='question' && GS.q && myIdx!==GS.turn){
-        showQWait();
+      if(GS.phase==='question' && GS.q){
+        if(GS.turn===myIdx){
+          // Мой вопрос — показываю поле ввода
+          showQuestion(GS.q);
+        } else {
+          // Чужой вопрос — просто жду, модал скрыт
+          document.getElementById('qmodal').classList.add('hidden');
+        }
       }
       break;
 
@@ -632,10 +638,15 @@ async function rollDice(){
 // Только хост обрабатывает логику хода
 function processRoll(dice, newPos){
   GS.dice=dice;
-  GS.players[GS.turn].pos=newPos;
+  // НЕ двигаем сразу — сначала пусть ответит на вопрос
+  // Сохраняем текущую позицию и pendingPos
+  GS.pendingPos=newPos;
+  const oldPos=GS.players[GS.turn].pos||0;
   const cell=CELLS[newPos];
 
+  // Клетки без вопроса — двигаем сразу
   if(cell.cls==='cfin'){
+    GS.players[GS.turn].pos=newPos;
     GS.players[GS.turn].score+=50;
     GS.phase='end';
     syncGuest();
@@ -644,25 +655,32 @@ function processRoll(dice, newPos){
     return;
   }
   if(cell.cls==='sred'){
+    GS.players[GS.turn].pos=newPos;
     GS.players[GS.turn].score=Math.max(0,(GS.players[GS.turn].score||0)-5);
     toast('⚠️ ОШИБКА! -5'); nextTurn(); return;
   }
   if(cell.cls==='sgold'){
+    GS.players[GS.turn].pos=newPos;
     GS.players[GS.turn].score=(GS.players[GS.turn].score||0)+10;
     toast('⭐ ФОРМУЛА УДАЧИ! +10'); nextTurn(); return;
   }
-  if(cell.cls==='cstart'){toast('🚀 СТАРТ!'); nextTurn(); return;}
+  if(cell.cls==='cstart'){
+    GS.players[GS.turn].pos=newPos;
+    toast('🚀 СТАРТ!'); nextTurn(); return;
+  }
 
-  // Вопрос
+  // Вопрос — позицию НЕ меняем до ответа
   const cat=cell.cls==='geo'?'geometry':cell.cls==='lgc'?'logic':'algebra';
   const pool=QS[cat];
   const q=pool[Math.floor(Math.random()*pool.length)];
   GS.q={text:q.q, answer:q.a, category:cell.label};
   GS.phase='question';
+  // Синхронизируем гостю — он увидит фазу 'question' и чей ход
   syncGuest();
   renderAll();
-  // Показываем вопрос тому, чей ход
+  // Показываем вопрос ТОЛЬКО тому чей ход
   if(GS.turn===0) showQuestion(GS.q);
+  // else — гость покажет сам через sync→applySync
 }
 
 function nextTurn(){
@@ -735,10 +753,14 @@ async function submitAns(timeout=false){
 }
 
 function processAnswer(playerIdx, correct){
-  if(correct) GS.players[playerIdx].score=(GS.players[playerIdx].score||0)+15;
-  setTimeout(()=>{
-    nextTurn();
-  },500);
+  if(correct){
+    // Верно — двигаем на новую клетку
+    GS.players[playerIdx].score=(GS.players[playerIdx].score||0)+15;
+    if(GS.pendingPos!==undefined) GS.players[playerIdx].pos=GS.pendingPos;
+  }
+  // Неверно — остаёмся на месте (pendingPos не применяется)
+  GS.pendingPos=undefined;
+  setTimeout(()=>{ nextTurn(); },700);
 }
 
 // ── ФИНИШ ──
