@@ -219,7 +219,7 @@
       Четыре уровня, четыре эпохи. <span>История ждёт вас.</span><br><br>
       Удачи, хакер.<span class="intro-cursor"></span>
     </div>
-    <button class="intro-btn" onclick="closeIntro()">[ НАЧАТЬ ВЗЛОМ ]</button>
+    <button class="intro-btn" onclick="closeIntroAndStart()">[ НАЧАТЬ ВЗЛОМ ]</button>
   </div>
 </div>
 
@@ -237,7 +237,7 @@
 <div class="screen hidden" id="game-menu">
   <div class="gmenu-title">🎮 ВЫБОР ИГРЫ</div>
   <div class="gmenu-sub">// ВЫБЕРИ РЕЖИМ //</div>
-  <button class="btn btn-gold" onclick="startGame()">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]</button>
+  <button class="btn btn-gold" onclick="startWithIntro()">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]</button>
   <div class="other-label">── ДРУГИЕ ИГРЫ ──</div>
   <button class="btn dis">[ ИГРА 2 ]<br><span style="font-size:.55rem">пока в разработке</span></button>
   <button class="btn dis">[ ИГРА 3 ]<br><span style="font-size:.55rem">пока в разработке</span></button>
@@ -395,8 +395,16 @@ loadData();
 if(!localStorage.getItem('cag_test500')){SAVE.coins+=500;localStorage.setItem('cag_test500','1');saveData();}
 
 /* ══ ИНТРО ══ */
-function checkIntro(){if(!localStorage.getItem('cag_intro_shown'))showS('intro-screen');}
-function closeIntro(){localStorage.setItem('cag_intro_shown','1');showS('main-menu');updMenuCoins();}
+function checkIntro(){showS('main-menu');}
+function closeIntro(){showS('main-menu');updMenuCoins();}
+function startWithIntro(){
+  // Всегда показываем предысторию перед игрой
+  showS('intro-screen');
+}
+function closeIntroAndStart(){
+  // После предыстории — сразу в игру
+  startGame();
+}
 
 /* ══ ДОСТИЖЕНИЯ ══ */
 const ACHIEVEMENTS=[
