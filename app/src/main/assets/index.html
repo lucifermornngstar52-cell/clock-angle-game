@@ -248,150 +248,129 @@
 
 <!-- ══ ВЛАСТЕЛИНЫ ВРЕМЕНИ — МЕНЮ ══ -->
 <div class="screen hidden" id="vl-menu">
-  <div class="gmenu-title">👑 ВЛАСТЕЛИНЫ<br>ВРЕМЕНИ</div>
-  <div class="gmenu-sub">// ВЫБЕРИ РЕЖИМ //</div>
-  <button class="btn btn-gold" onclick="showS('vl-game');vlGameReset()">[ 🎮 ИГРАТЬ ]</button>
-  <button class="btn btn-gold" onclick="showS('vl-cards')">[ 📚 КАРТОЧКИ ]</button>
+  <div style="font-size:2.2rem;margin-bottom:4px;">⏳</div>
+  <div class="gmenu-title" style="font-size:.9rem;line-height:1.3;">ВЛАСТЕЛИНЫ<br>ВРЕМЕНИ</div>
+  <div class="gmenu-sub" style="margin-bottom:16px;">// 1–5 КЛАСС · ПУТЕШЕСТВИЕ ПО ЦИФЕРБЛАТУ //</div>
+  <button class="btn btn-gold" onclick="vlStart()">[ 🎮 ИГРАТЬ ]</button>
   <button class="btn btn-gold" onclick="showS('vl-rules')">[ 📜 ПРАВИЛА ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:8px;" onclick="showS('game-menu')">[ ← НАЗАД ]</button>
 </div>
 
-<!-- ══ ВЛАСТЕЛИНЫ — КАРТОЧКИ ══ -->
-<div class="screen hidden" id="vl-cards" style="overflow-y:auto;padding-bottom:60px;">
-  <div class="gmenu-title" style="font-size:.85rem;padding:12px 0 4px;">📚 КАРТОЧКИ</div>
-
-  <!-- ЗЕЛЁНЫЙ -->
-  <div class="vl-sector green">🟢 ЗЕЛЁНЫЙ — Обычное время <span style="margin-left:auto;font-size:.6rem;opacity:.7">+1 ⏳</span></div>
-  <div class="vl-card green">
-    <div class="vl-pts green">+1 ⏳</div>
-    <div class="vl-q">Уроки с 08:30. Урок — 45 мин, перемена — 10 мин. Когда закончится 1-й урок и начнётся 2-й?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer green"><span><b>09:15</b> — конец 1-го, <b>09:25</b> — начало 2-го</span></div>
-  </div>
-  <div class="vl-card green">
-    <div class="vl-pts green">+1 ⏳</div>
-    <div class="vl-q">Часы показывают 17:45. Сколько минут до 18:00?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer green"><span><b>15 минут</b></span></div>
-  </div>
-  <div class="vl-card green">
-    <div class="vl-pts green">+1 ⏳</div>
-    <div class="vl-q">Мультфильм 1 ч 25 мин включили в 15:10. Когда финальные титры?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer green"><span><b>16:35</b></span></div>
-  </div>
-  <div class="vl-card green">
-    <div class="vl-pts green">+1 ⏳</div>
-    <div class="vl-q">На часах 15:00. Какой угол между стрелками?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer green"><span><b>90 градусов</b></span></div>
-  </div>
-
-  <!-- ЖЁЛТЫЙ -->
-  <div class="vl-sector yellow">🟡 ЖЁЛТЫЙ — Временной сдвиг <span style="margin-left:auto;font-size:.6rem;opacity:.7">+2 ⏳</span></div>
-  <div class="vl-card yellow">
-    <div class="vl-pts yellow">+2 ⏳</div>
-    <div class="vl-q">Сейчас 22:15. Корабль стартует через 3 ч 50 мин. Время старта и какие сутки?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer yellow"><span><b>02:05, завтра</b></span></div>
-  </div>
-  <div class="vl-card yellow">
-    <div class="vl-pts yellow">+2 ⏳</div>
-    <div class="vl-q">Замок открывается когда сумма цифр = 10. Сейчас 21:00. Ближайшее такое время?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer yellow"><span><b>21:07</b> (2+1+0+7 = 10)</span></div>
-  </div>
-  <div class="vl-card yellow">
-    <div class="vl-pts yellow">+2 ⏳</div>
-    <div class="vl-q">Часы отстают 4 мин в сутки. Через сколько дней отставание = 1 час?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer yellow"><span><b>15 дней</b> (60 ÷ 4 = 15)</span></div>
-  </div>
-
-  <!-- КРАСНЫЙ -->
-  <div class="vl-sector red">🔴 КРАСНЫЙ — Магический календарь <span style="margin-left:auto;font-size:.6rem;opacity:.7">+3 ⏳</span></div>
-  <div class="vl-card red">
-    <div class="vl-pts red">+3 ⏳</div>
-    <div class="vl-q">Через 100 часов после полуночи 1 января — какое число и время?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer red"><span><b>5 января, 04:00</b> (100ч = 4 суток 4 часа)</span></div>
-  </div>
-  <div class="vl-card red">
-    <div class="vl-pts red">+3 ⏳</div>
-    <div class="vl-q">Триатлонист финишировал за 10 000 секунд. Переведи в часы, минуты, секунды.</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer red"><span><b>2 ч 46 мин 40 сек</b></span></div>
-  </div>
-  <div class="vl-card red">
-    <div class="vl-pts red">+3 ⏳</div>
-    <div class="vl-q">Полтрети часа — сколько минут?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer red"><span><b>10 минут</b> (⅓ ч = 20 мин, ÷ 2 = 10)</span></div>
-  </div>
-
-  <!-- ПАРАДОКС -->
-  <div class="vl-sector paradox">⚡ ПАРАДОКС — Шанс/Риск <span style="margin-left:auto;font-size:.6rem;opacity:.7">×2 или −ход</span></div>
-  <div class="vl-card paradox">
-    <div class="vl-pts paradox">⚡</div>
-    <div class="vl-q">🪞 Зеркальное время. Часы 19:20, в зеркале стрелки поменялись. Какое время у зеркала?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer paradox"><span>Около <b>04:37</b> — для игры «около половины пятого»</span></div>
-  </div>
-  <div class="vl-card paradox">
-    <div class="vl-pts paradox">⚡</div>
-    <div class="vl-q">📅 Что дольше: треть века или 350 месяцев?</div>
-    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
-    <div class="vl-answer paradox"><span><b>Треть века</b> = 400 месяцев. Треть века дольше!</span></div>
-  </div>
-
-  <button class="btn" style="margin:14px 0 6px;border-color:var(--dg);color:var(--dg);" onclick="showS('vl-menu')">[ ← НАЗАД ]</button>
-</div>
-
 <!-- ══ ВЛАСТЕЛИНЫ — ИГРА ══ -->
-<div class="screen hidden" id="vl-game">
-  <div id="vl-sand-bar" style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#0a0f20;border-bottom:1px solid #1a2a4a;">
-    <span style="font-size:.7rem;color:#556;font-family:'Orbitron',monospace;letter-spacing:1px;">ВЛАСТЕЛИНЫ</span>
-    <span style="font-size:.82rem;color:#ffd700;">⏳ <b id="vl-game-sand2">0</b> песчинок</span>
-    <button onclick="showS('vl-menu')" style="background:none;border:1px solid #334;color:#556;padding:3px 9px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.6rem;cursor:pointer;">✕</button>
+<div class="screen hidden" id="vl-game" style="padding:0;overflow:hidden;">
+<style>
+#vl-hud{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0f20;border-bottom:1px solid #1a2a4a;flex-shrink:0;}
+.vl-hud-cell{text-align:center;}
+.vl-hud-lbl{font-size:.52rem;color:#445;letter-spacing:1px;font-family:'Orbitron',monospace;}
+.vl-hud-val{font-size:.85rem;font-weight:700;font-family:'Orbitron',monospace;}
+#vl-board-wrap{position:relative;width:100%;padding-top:100%;flex-shrink:0;}
+#vl-board-canvas{position:absolute;top:0;left:0;width:100%;height:100%;}
+#vl-card-area{flex:1;overflow-y:auto;padding:10px 12px 8px;}
+#vl-question-card{background:#0d1a2e;border-radius:12px;padding:14px 14px 12px;border:2px solid #1a2a4a;position:relative;transition:border-color .3s;}
+#vl-q-badge{display:inline-block;font-size:.6rem;padding:3px 9px;border-radius:20px;font-weight:700;margin-bottom:8px;}
+#vl-q-text{font-size:.88rem;color:#ddeeff;line-height:1.5;margin-bottom:12px;}
+#vl-answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.vl-opt{padding:10px 6px;background:rgba(255,255,255,.04);border:1px solid #1f3050;color:#aabbcc;border-radius:8px;font-size:.75rem;font-family:'Orbitron',monospace;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;}
+.vl-opt:active{transform:scale(.97);}
+.vl-opt.correct{background:rgba(0,255,136,.15);border-color:#00ff88;color:#00ff88;}
+.vl-opt.wrong{background:rgba(255,68,85,.15);border-color:#ff4455;color:#ff4455;}
+#vl-explanation{display:none;margin-top:10px;padding:10px 12px;background:rgba(0,0,0,.3);border-radius:8px;font-size:.75rem;color:#aabbcc;line-height:1.5;border-left:3px solid #ffd700;}
+#vl-dice-area{display:none;text-align:center;padding:10px 0 4px;}
+#vl-dice-num{font-size:2.5rem;display:inline-block;}
+#vl-action-btn{display:none;width:100%;padding:12px;background:rgba(255,215,0,.1);border:1px solid #ffd700;color:#ffd700;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;margin-top:8px;}
+/* ПАРАДОКС-карта */
+#vl-paradox-card{display:none;background:linear-gradient(135deg,#1a0a2e,#0a1a2e);border-radius:12px;padding:16px;border:2px solid #bb88ff;text-align:center;}
+#vl-paradox-text{font-size:.9rem;color:#ddeeff;margin:8px 0 14px;line-height:1.5;}
+/* Финальный экзамен */
+#vl-exam-area{display:none;padding:10px 12px;}
+#vl-exam-progress{font-size:.65rem;color:#556;text-align:center;margin-bottom:8px;font-family:'Orbitron',monospace;}
+/* Победа */
+#vl-win-screen{display:none;text-align:center;padding:30px 20px;}
+</style>
+
+  <!-- HUD -->
+  <div id="vl-hud">
+    <div class="vl-hud-cell">
+      <div class="vl-hud-lbl">ЖЕТОНЫ</div>
+      <div class="vl-hud-val" style="color:#ffd700;">⏳ <span id="vl-h-sand">0</span></div>
+    </div>
+    <div class="vl-hud-cell">
+      <div class="vl-hud-lbl">КЛЕТКА</div>
+      <div class="vl-hud-val" style="color:#00ff88;"><span id="vl-h-pos">0</span>/60</div>
+    </div>
+    <div class="vl-hud-cell">
+      <div class="vl-hud-lbl">ДО ФИНИША</div>
+      <div class="vl-hud-val" style="color:#88aaff;"><span id="vl-h-left">60</span> кл.</div>
+    </div>
+    <button onclick="showS('vl-menu')" style="background:none;border:1px solid #223;color:#445;padding:4px 8px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.55rem;cursor:pointer;">✕</button>
   </div>
-  <div style="flex:1;overflow-y:auto;padding:10px 12px 20px;">
-    <div id="vl-card-display2" style="background:#0d1a2e;border-radius:12px;padding:16px;margin-bottom:10px;border:2px solid #1a2a4a;position:relative;min-height:180px;">
-      <div id="vl-cd-sector2" style="font-size:.65rem;letter-spacing:2px;margin-bottom:6px;color:#556;">—</div>
-      <div id="vl-cd-pts2" style="position:absolute;top:12px;right:12px;font-size:.72rem;padding:3px 9px;border-radius:20px;display:none;font-weight:700;"></div>
-      <div id="vl-cd-q2" style="font-size:.88rem;color:#ddeeff;line-height:1.5;margin:8px 0 14px;padding-right:44px;">Нажми «Следующая карта» чтобы начать!</div>
-      <button id="vl-cd-reveal2" onclick="vlGameReveal2()" style="display:none;width:100%;padding:10px;background:rgba(255,255,255,.05);border:1px solid #2a3a5a;color:#88aabb;border-radius:7px;font-family:'Orbitron',monospace;font-size:.7rem;cursor:pointer;">[ 👁 ОТКРЫТЬ ОТВЕТ ]</button>
-      <div id="vl-cd-ans2" style="display:none;padding:10px;background:rgba(0,0,0,.3);border-radius:7px;font-size:.78rem;color:#cce8ff;line-height:1.5;margin-top:8px;border-left:3px solid #ffd700;"></div>
-      <div id="vl-cd-btns2" style="display:none;display:none;gap:8px;margin-top:10px;flex-wrap:nowrap;">
-        <button onclick="vlGameNext2(false)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #ff4455;background:rgba(255,68,85,.1);color:#ff4455;">✗ НЕВЕРНО<br>+0 ⏳</button>
-        <button onclick="vlGameNext2(true)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #00ff88;background:rgba(0,255,136,.1);color:#00ff88;" id="vl-right2">✓ ВЕРНО<br><span id="vl-pts-lbl2">+1 ⏳</span></button>
+
+  <!-- Игровое поле (canvas) -->
+  <div id="vl-board-wrap">
+    <canvas id="vl-board-canvas"></canvas>
+  </div>
+
+  <!-- Карточка вопроса / парадокса / кубик -->
+  <div id="vl-card-area">
+    <div id="vl-question-card">
+      <div id="vl-q-badge">⏳ ВОПРОС</div>
+      <div id="vl-q-text">Нажми «Начать ход» чтобы получить вопрос!</div>
+      <div id="vl-answers"></div>
+      <div id="vl-explanation"></div>
+      <div id="vl-dice-area">
+        <div style="font-size:.7rem;color:#ffd700;margin-bottom:4px;font-family:'Orbitron',monospace;">БРОСОК КУБИКА</div>
+        <div id="vl-dice-num">🎲</div>
+        <div id="vl-dice-result" style="font-size:.75rem;color:#aabbcc;margin-top:4px;"></div>
       </div>
     </div>
-    <button id="vl-deal-btn" onclick="vlGameDeal2()" style="width:100%;padding:13px;background:rgba(255,215,0,.1);border:1px solid #ffd700;color:#ffd700;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ 🎴 СЛЕДУЮЩАЯ КАРТА ]</button>
-    <div style="text-align:center;padding:8px 0 0;font-size:.58rem;color:#334;">Карты перемешаны · собирай Песок Времени ⏳</div>
+    <div id="vl-paradox-card">
+      <div style="font-size:1.4rem;margin-bottom:4px;">⚡</div>
+      <div style="font-size:.65rem;color:#bb88ff;letter-spacing:2px;font-family:'Orbitron',monospace;">ВРЕМЕННОЙ ПАРАДОКС</div>
+      <div id="vl-paradox-text"></div>
+    </div>
+    <!-- Финальный экзамен -->
+    <div id="vl-exam-area">
+      <div id="vl-exam-progress">ФИНАЛЬНЫЙ ЭКЗАМЕН · ВОПРОС <span id="vl-exam-q">1</span>/5</div>
+      <div id="vl-exam-card" style="background:#0d1a2e;border-radius:12px;padding:14px;border:2px solid #ffd700;">
+        <div id="vl-exam-text" style="font-size:.88rem;color:#ddeeff;line-height:1.5;margin-bottom:12px;"></div>
+        <div id="vl-exam-answers" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+      </div>
+    </div>
+    <!-- Победный экран -->
+    <div id="vl-win-screen">
+      <div style="font-size:3rem;margin-bottom:8px;">🏆</div>
+      <div style="font-size:1rem;color:#ffd700;font-family:'Orbitron',monospace;letter-spacing:2px;">ПОБЕДИТЕЛЬ</div>
+      <div style="font-size:.75rem;color:#bb88ff;margin:4px 0 16px;font-family:'Orbitron',monospace;">⏳ ВЛАСТЕЛИН ВРЕМЕНИ</div>
+      <div id="vl-win-sand" style="font-size:.9rem;color:#aabbcc;margin-bottom:20px;"></div>
+      <button onclick="vlStart()" style="padding:12px 24px;background:rgba(255,215,0,.15);border:2px solid #ffd700;color:#ffd700;border-radius:10px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ 🔄 ИГРАТЬ СНОВА ]</button>
+      <button onclick="showS('vl-menu')" style="display:block;margin:10px auto 0;padding:10px 20px;background:none;border:1px solid #445;color:#667;border-radius:8px;font-family:'Orbitron',monospace;font-size:.65rem;cursor:pointer;">[ ← МЕНЮ ]</button>
+    </div>
+    <button id="vl-action-btn" onclick="vlActionBtn()">[ 🎲 НАЧАТЬ ХОД ]</button>
   </div>
 </div>
 
 <!-- ══ ВЛАСТЕЛИНЫ — ПРАВИЛА ══ -->
 <div class="screen hidden" id="vl-rules" style="overflow-y:auto;padding:14px 16px 60px;">
   <div class="gmenu-title" style="font-size:.85rem;padding:10px 0 6px;">📜 ПРАВИЛА</div>
-  <div style="color:#aabbcc;font-size:.78rem;line-height:1.75;font-family:inherit;">
-    <div style="color:#00ff88;font-size:.72rem;margin:10px 0 3px;">🎯 ЦЕЛЬ</div>
-    Собрать как можно больше <b style="color:#ffd700">Песка Времени ⏳</b>. Победит тот, у кого к финишу больше песчинок.
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🟢🟡🔴 СЕКТОРЫ</div>
-    <b style="color:#00ff88">Зелёный</b> — базовый уровень, +1 ⏳<br>
-    <b style="color:#ffd700">Жёлтый</b> — нестандартное мышление, +2 ⏳<br>
-    <b style="color:#ff4455">Красный</b> — сложная логика, +3 ⏳<br>
-    <b style="color:#bb88ff">⚡ Парадокс</b> — рисковая карта: ×2 баллов или теряешь ход!
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎮 КАК ИГРАТЬ</div>
-    <b>📚 Карточки</b> — изучай вопросы и проверяй ответы, идеально для подготовки.<br><br>
-    <b>🎮 Играть</b> — карты перемешаны, открываются одна за раз. Угадал → +песчинки, нет → 0.
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 НАСТОЛКА</div>
-    Нарисуй поле-циферблат на ватмане: 60 делений = 60 клеток. Игроки — «стрелки», бросают кубик и двигаются вперёд.<br><br>
-    Поля: <b>1–20</b> = 🟢, <b>21–40</b> = 🟡, <b>41–55</b> = 🔴, особые (12, 24, 36, 48, 60) = ⚡ Парадокс.
+  <div style="color:#aabbcc;font-size:.78rem;line-height:1.8;font-family:inherit;">
+    <div style="color:#ffd700;font-size:.72rem;margin:8px 0 3px;">🎯 ЦЕЛЬ</div>
+    Первым дойти до 60-й клетки и пройти <b style="color:#ffd700">Финальный Экзамен</b>. Кто наберёт больше жетонов <b>⏳</b> — тот Властелин Времени!
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 КАК ИГРАТЬ</div>
+    1. Нажми <b>«Начать ход»</b> — получишь карточку с вопросом<br>
+    2. Выбери правильный ответ<br>
+    3. <b style="color:#00ff88">Верно</b> → получаешь жетоны + бросаешь кубик + двигаешься вперёд<br>
+    4. <b style="color:#ff4455">Неверно</b> → стоишь на месте, видишь объяснение
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🟢🟡🔴 КЛЕТКИ</div>
+    <b style="color:#00ff88">🟢 Зелёные (1–20)</b> — лёгкие вопросы, +1 ⏳<br>
+    <b style="color:#ffd700">🟡 Жёлтые (21–40)</b> — средние вопросы, +2 ⏳<br>
+    <b style="color:#ff4455">🔴 Красные (41–59)</b> — сложные вопросы, +3 ⏳<br>
+    <b style="color:#bb88ff">⚡ Парадокс (12,24,36,48)</b> — бонус или штраф<br>
+    <b style="color:#ffd700">👑 Клетка 60</b> — Финальный Экзамен из 5 вопросов!
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🏆 ФИНАЛ</div>
+    На клетке 60 — ответь на 5 вопросов подряд. За каждый верный +3 ⏳. Пройди экзамен — и ты Властелин Времени!
   </div>
   <button class="btn" style="margin-top:16px;border-color:var(--dg);color:var(--dg);" onclick="showS('vl-menu')">[ ← НАЗАД ]</button>
 </div>
-
 
 <!-- ══ ХРАНИТЕЛИ ВРЕМЕНИ — МЕНЮ ══ -->
 <div class="screen hidden" id="hk-menu">
@@ -1138,143 +1117,368 @@ document.body.addEventListener('click',initA,{once:true});
 drawTicks();updMenuCoins();checkIntro();
 
 /* ══ ВЛАСТЕЛИНИ ВРЕМЕНИ ══ */
-const VL_CARDS = [
-  {cat:'green', pts:1, sector:'🟢 ЗЕЛЁНЫЙ СЕКТОР', q:'Уроки начинаются в 08:30. Урок — 45 мин, перемена — 10 мин. Во сколько закончится 1-й урок и начнётся 2-й?', a:'1-й закончится в 09:15, 2-й начнётся в 09:25'},
-  {cat:'green', pts:1, sector:'🟢 ЗЕЛЁНЫЙ СЕКТОР', q:'Часы показывают 17:45. Сколько минут до 18:00?', a:'15 минут'},
-  {cat:'green', pts:1, sector:'🟢 ЗЕЛЁНЫЙ СЕКТОР', q:'Мультфильм 1 ч 25 мин включили в 15:10. Когда финальные титры?', a:'В 16:35'},
-  {cat:'green', pts:1, sector:'🟢 ЗЕЛЁНЫЙ СЕКТОР', q:'На часах 15:00. Какой угол между стрелками?', a:'90 градусов'},
-  {cat:'yellow', pts:2, sector:'🟡 ЖЁЛТЫЙ СЕКТОР', q:'Сейчас 22:15. Корабль стартует через 3 ч 50 мин. Какое время и какие сутки?', a:'02:05, завтра'},
-  {cat:'yellow', pts:2, sector:'🟡 ЖЁЛТЫЙ СЕКТОР', q:'Замок открывается когда сумма цифр = 10. Сейчас 21:00. Ближайшее время?', a:'21:07 (2+1+0+7=10)'},
-  {cat:'yellow', pts:2, sector:'🟡 ЖЁЛТЫЙ СЕКТОР', q:'Часы отстают 4 мин в сутки. Через сколько дней отставание = 1 час?', a:'15 дней (60÷4=15)'},
-  {cat:'red', pts:3, sector:'🔴 КРАСНЫЙ СЕКТОР', q:'Через 100 часов после полуночи 1 января — какое число и время?', a:'5 января, 04:00 (100ч = 4 суток 4 часа)'},
-  {cat:'red', pts:3, sector:'🔴 КРАСНЫЙ СЕКТОР', q:'Триатлонист финишировал за 10 000 секунд. Переведи в ч/мин/сек.', a:'2 часа 46 минут 40 секунд'},
-  {cat:'red', pts:3, sector:'🔴 КРАСНЫЙ СЕКТОР', q:'Полтрети часа — сколько минут?', a:'10 минут (1/3 ч = 20 мин, ÷2 = 10)'},
-  {cat:'paradox', pts:3, sector:'⚡ ВРЕМЕННОЙ ПАРАДОКС', q:'🪞 Зеркальное время. Часы показывают 19:20, в зеркале стрелки отразились. Какое время?', a:'Около 04:37 — для игры засчитывается «около половины пятого»'},
-  {cat:'paradox', pts:0, sector:'⚡ ВРЕМЕННОЙ ПАРАДОКС', q:'📅 Что дольше: треть века или 350 месяцев?', a:'Треть века — 33 г 4 мес = 400 месяцев. Треть века дольше! (+удвоение баллов)'},
+/* ══ ВЛАСТЕЛИНЫ ВРЕМЕНИ — ПОЛНАЯ ИГРА ══ */
+const VL_Q = {
+  green: [
+    {q:'Сейчас 15:00. Сколько будет через 1 час?', opts:['14:00','15:30','16:00','17:00'], ans:2, exp:'15:00 + 1 час = 16:00'},
+    {q:'Сколько минут в одном часе?', opts:['30','60','100','120'], ans:1, exp:'В 1 часе ровно 60 минут'},
+    {q:'Сколько часов в сутках?', opts:['12','20','24','48'], ans:2, exp:'В сутках 24 часа'},
+    {q:'Урок начался в 08:00 и длился 1 час. Когда закончился?', opts:['08:30','09:00','09:30','10:00'], ans:1, exp:'08:00 + 1 час = 09:00'},
+    {q:'На часах 3 часа дня. Это сколько по 24-часовому формату?', opts:['03:00','13:00','15:00','30:00'], ans:2, exp:'3 часа дня = 15:00'},
+    {q:'Сейчас 07:00. Сколько будет через 2 часа?', opts:['08:00','09:00','05:00','10:00'], ans:1, exp:'07:00 + 2 часа = 09:00'},
+    {q:'Сколько секунд в одной минуте?', opts:['10','30','60','100'], ans:2, exp:'В 1 минуте 60 секунд'},
+    {q:'Сейчас 10:30. Сколько будет через 30 минут?', opts:['10:00','11:00','11:30','10:60'], ans:1, exp:'10:30 + 30 минут = 11:00'},
+    {q:'Сколько минут в полчаса?', opts:['15','20','25','30'], ans:3, exp:'Полчаса = 30 минут'},
+    {q:'Сейчас 06:00 утра. Сколько часов прошло с полуночи?', opts:['4','5','6','7'], ans:2, exp:'С 00:00 до 06:00 — 6 часов'},
+    {q:'На часах 12:00. Это…?', opts:['Полночь','Полдень','Утро','Вечер'], ans:1, exp:'12:00 — это полдень (середина дня)'},
+    {q:'Сейчас 09:15. Сколько минут прошло с 9 утра?', opts:['5','10','15','20'], ans:2, exp:'С 09:00 до 09:15 — 15 минут'},
+  ],
+  yellow: [
+    {q:'Сейчас 18:20. Сколько будет через 40 минут?', opts:['18:60','19:00','19:20','18:80'], ans:1, exp:'18:20 + 40 мин = 19:00'},
+    {q:'Урок начался в 09:00 и длился 45 минут. Когда закончился?', opts:['09:40','09:45','09:50','10:00'], ans:1, exp:'09:00 + 45 мин = 09:45'},
+    {q:'Сколько минут прошло от 14:10 до 14:50?', opts:['30','35','40','45'], ans:2, exp:'14:50 − 14:10 = 40 минут'},
+    {q:'Через сколько часов наступит полночь, если сейчас 20:00?', opts:['2','3','4','5'], ans:2, exp:'С 20:00 до 00:00 = 4 часа'},
+    {q:'Сейчас 11:45. Сколько минут до полудня?', opts:['10','15','20','25'], ans:1, exp:'С 11:45 до 12:00 = 15 минут'},
+    {q:'Сколько часов в двух сутках?', opts:['24','36','48','72'], ans:2, exp:'2 × 24 часа = 48 часов'},
+    {q:'Поезд едет 2 часа. Отправился в 13:00. Когда прибудет?', opts:['14:00','15:00','16:00','13:20'], ans:1, exp:'13:00 + 2 часа = 15:00'},
+    {q:'Сейчас 07:30. Прошло 1 час 15 минут. Сколько сейчас?', opts:['08:30','08:45','09:00','08:15'], ans:1, exp:'07:30 + 1ч 15мин = 08:45'},
+    {q:'Сколько минут в 2 часах?', opts:['60','100','120','150'], ans:2, exp:'2 часа × 60 мин = 120 минут'},
+    {q:'Сейчас 22:00. Когда будет полночь? Через сколько часов?', opts:['1','2','3','4'], ans:1, exp:'С 22:00 до 00:00 = 2 часа'},
+  ],
+  red: [
+    {q:'Мультфильм 1 ч 30 мин. Начался в 16:15. Когда закончится?', opts:['17:15','17:30','17:45','18:00'], ans:2, exp:'16:15 + 1ч30мин = 17:45'},
+    {q:'Поезд отправился в 13:40 и ехал 2 ч 25 мин. Когда прибыл?', opts:['15:55','16:00','16:05','16:15'], ans:2, exp:'13:40 + 2ч 25мин = 16:05'},
+    {q:'Сколько минут в трёх часах?', opts:['120','150','180','200'], ans:2, exp:'3 × 60 = 180 минут'},
+    {q:'150 минут — это сколько часов и минут?', opts:['1ч 50мин','2ч 30мин','2ч 50мин','3ч'], ans:1, exp:'150 ÷ 60 = 2 часа и 30 минут'},
+    {q:'Урок начался в 08:30, перемена 10 минут, следующий урок. Когда начнётся 2-й урок?', opts:['09:15','09:20','09:25','09:30'], ans:2, exp:'08:30 + 45мин урок = 09:15, +10мин = 09:25'},
+    {q:'Сейчас 23:30. Через 2 часа какое время?', opts:['01:30','00:30','01:00','02:30'], ans:0, exp:'23:30 + 2ч = 01:30 следующего дня'},
+    {q:'Сколько часов и минут в 200 минутах?', opts:['2ч 20мин','3ч 20мин','3ч 40мин','2ч 40мин'], ans:1, exp:'200 ÷ 60 = 3ч и 20мин'},
+    {q:'Самолёт летит 3ч 45мин. Вылет в 10:15. Когда прилетит?', opts:['13:00','14:00','13:45','14:15'], ans:1, exp:'10:15 + 3ч45мин = 14:00'},
+  ],
+  exam: [
+    {q:'Сколько минут в 1,5 часах?', opts:['80','90','100','75'], ans:1, exp:'1,5 × 60 = 90 минут'},
+    {q:'Сейчас 20:45. Через 1 ч 30 мин?', opts:['21:45','22:15','22:45','23:15'], ans:1, exp:'20:45 + 1ч30мин = 22:15'},
+    {q:'Поезд едет 4ч 10мин. Прибыл в 18:00. Когда отправился?', opts:['13:40','13:50','14:00','14:10'], ans:1, exp:'18:00 − 4ч10мин = 13:50'},
+    {q:'Фильм 2ч 15мин. Начался в 19:30. Когда кончится?', opts:['21:30','21:45','22:00','21:15'], ans:1, exp:'19:30 + 2ч15мин = 21:45'},
+    {q:'Сколько минут от 09:20 до 11:05?', opts:['95','100','105','110'], ans:2, exp:'11:05 − 09:20 = 1ч45мин = 105 минут'},
+    {q:'В 3 сутках сколько часов?', opts:['48','60','72','96'], ans:2, exp:'3 × 24 = 72 часа'},
+    {q:'Через сколько минут 14:35 станет 15:10?', opts:['25','30','35','40'], ans:2, exp:'15:10 − 14:35 = 35 минут'},
+  ]
+};
+
+const VL_PARADOX = [
+  {text:'⚡ Дополнительный бросок кубика! Бросай ещё раз!', effect:'extra_roll'},
+  {text:'💰 Получи 2 жетона Песка Времени!', effect:'coins_2'},
+  {text:'⏩ Перейди вперёд на 3 клетки!', effect:'forward_3'},
+  {text:'⏪ Вернись назад на 2 клетки.', effect:'back_2'},
+  {text:'⏸ Пропусти следующий ход.', effect:'skip'},
+  {text:'🌟 Ответь на бонусный вопрос — получи двойную награду!', effect:'bonus_q'},
 ];
 
-let vlSand = 0;
-let vlDeck = [];
-let vlCurrent = null;
-let vlAnswerShown = false;
+const VL_CELL_TYPE = (n) => {
+  if([12,24,36,48].includes(n)) return 'paradox';
+  if(n===60) return 'finish';
+  if(n<=20) return 'green';
+  if(n<=40) return 'yellow';
+  return 'red';
+};
+const VL_CELL_PTS = {green:1,yellow:2,red:3};
 
-function vlShuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+let vlState = {
+  pos:0, sand:0, phase:'start',
+  skipNext:false, extraRoll:false,
+  examQ:0, examCorrect:0,
+  currentQ:null, currentP:null,
+  diceVal:0
+};
 
+function vlRnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function vlShuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function vlReveal(btn){
-  const card = btn.closest('.vl-card');
-  const ans = card.querySelector('.vl-answer');
-  if(!ans) return;
-  ans.style.display = 'block';
-  btn.textContent = '[ ✓ ОТВЕТ ОТКРЫТ ]';
-  btn.style.opacity = '.4';
-  btn.disabled = true;
+function vlStart(){
+  vlState={pos:0,sand:0,phase:'start',skipNext:false,extraRoll:false,examQ:0,examCorrect:0,currentQ:null,currentP:null,diceVal:0};
+  showS('vl-game');
+  document.getElementById('vl-question-card').style.display='block';
+  document.getElementById('vl-paradox-card').style.display='none';
+  document.getElementById('vl-exam-area').style.display='none';
+  document.getElementById('vl-win-screen').style.display='none';
+  document.getElementById('vl-card-area').style.display='flex';
+  document.getElementById('vl-card-area').style.flexDirection='column';
+  vlUpdateHUD();
+  vlDrawBoard();
+  vlShowStartCard();
+  // Resize canvas
+  setTimeout(vlDrawBoard,50);
 }
 
-function vlGameDeal(){
-  if(vlDeck.length===0) vlDeck = vlShuffle([...VL_CARDS]);
-  vlCurrent = vlDeck.pop();
-  vlAnswerShown = false;
-
-  const colorMap = {green:'#00ff88',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
-  const c = colorMap[vlCurrent.cat]||'#aaa';
-
-  document.getElementById('vl-card-display').style.borderColor = c;
-  document.getElementById('vl-cd-sector').innerHTML = `<span style="color:${c}">${vlCurrent.sector}</span>`;
-
-  const ptsBadge = document.getElementById('vl-cd-pts');
-  ptsBadge.style.display = 'block';
-  ptsBadge.textContent = vlCurrent.pts>0 ? `+${vlCurrent.pts} ⏳` : '⚡';
-  ptsBadge.style.background = c+'33';
-  ptsBadge.style.color = c;
-
-  document.getElementById('vl-cd-q').textContent = vlCurrent.q;
-  document.getElementById('vl-cd-answer').style.display = 'none';
-  document.getElementById('vl-cd-answer').textContent = '';
-  document.getElementById('vl-cd-reveal-btn').style.display = 'block';
-  document.getElementById('vl-cd-btns').style.display = 'none';
-  document.getElementById('vl-cd-pts-label').textContent = '+'+vlCurrent.pts+' ⏳';
-  document.getElementById('vl-next-btn').style.display = 'none';
+function vlShowStartCard(){
+  document.getElementById('vl-dice-area').style.display='none';
+  document.getElementById('vl-explanation').style.display='none';
+  document.getElementById('vl-answers').innerHTML='';
+  document.getElementById('vl-q-badge').textContent='⏳ НАЧНИ ПУТЕШЕСТВИЕ';
+  document.getElementById('vl-q-badge').style.background='rgba(0,255,136,.15)';
+  document.getElementById('vl-q-badge').style.color='#00ff88';
+  document.getElementById('vl-q-text').textContent='Ты на старте! Ответь на вопрос — и кубик бросит тебя вперёд по циферблату времени!';
+  document.getElementById('vl-question-card').style.borderColor='#1a2a4a';
+  document.getElementById('vl-action-btn').style.display='block';
+  document.getElementById('vl-action-btn').textContent='[ 🎲 НАЧАТЬ ХОД ]';
+  vlState.phase='start';
 }
 
-function vlGameReveal(){
-  if(!vlCurrent) return;
-  vlAnswerShown = true;
-  document.getElementById('vl-cd-answer').textContent = '✓ ' + vlCurrent.a;
-  document.getElementById('vl-cd-answer').style.display = 'block';
-  document.getElementById('vl-cd-reveal-btn').style.display = 'none';
-  document.getElementById('vl-cd-btns').style.display = 'flex';
+function vlUpdateHUD(){
+  document.getElementById('vl-h-sand').textContent=vlState.sand;
+  document.getElementById('vl-h-pos').textContent=vlState.pos;
+  document.getElementById('vl-h-left').textContent=Math.max(0,60-vlState.pos);
 }
 
-function vlGameNext(correct){
-  if(!vlCurrent) return;
-  if(correct && vlCurrent.pts>0){
-    vlSand += vlCurrent.pts;
-    document.getElementById('vl-game-sand').textContent = vlSand;
-    document.getElementById('vl-sand-val').textContent = vlSand;
+function vlActionBtn(){
+  if(vlState.phase==='start') vlAskQuestion();
+  else if(vlState.phase==='roll') vlRollDice();
+  else if(vlState.phase==='after_roll') vlShowStartCard();
+  else if(vlState.phase==='paradox_done') vlShowStartCard();
+}
+
+function vlAskQuestion(){
+  if(vlState.skipNext){
+    vlState.skipNext=false;
+    document.getElementById('vl-q-text').textContent='⏸ Твой ход пропущен. Следующий раз — вперёд!';
+    document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
+    vlState.phase='after_roll';
+    return;
   }
-  document.getElementById('vl-cd-btns').style.display = 'none';
-  document.getElementById('vl-next-btn').style.display = 'block';
-  vlCurrent = null;
+  const type=VL_CELL_TYPE(vlState.pos+1);
+  let pool;
+  if(type==='paradox'){vlShowParadox();return;}
+  if(type==='finish'){vlStartExam();return;}
+  pool=type==='green'?VL_Q.green:type==='yellow'?VL_Q.yellow:VL_Q.red;
+  vlState.currentQ=vlRnd(pool);
+  vlRenderQuestion(vlState.currentQ,type,false);
+  vlState.phase='question';
 }
 
-
-/* ══ ВЛАСТЕЛИНЫ ВРЕМЕНИ — ИГРА (screen-режим) ══ */
-let vl2Sand = 0, vl2Deck = [], vl2Current = null;
-const VL_COLOR = {green:'#00ff88',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
-
-function vlGameReset(){
-  vl2Sand = 0; vl2Deck = []; vl2Current = null;
-  document.getElementById('vl-game-sand2').textContent = '0';
-  document.getElementById('vl-cd-q2').textContent = 'Нажми «Следующая карта» чтобы начать!';
-  document.getElementById('vl-cd-sector2').textContent = '—';
-  document.getElementById('vl-cd-sector2').style.color = '#556';
-  document.getElementById('vl-cd-pts2').style.display = 'none';
-  document.getElementById('vl-cd-reveal2').style.display = 'none';
-  document.getElementById('vl-cd-ans2').style.display = 'none';
-  document.getElementById('vl-cd-btns2').style.display = 'none';
-  document.getElementById('vl-deal-btn').style.display = 'block';
-  document.getElementById('vl-card-display2').style.borderColor = '#1a2a4a';
+function vlRenderQuestion(q,type,isExam){
+  const colors={green:'#00ff88',yellow:'#ffd700',red:'#ff4455',exam:'#bb88ff'};
+  const labels={green:'🟢 ЛЁГКОЕ +1⏳',yellow:'🟡 СРЕДНЕЕ +2⏳',red:'🔴 СЛОЖНОЕ +3⏳',exam:'👑 ЭКЗАМЕН +3⏳'};
+  const c=colors[type]||'#aaa';
+  const badge=document.getElementById('vl-q-badge');
+  badge.textContent=labels[type]||'⏳';
+  badge.style.background=c+'22';badge.style.color=c;
+  document.getElementById('vl-question-card').style.borderColor=c;
+  document.getElementById('vl-q-text').textContent=q.q;
+  document.getElementById('vl-explanation').style.display='none';
+  document.getElementById('vl-dice-area').style.display='none';
+  const ans=document.getElementById('vl-answers');
+  ans.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='vl-opt';b.textContent=opt;
+    b.onclick=()=>isExam?vlExamAnswer(i):vlCheckAnswer(i,type);
+    ans.appendChild(b);
+  });
+  document.getElementById('vl-action-btn').style.display='none';
 }
 
-function vlGameDeal2(){
-  if(vl2Deck.length === 0) vl2Deck = VL_CARDS.slice().sort(()=>Math.random()-.5);
-  vl2Current = vl2Deck.pop();
-  const c = VL_COLOR[vl2Current.cat] || '#aaa';
-  document.getElementById('vl-card-display2').style.borderColor = c;
-  document.getElementById('vl-cd-sector2').innerHTML = '<span style="color:'+c+'">'+vl2Current.sector+'</span>';
-  const pts = document.getElementById('vl-cd-pts2');
-  pts.style.display = 'block';
-  pts.textContent = vl2Current.pts > 0 ? '+'+vl2Current.pts+' ⏳' : '⚡';
-  pts.style.background = c+'33'; pts.style.color = c;
-  document.getElementById('vl-cd-q2').textContent = vl2Current.q;
-  document.getElementById('vl-pts-lbl2').textContent = '+'+vl2Current.pts+' ⏳';
-  document.getElementById('vl-cd-ans2').style.display = 'none';
-  document.getElementById('vl-cd-ans2').style.borderColor = c;
-  document.getElementById('vl-cd-reveal2').style.display = 'block';
-  document.getElementById('vl-cd-btns2').style.display = 'none';
-  document.getElementById('vl-deal-btn').style.display = 'none';
-}
-
-function vlGameReveal2(){
-  if(!vl2Current) return;
-  document.getElementById('vl-cd-ans2').textContent = '✓ ' + vl2Current.a;
-  document.getElementById('vl-cd-ans2').style.display = 'block';
-  document.getElementById('vl-cd-reveal2').style.display = 'none';
-  document.getElementById('vl-cd-btns2').style.display = 'flex';
-}
-
-function vlGameNext2(correct){
-  if(!vl2Current) return;
-  if(correct && vl2Current.pts > 0){
-    vl2Sand += vl2Current.pts;
-    document.getElementById('vl-game-sand2').textContent = vl2Sand;
+function vlCheckAnswer(idx,type){
+  const q=vlState.currentQ;
+  const btns=document.querySelectorAll('#vl-answers .vl-opt');
+  btns.forEach(b=>b.disabled=true);
+  if(idx===q.ans){
+    btns[idx].classList.add('correct');
+    const pts=VL_CELL_PTS[type]||1;
+    vlState.sand+=pts;
+    vlUpdateHUD();
+    document.getElementById('vl-explanation').innerHTML='✅ Верно! <span style="color:#ffd700">+'+pts+'⏳</span>';
+    document.getElementById('vl-explanation').style.display='block';
+    document.getElementById('vl-explanation').style.borderColor='#00ff88';
+    setTimeout(()=>{
+      document.getElementById('vl-dice-area').style.display='block';
+      document.getElementById('vl-action-btn').style.display='block';
+      document.getElementById('vl-action-btn').textContent='[ 🎲 БРОСИТЬ КУБИК ]';
+      vlState.phase='roll';
+    },700);
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+    document.getElementById('vl-explanation').innerHTML='❌ Неверно. <b style="color:#ffd700">'+q.exp+'</b>';
+    document.getElementById('vl-explanation').style.display='block';
+    document.getElementById('vl-explanation').style.borderColor='#ff4455';
+    document.getElementById('vl-action-btn').style.display='block';
+    document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
+    vlState.phase='after_roll';
   }
-  document.getElementById('vl-cd-btns2').style.display = 'none';
-  document.getElementById('vl-deal-btn').style.display = 'block';
-  vl2Current = null;
 }
 
+function vlRollDice(){
+  const dice=document.getElementById('vl-dice-num');
+  const faces=['⚀','⚁','⚂','⚃','⚄','⚅'];
+  let count=0;
+  const val=1+Math.floor(Math.random()*6);
+  vlState.diceVal=val;
+  const timer=setInterval(()=>{
+    dice.textContent=faces[Math.floor(Math.random()*6)];
+    if(++count>=12){clearInterval(timer);dice.textContent=faces[val-1];vlAfterRoll(val);}
+  },80);
+}
+
+function vlAfterRoll(val){
+  document.getElementById('vl-dice-result').textContent='Выпало '+val+'! Двигаешься на '+val+' клеток вперёд.';
+  vlState.pos=Math.min(60,vlState.pos+val);
+  vlUpdateHUD();
+  vlDrawBoard();
+  document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
+  vlState.phase='after_roll';
+  if(vlState.pos>=60){
+    setTimeout(vlStartExam,600);
+  }
+}
+
+function vlShowParadox(){
+  const p=vlRnd(VL_PARADOX);
+  vlState.currentP=p;
+  document.getElementById('vl-question-card').style.display='none';
+  document.getElementById('vl-paradox-card').style.display='block';
+  document.getElementById('vl-paradox-text').textContent=p.text;
+  document.getElementById('vl-action-btn').style.display='block';
+  document.getElementById('vl-action-btn').textContent='[ ✓ ПОНЯЛ ]';
+  vlState.phase='paradox';
+  // Применяем эффект
+  const ef=p.effect;
+  if(ef==='coins_2'){vlState.sand+=2;vlUpdateHUD();}
+  else if(ef==='forward_3'){vlState.pos=Math.min(60,vlState.pos+3);vlUpdateHUD();vlDrawBoard();}
+  else if(ef==='back_2'){vlState.pos=Math.max(0,vlState.pos-2);vlUpdateHUD();vlDrawBoard();}
+  else if(ef==='skip'){vlState.skipNext=true;}
+  else if(ef==='extra_roll'||ef==='bonus_q'){
+    // Даём доп вопрос
+    const q=vlRnd(VL_Q.yellow);
+    vlState.currentQ=q;
+    setTimeout(()=>{
+      document.getElementById('vl-paradox-card').style.display='none';
+      document.getElementById('vl-question-card').style.display='block';
+      vlRenderQuestion(q,'yellow',false);
+      vlState.phase='question';
+    },1200);
+    return;
+  }
+  vlState.phase='paradox_done';
+  // После paradox_done кнопка вызывает vlShowStartCard через vlActionBtn
+  document.getElementById('vl-action-btn').onclick=()=>{
+    document.getElementById('vl-paradox-card').style.display='none';
+    document.getElementById('vl-question-card').style.display='block';
+    vlShowStartCard();
+    document.getElementById('vl-action-btn').onclick=vlActionBtn;
+  };
+}
+
+/* ФИНАЛЬНЫЙ ЭКЗАМЕН */
+function vlStartExam(){
+  vlState.pos=60;vlUpdateHUD();vlDrawBoard();
+  vlState.phase='exam';
+  vlState.examQ=0;vlState.examCorrect=0;
+  vlState.examPool=vlShuffle(VL_Q.exam).slice(0,5);
+  document.getElementById('vl-question-card').style.display='none';
+  document.getElementById('vl-paradox-card').style.display='none';
+  document.getElementById('vl-exam-area').style.display='block';
+  document.getElementById('vl-action-btn').style.display='none';
+  vlNextExamQ();
+}
+
+function vlNextExamQ(){
+  if(vlState.examQ>=5){vlShowWin();return;}
+  const q=vlState.examPool[vlState.examQ];
+  document.getElementById('vl-exam-q').textContent=vlState.examQ+1;
+  document.getElementById('vl-exam-progress').style.color='#ffd700';
+  document.getElementById('vl-exam-text').textContent=q.q;
+  const ans=document.getElementById('vl-exam-answers');
+  ans.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='vl-opt';b.textContent=opt;
+    b.onclick=()=>vlExamAnswer(i);
+    ans.appendChild(b);
+  });
+}
+
+function vlExamAnswer(idx){
+  const q=vlState.examPool[vlState.examQ];
+  const btns=document.querySelectorAll('#vl-exam-answers .vl-opt');
+  btns.forEach(b=>b.disabled=true);
+  if(idx===q.ans){
+    btns[idx].classList.add('correct');
+    vlState.sand+=3;vlUpdateHUD();
+    vlState.examCorrect++;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+  }
+  vlState.examQ++;
+  setTimeout(vlNextExamQ,900);
+}
+
+function vlShowWin(){
+  document.getElementById('vl-exam-area').style.display='none';
+  document.getElementById('vl-win-screen').style.display='block';
+  document.getElementById('vl-win-sand').innerHTML=
+    '⏳ Жетонов собрано: <b style="color:#ffd700">'+vlState.sand+'</b><br>'+
+    '✅ Правильных ответов в экзамене: <b style="color:#00ff88">'+vlState.examCorrect+'/5</b>';
+}
+
+/* ИГРОВОЕ ПОЛЕ */
+function vlDrawBoard(){
+  const canvas=document.getElementById('vl-board-canvas');
+  if(!canvas)return;
+  const wrap=document.getElementById('vl-board-wrap');
+  const size=wrap.offsetWidth;
+  canvas.width=size;canvas.height=size;
+  const ctx=canvas.getContext('2d');
+  const cx=size/2,cy=size/2,R=size*0.44,r=size*0.08;
+
+  // Фон
+  ctx.fillStyle='#07071a';ctx.fillRect(0,0,size,size);
+
+  // Центральный циферблат
+  const grd=ctx.createRadialGradient(cx,cy,r*0.5,cx,cy,r*1.8);
+  grd.addColorStop(0,'#1a1400');grd.addColorStop(1,'#0a0a1a');
+  ctx.beginPath();ctx.arc(cx,cy,r*1.9,0,Math.PI*2);
+  ctx.fillStyle=grd;ctx.fill();
+  ctx.strokeStyle='#ffd700';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#ffd700';ctx.font='bold '+(size*.028)+'px Orbitron,monospace';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('ФИНАЛ',cx,cy-size*.018);
+  ctx.fillText('ЭКЗАМЕН',cx,cy+size*.018);
+
+  // 60 клеток
+  for(let i=1;i<=60;i++){
+    const angle=(i/60)*Math.PI*2-Math.PI/2;
+    const nx=cx+R*Math.cos(angle),ny=cy+R*Math.sin(angle);
+    const cr=size*0.038;
+    const type=VL_CELL_TYPE(i);
+    // Тень/свечение для активной
+    if(i===vlState.pos){
+      ctx.beginPath();ctx.arc(nx,ny,cr*1.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,215,0,0.18)';ctx.fill();
+    }
+    // Цвет клетки
+    let bg,border;
+    if(type==='paradox'){bg='rgba(120,60,200,.25)';border='#bb88ff';}
+    else if(type==='finish'){bg='rgba(255,215,0,.3)';border='#ffd700';}
+    else if(type==='green'){bg='rgba(0,180,80,.2)';border='#00cc66';}
+    else if(type==='yellow'){bg='rgba(220,170,0,.22)';border='#ccaa00';}
+    else{bg='rgba(200,40,50,.22)';border='#cc3344';}
+    ctx.beginPath();ctx.arc(nx,ny,cr,0,Math.PI*2);
+    ctx.fillStyle=bg;ctx.fill();
+    ctx.strokeStyle=i===vlState.pos?'#ffd700':border;
+    ctx.lineWidth=i===vlState.pos?2:1;ctx.stroke();
+    // Текст в клетке
+    ctx.fillStyle=i===vlState.pos?'#ffd700':'#99aacc';
+    ctx.font=(i===vlState.pos?'bold ':'')+(size*.022)+'px Orbitron,monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    if(type==='paradox')ctx.fillText('⚡',nx,ny);
+    else if(type==='finish')ctx.fillText('👑',nx,ny);
+    else ctx.fillText(i,nx,ny);
+  }
+}
+
+window.addEventListener('resize',()=>{if(document.getElementById('vl-game') && !document.getElementById('vl-game').classList.contains('hidden'))vlDrawBoard();});
 
 /* ══ ХРАНИТЕЛИ ВРЕМЕНИ — ИГРА ══ */
 const HK_CARDS = [
