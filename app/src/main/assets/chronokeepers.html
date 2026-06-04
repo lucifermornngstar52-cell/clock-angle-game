@@ -825,22 +825,63 @@ function loadFinalQuestion() {
 // ═══════════════════════════════════════════════════════
 // END GAME
 // ═══════════════════════════════════════════════════════
-function endGame(win, reason='') {
-  send({type:'gameOver', win: !win}); // сообщаем сопернику что он проиграл
-  clearInterval(finalTimer);
-  showScreen('sEnd');
-  document.getElementById('endBadge').textContent = win ? '🏆' : '💔';
-  document.getElementById('endTitle').textContent = win ? 'ПОБЕДА!' : 'ПОРАЖЕНИЕ';
-  document.getElementById('endSub').textContent = win
-    ? 'Главный Хранитель Времени'
-    : (reason || 'Соперник оказался быстрее');
+// Таблица титулов Хранителей Времени
+const CK_TITLES = [
+  {wins:1, icon:'🎓', title:'Бакалавр времени'},
+  {wins:2, icon:'🌀', title:'Специалист временной петли'},
+  {wins:3, icon:'🌌', title:'Магистр временного хаоса'},
+  {wins:4, icon:'⚛️', title:'Академик часовой переменной'},
+  {wins:5, icon:'👑', title:'Профессор минутного постоянства'},
+];
+function getCkTitle(wins) {
+  let best = null;
+  for(const t of CK_TITLES) { if(wins >= t.wins) best = t; }
+  return best;
+}
 
-  document.getElementById('endStats').innerHTML = `
-    <div class="stat-row"><span>💎 Кристаллов</span><span style="color:var(--gold)">${myCrystals}/5</span></div>
-    <div class="stat-row"><span>✓ Правильных ответов</span><span style="color:var(--green)">${myScore}</span></div>
-    <div class="stat-row"><span>⏰ Финальное время</span><span style="color:var(--c1)">${fmtTime(myTime)}</span></div>
-    <div class="stat-row" style="border:none;padding:0;"><span>👤 Соперник</span><span style="color:var(--c3)">${opName}</span></div>
-  `;
+function endGame(win, reason='') {
+  send({type:'gameOver', win: !win});
+  clearInterval(finalTimer);
+
+  let ckWins = parseInt(localStorage.getItem('cag_ck_wins') || '0');
+  let newTitle = null;
+  if(win) {
+    ckWins++;
+    localStorage.setItem('cag_ck_wins', ckWins);
+    newTitle = getCkTitle(ckWins);
+  }
+
+  showScreen('sEnd');
+  document.getElementById('endBadge').textContent = win ? (newTitle ? newTitle.icon : '🏆') : '💔';
+  document.getElementById('endTitle').textContent = win ? 'ПОБЕДА!' : 'ПОРАЖЕНИЕ';
+  let subtitle = win ? 'Главный Хранитель Времени' : (reason || 'Соперник оказался быстрее');
+  if(win && newTitle) subtitle = newTitle.title;
+  document.getElementById('endSub').textContent = subtitle;
+
+  // Показываем уведомление о новом достижении
+  if(win && newTitle) {
+    const prevTitle = getCkTitle(ckWins - 1);
+    if(!prevTitle || prevTitle.title !== newTitle.title) {
+      setTimeout(() => {
+        const toast = document.getElementById('toast');
+        if(toast) {
+          toast.textContent = '🏆 Новое достижение: ' + newTitle.icon + ' ' + newTitle.title;
+          toast.classList.remove('hidden');
+          setTimeout(() => toast.classList.add('hidden'), 4500);
+        }
+      }, 900);
+    }
+  }
+
+  const nextTitle = CK_TITLES.find(t => t.wins === ckWins + 1);
+  const statsHtml = [
+    '<div class="stat-row"><span>💎 Кристаллов</span><span style="color:var(--gold)">' + myCrystals + '/5</span></div>',
+    '<div class="stat-row"><span>✓ Правильных ответов</span><span style="color:var(--green)">' + myScore + '</span></div>',
+    '<div class="stat-row"><span>🏆 Побед в игре</span><span style="color:var(--c1)">' + ckWins + '</span></div>',
+    nextTitle ? '<div class="stat-row"><span>🎯 Следующий титул</span><span style="color:rgba(255,255,255,.4);font-size:.58rem;">' + nextTitle.icon + ' ' + nextTitle.title + '</span></div>' : '',
+    '<div class="stat-row" style="border:none;padding:0;"><span>👤 Соперник</span><span style="color:var(--c3)">' + opName + '</span></div>',
+  ].join('');
+  document.getElementById('endStats').innerHTML = statsHtml;
 }
 
 function resetGame() {
