@@ -1261,11 +1261,29 @@ function vlShowStartCard(){
   document.getElementById('vl-dice-area').style.display='none';
   document.getElementById('vl-explanation').style.display='none';
   document.getElementById('vl-answers').innerHTML='';
-  document.getElementById('vl-q-badge').textContent='⏳ НАЧНИ ПУТЕШЕСТВИЕ';
-  document.getElementById('vl-q-badge').style.background='rgba(0,255,136,.15)';
-  document.getElementById('vl-q-badge').style.color='#00ff88';
-  document.getElementById('vl-q-text').textContent='Ты на старте! Ответь на вопрос — и кубик бросит тебя вперёд по циферблату времени!';
-  document.getElementById('vl-question-card').style.borderColor='#1a2a4a';
+  const pos = vlState.pos;
+  const nextType = VL_CELL_TYPE(pos + 1);
+  const typeInfo = {
+    green:  {badge:'🟢 ЗЕЛЁНЫЙ СЕКТОР — лёгкий (+1⏳)', color:'#00ff88', bg:'rgba(0,255,136,.12)',
+             hint:'Следующая клетка: простые задачи на время'},
+    yellow: {badge:'🟡 ЖЁЛТЫЙ СЕКТОР — средний (+2⏳)', color:'#ffd700', bg:'rgba(255,215,0,.12)',
+             hint:'Следующая клетка: задачи посложнее'},
+    red:    {badge:'🔴 КРАСНЫЙ СЕКТОР — сложный (+3⏳)', color:'#ff4455', bg:'rgba(255,68,85,.12)',
+             hint:'Следующая клетка: трудные задачи!'},
+    paradox:{badge:'⚡ ПАРАДОКС — особая клетка', color:'#bb88ff', bg:'rgba(187,136,255,.12)',
+             hint:'Следующая клетка: карта Временного Парадокса!'},
+    finish: {badge:'🏁 ФИНИШ — итоговый экзамен!', color:'#ffffff', bg:'rgba(255,255,255,.1)',
+             hint:'Ты у финиша! Тебя ждёт экзамен.'},
+  };
+  const info = typeInfo[nextType] || typeInfo.green;
+  document.getElementById('vl-q-badge').textContent = info.badge;
+  document.getElementById('vl-q-badge').style.background = info.bg;
+  document.getElementById('vl-q-badge').style.color = info.color;
+  document.getElementById('vl-q-text').textContent =
+    pos === 0
+      ? 'Ты на старте! Ответь на вопрос — кубик двинет тебя вперёд. ' + info.hint
+      : 'Клетка ' + pos + '/60. ' + info.hint + ' Готов?';
+  document.getElementById('vl-question-card').style.borderColor = info.color;
   document.getElementById('vl-action-btn').style.display='block';
   document.getElementById('vl-action-btn').textContent='[ 🎲 НАЧАТЬ ХОД ]';
   vlState.phase='start';
