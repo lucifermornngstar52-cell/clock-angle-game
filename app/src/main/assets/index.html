@@ -1161,15 +1161,6 @@ let vlAnswerShown = false;
 function vlShuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 
 
-
-
-
-);
-  document.querySelectorAll('.vl-tab').forEach((b,i)=>{
-    b.classList.toggle('active',['browse','game','rules'][i]===name);
-  });
-}
-
 function vlReveal(btn){
   const card = btn.closest('.vl-card');
   const ans = card.querySelector('.vl-answer');
