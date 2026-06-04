@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MATHOPOLY</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+:root{
+  --g:#00ff41;--dg:#008f11;--bg:#0a0a1a;
+  --purple:#7b2fff;--cyan:#00f5ff;--gold:#ffd700;
+  --red:#ff3131;--orange:#ff8c00;--green:#00c853;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Share Tech Mono',monospace;overflow:hidden;}
+
+.screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:12px;overflow-y:auto;}
+.screen.hidden{display:none!important;}
+
+/* ══ ЛОББИ ══ */
+#lobby{gap:14px;background:radial-gradient(ellipse at 50% 30%,rgba(123,47,255,.15) 0%,var(--bg) 70%);}
+.lobby-title{font-family:'Orbitron',monospace;font-size:clamp(1.6rem,7vw,2.4rem);font-weight:900;
+  color:var(--gold);text-shadow:0 0 30px var(--gold),0 0 60px rgba(255,215,0,.4);
+  text-align:center;letter-spacing:4px;}
+.lobby-sub{font-size:.65rem;color:rgba(255,215,0,.6);letter-spacing:3px;text-align:center;}
+.lobby-box{background:rgba(10,10,40,.95);border:1px solid rgba(123,47,255,.5);border-radius:12px;
+  padding:20px;max-width:340px;width:100%;box-shadow:0 0 30px rgba(123,47,255,.2);}
+.lbl{font-size:.6rem;color:var(--purple);letter-spacing:2px;margin-bottom:6px;}
+.inp{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(123,47,255,.4);border-radius:6px;
+  color:#fff;font-family:'Share Tech Mono',monospace;font-size:.95rem;padding:10px 12px;
+  letter-spacing:3px;text-transform:uppercase;outline:none;}
+.inp:focus{border-color:var(--purple);box-shadow:0 0 10px rgba(123,47,255,.3);}
+.mbtn{font-family:'Orbitron',monospace;font-size:.8rem;border-radius:6px;padding:12px;
+  cursor:pointer;letter-spacing:2px;width:100%;text-align:center;transition:all .2s;border:none;}
+.mbtn-gold{background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,215,0,.05));
+  border:2px solid var(--gold)!important;border:none;color:var(--gold);
+  text-shadow:0 0 8px var(--gold);}
+.mbtn-gold:active{background:rgba(255,215,0,.25);}
+.mbtn-purple{background:rgba(123,47,255,.15);border:2px solid var(--purple)!important;border:none;
+  color:var(--purple);text-shadow:0 0 8px var(--purple);}
+.mbtn-purple:active{background:rgba(123,47,255,.3);}
+.mbtn-gray{background:transparent;border:1px solid rgba(255,255,255,.2)!important;border:none;
+  color:rgba(255,255,255,.4);font-size:.7rem;}
+.divider{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.2);font-size:.6rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1);}
+.status-msg{font-size:.7rem;text-align:center;min-height:18px;letter-spacing:1px;}
+.status-ok{color:var(--green);}
+.status-err{color:var(--red);}
+.status-wait{color:var(--cyan);animation:pulse-text 1s infinite;}
+@keyframes pulse-text{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* ══ ИГРОВОЕ ПОЛЕ ══ */
+#game-screen{padding:0;overflow:hidden;background:var(--bg);}
+
+/* Верхняя панель */
+.game-hud{position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 10px;background:rgba(5,5,20,.95);
+  border-bottom:1px solid rgba(123,47,255,.3);}
+.hud-player{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.hud-name{font-family:'Orbitron',monospace;font-size:.55rem;letter-spacing:1px;}
+.hud-score{font-size:.8rem;font-weight:bold;}
+.hud-pos{font-size:.5rem;color:rgba(255,255,255,.4);}
+.hud-turn{font-family:'Orbitron',monospace;font-size:.6rem;text-align:center;
+  color:var(--cyan);text-shadow:0 0 8px var(--cyan);letter-spacing:2px;}
+
+/* Поле — прокручиваемая зона */
+.board-wrap{position:fixed;top:52px;left:0;right:0;bottom:180px;overflow:auto;
+  display:flex;align-items:center;justify-content:center;}
+.board{position:relative;background:rgba(5,5,30,.97);border:2px solid rgba(123,47,255,.4);
+  border-radius:8px;box-shadow:0 0 40px rgba(123,47,255,.2) inset;}
+
+/* Клетки */
+.cell{position:absolute;border:1px solid rgba(255,255,255,.15);border-radius:4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;overflow:hidden;}
+.cell-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;height:100%;padding:2px;}
+.cell-label{font-size:.38rem;text-align:center;line-height:1.2;color:#fff;
+  text-shadow:0 0 4px rgba(255,255,255,.5);font-weight:bold;}
+.cell-icon{font-size:.9rem;margin-bottom:1px;}
+.cell-num{position:absolute;top:2px;left:3px;font-size:.32rem;color:rgba(255,255,255,.3);}
+
+/* Цвета клеток по типу */
+.cell-algebra{background:linear-gradient(135deg,rgba(123,47,255,.35),rgba(60,20,140,.6));
+  border-color:rgba(123,47,255,.5);}
+.cell-geometry{background:linear-gradient(135deg,rgba(0,180,220,.3),rgba(0,80,140,.6));
+  border-color:rgba(0,200,255,.4);}
+.cell-logic{background:linear-gradient(135deg,rgba(0,180,80,.3),rgba(0,80,40,.6));
+  border-color:rgba(0,220,100,.4);}
+.cell-special-red{background:linear-gradient(135deg,rgba(200,30,30,.4),rgba(100,0,0,.6));
+  border-color:rgba(255,50,50,.5);}
+.cell-special-gold{background:linear-gradient(135deg,rgba(200,160,0,.4),rgba(100,80,0,.6));
+  border-color:rgba(255,215,0,.5);}
+.cell-special-orange{background:linear-gradient(135deg,rgba(200,100,0,.4),rgba(100,50,0,.6));
+  border-color:rgba(255,140,0,.5);}
+.cell-start{background:linear-gradient(135deg,rgba(0,255,65,.2),rgba(0,100,30,.5));
+  border-color:var(--g);}
+.cell-finish{background:linear-gradient(135deg,rgba(255,215,0,.3),rgba(150,100,0,.5));
+  border-color:var(--gold);}
+
+/* Центр поля */
+.board-center{position:absolute;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;}
+.center-title{font-family:'Orbitron',monospace;font-weight:900;
+  color:var(--gold);text-shadow:0 0 20px var(--gold),0 0 40px rgba(255,215,0,.5);
+  text-align:center;letter-spacing:3px;}
+.center-sub{font-family:'Orbitron',monospace;
+  color:rgba(255,215,0,.6);letter-spacing:2px;text-align:center;}
+.center-formulas{color:rgba(123,47,255,.4);font-size:.5rem;text-align:center;
+  line-height:1.8;letter-spacing:1px;}
+
+/* Фишки игроков */
+.pawn{position:absolute;width:22px;height:22px;border-radius:50%;border:2px solid;
+  display:flex;align-items:center;justify-content:center;font-size:.7rem;
+  z-index:20;pointer-events:none;transition:all .5s;
+  box-shadow:0 0 10px;font-weight:bold;}
+.pawn-0{background:rgba(123,47,255,.8);border-color:var(--purple);
+  color:#fff;box-shadow:0 0 10px var(--purple);}
+.pawn-1{background:rgba(0,200,255,.8);border-color:var(--cyan);
+  color:#fff;box-shadow:0 0 10px var(--cyan);}
+
+/* ══ НИЖНЯЯ ПАНЕЛЬ ══ */
+.game-bottom{position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:rgba(5,5,20,.97);border-top:1px solid rgba(123,47,255,.3);
+  padding:8px 10px;display:flex;flex-direction:column;gap:6px;}
+.dice-row{display:flex;align-items:center;justify-content:center;gap:12px;}
+.dice-btn{font-family:'Orbitron',monospace;font-size:.75rem;
+  background:rgba(123,47,255,.15);border:2px solid var(--purple);
+  color:var(--purple);border-radius:8px;padding:10px 24px;cursor:pointer;
+  letter-spacing:2px;text-shadow:0 0 8px var(--purple);transition:all .2s;}
+.dice-btn:active{background:rgba(123,47,255,.35);}
+.dice-btn:disabled{opacity:.3;pointer-events:none;}
+.dice-val{font-family:'Orbitron',monospace;font-size:1.8rem;
+  color:var(--gold);text-shadow:0 0 15px var(--gold);min-width:40px;text-align:center;}
+.turn-info{font-size:.6rem;text-align:center;color:rgba(255,255,255,.5);letter-spacing:1px;}
+
+/* ══ МОДАЛ ВОПРОСА ══ */
+#q-modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;padding:16px;}
+#q-modal.hidden{display:none!important;}
+.q-box{background:rgba(5,5,25,.98);border:2px solid var(--purple);border-radius:14px;
+  padding:20px;max-width:380px;width:100%;box-shadow:0 0 40px rgba(123,47,255,.4);}
+.q-cat{font-size:.55rem;color:var(--purple);letter-spacing:3px;margin-bottom:8px;}
+.q-text{font-size:.85rem;color:#fff;line-height:1.6;margin-bottom:14px;}
+.q-timer{font-family:'Orbitron',monospace;font-size:1rem;color:var(--gold);
+  text-align:right;margin-bottom:10px;}
+.q-input{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(123,47,255,.4);
+  border-radius:6px;color:#fff;font-family:'Share Tech Mono',monospace;
+  font-size:1rem;padding:10px 12px;outline:none;margin-bottom:10px;}
+.q-input:focus{border-color:var(--purple);}
+.q-submit{font-family:'Orbitron',monospace;font-size:.75rem;
+  background:rgba(123,47,255,.2);border:2px solid var(--purple);
+  color:var(--purple);border-radius:8px;padding:12px;cursor:pointer;
+  letter-spacing:2px;width:100%;transition:all .2s;}
+.q-submit:active{background:rgba(123,47,255,.4);}
+.q-result{font-family:'Orbitron',monospace;font-size:.9rem;text-align:center;
+  padding:10px;border-radius:6px;margin-top:8px;}
+.q-result.ok{background:rgba(0,255,65,.1);border:1px solid var(--g);color:var(--g);}
+.q-result.bad{background:rgba(255,49,49,.1);border:1px solid var(--red);color:var(--red);}
+
+/* ══ ИТОГ ══ */
+#end-screen{gap:16px;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,0,.1) 0%,var(--bg) 70%);}
+.end-title{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,6vw,2rem);
+  font-weight:900;text-align:center;letter-spacing:3px;}
+.end-box{background:rgba(10,10,30,.97);border:1px solid rgba(255,215,0,.4);
+  border-radius:12px;padding:20px;max-width:340px;width:100%;}
+.end-row{display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:.8rem;}
+
+/* ══ УВЕДОМЛЕНИЕ ══ */
+#toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:200;
+  background:rgba(10,10,30,.97);border:1px solid var(--cyan);border-radius:8px;
+  padding:10px 20px;font-size:.75rem;color:var(--cyan);text-align:center;
+  pointer-events:none;transition:opacity .3s;white-space:nowrap;}
+#toast.hidden{opacity:0;}
+
+@keyframes pawn-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.pawn.active{animation:pawn-bounce .6s infinite;}
+
+/* Подсветка текущей клетки */
+.cell.highlight{box-shadow:0 0 12px rgba(255,215,0,.8);border-color:var(--gold)!important;}
+</style>
+</head>
+<body>
+
+<!-- ══ ТОСТ ══ -->
+<div id="toast" class="hidden"></div>
+
+<!-- ══ ЛОББИ ══ -->
+<div class="screen" id="lobby">
+  <div class="lobby-title">MATHOPOLY</div>
+  <div class="lobby-sub">// МАТЕМАТИКА 9 КЛАСС — КАЗАХСТАН //</div>
+
+  <div class="lobby-box" id="create-box">
+    <div class="lbl">▸ ИМЯ ИГРОКА</div>
+    <input class="inp" id="player-name" placeholder="ТВОЁ ИМЯ" maxlength="10">
+    <br><br>
+    <button class="mbtn mbtn-gold" onclick="createRoom()">[ ⚡ СОЗДАТЬ КОМНАТУ ]</button>
+    <br><br>
+    <div class="divider">или</div>
+    <br>
+    <div class="lbl">▸ КОД КОМНАТЫ</div>
+    <input class="inp" id="room-code-inp" placeholder="XXXX" maxlength="4">
+    <br><br>
+    <button class="mbtn mbtn-purple" onclick="joinRoom()">[ 🔗 ВОЙТИ В КОМНАТУ ]</button>
+    <br><br>
+    <button class="mbtn mbtn-gray" onclick="goMenu()">[ ← НАЗАД ]</button>
+    <div class="status-msg" id="lobby-status"></div>
+  </div>
+</div>
+
+<!-- ══ ОЖИДАНИЕ ══ -->
+<div class="screen hidden" id="waiting-screen">
+  <div class="lobby-title">MATHOPOLY</div>
+  <div class="lobby-box" style="text-align:center;gap:14px;display:flex;flex-direction:column;">
+    <div class="lbl" style="font-size:.65rem;">КОД КОМНАТЫ</div>
+    <div style="font-family:'Orbitron',monospace;font-size:2.5rem;color:var(--gold);
+      text-shadow:0 0 20px var(--gold);letter-spacing:8px;" id="room-code-display">----</div>
+    <div style="font-size:.65rem;color:rgba(255,255,255,.4);">Отправь код другу!</div>
+    <div class="status-msg status-wait" id="wait-status">⏳ ОЖИДАЕМ ВТОРОГО ИГРОКА...</div>
+    <div id="players-list" style="font-size:.7rem;color:rgba(255,255,255,.5);line-height:2;"></div>
+    <button class="mbtn mbtn-gray" onclick="leaveRoom()">[ ✕ ОТМЕНА ]</button>
+  </div>
+</div>
+
+<!-- ══ ИГРОВОЙ ЭКРАН ══ -->
+<div class="screen hidden" id="game-screen">
+  <div class="game-hud" id="game-hud">
+    <div class="hud-player" id="hud-p0">
+      <div class="hud-name" style="color:var(--purple);">🟣 P1</div>
+      <div class="hud-score" id="score-0" style="color:var(--purple);">0 pts</div>
+      <div class="hud-pos" id="pos-0">кл. 0</div>
+    </div>
+    <div class="hud-turn" id="hud-turn">ХОД P1</div>
+    <div class="hud-player" id="hud-p1">
+      <div class="hud-name" style="color:var(--cyan);">🔵 P2</div>
+      <div class="hud-score" id="score-1" style="color:var(--cyan);">0 pts</div>
+      <div class="hud-pos" id="pos-1">кл. 0</div>
+    </div>
+  </div>
+
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
+  </div>
+
+  <div class="game-bottom">
+    <div class="dice-row">
+      <button class="dice-btn" id="dice-btn" onclick="rollDice()">[ 🎲 БРОСИТЬ ]</button>
+      <div class="dice-val" id="dice-val">—</div>
+    </div>
+    <div class="turn-info" id="turn-info">Жди своего хода...</div>
+  </div>
+</div>
+
+<!-- ══ ВОПРОС ══ -->
+<div id="q-modal" class="hidden">
+  <div class="q-box">
+    <div class="q-cat" id="q-cat">АЛГЕБРА</div>
+    <div class="q-text" id="q-text">Вопрос...</div>
+    <div class="q-timer" id="q-timer">⏱ 30</div>
+    <input class="q-input" id="q-input" placeholder="Твой ответ..." type="text">
+    <button class="q-submit" onclick="submitAnswer()">[ ✓ ОТВЕТИТЬ ]</button>
+    <div id="q-result" class="hidden"></div>
+  </div>
+</div>
+
+<!-- ══ ИТОГ ══ -->
+<div class="screen hidden" id="end-screen">
+  <div class="end-title" id="end-title" style="color:var(--gold);">🏆 ПОБЕДА!</div>
+  <div class="end-box">
+    <div class="end-row"><span>Победитель</span><span id="end-winner" style="color:var(--gold);">—</span></div>
+    <div class="end-row"><span id="end-p0-name">P1</span><span id="end-p0-score" style="color:var(--purple);">0</span></div>
+    <div class="end-row"><span id="end-p1-name">P2</span><span id="end-p1-score" style="color:var(--cyan);">0</span></div>
+  </div>
+  <button class="mbtn mbtn-gold" style="max-width:300px;" onclick="goMenu()">[ 🏠 В МЕНЮ ]</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// ВОПРОСЫ MATHOPOLY — Математика 9 класс КЗ
+// ══════════════════════════════════════════════════════════════════
+const QUESTIONS = {
+  algebra:[
+    {q:'Реши уравнение: 2x + 5 = 17',a:'6',hint:'x = ?'},
+    {q:'Реши: x² - 9 = 0',a:'3',hint:'Положительный корень'},
+    {q:'Дано: y = 2x + 3. При x = 4 найди y.',a:'11',hint:'Подставь x'},
+    {q:'Реши систему: x + y = 10, x - y = 4. Найди x.',a:'7'},
+    {q:'Арифметическая прогрессия: a₁=3, d=5. Найди a₄.',a:'18'},
+    {q:'Реши неравенство: 3x - 6 > 0. x > ?',a:'2'},
+    {q:'Дискриминант уравнения x² - 5x + 6 = 0',a:'1'},
+    {q:'Корни уравнения x² - 5x + 6 = 0. Меньший корень.',a:'2'},
+    {q:'Реши: 3x = 21',a:'7'},
+    {q:'Сумма первых 5 членов прогрессии 1,3,5,7,9',a:'25'},
+    {q:'Реши: |x| = 5. Положительный корень.',a:'5'},
+    {q:'Функция y = x². При x = -3 найди y.',a:'9'},
+  ],
+  geometry:[
+    {q:'В прямоугольном треугольнике катеты 3 и 4. Гипотенуза?',a:'5'},
+    {q:'Площадь квадрата со стороной 7',a:'49'},
+    {q:'Длина окружности с радиусом 5. Ответ через π (5π×2)',a:'10π',hint:'C = 2πr'},
+    {q:'Площадь прямоугольника 5×8',a:'40'},
+    {q:'Сумма углов треугольника (в градусах)',a:'180'},
+    {q:'Площадь круга с радиусом 3. Ответ: 9π',a:'9π'},
+    {q:'Периметр квадрата со стороной 6',a:'24'},
+    {q:'Площадь прямоугольного треугольника с катетами 6 и 8',a:'24'},
+    {q:'Угол в правильном шестиугольнике (в градусах)',a:'120'},
+    {q:'Радиус описанной окружности прямоугольного треугольника с гипотенузой 10',a:'5'},
+    {q:'Площадь трапеции с основаниями 4 и 6, высотой 5',a:'25'},
+    {q:'Вектор (3,4). Его длина?',a:'5'},
+  ],
+  logic:[
+    {q:'Вероятность выпадения 6 на кубике',a:'1/6'},
+    {q:'Сколько двузначных чисел кратны 7? (от 10 до 99)',a:'13'},
+    {q:'C(5,2) = ?',a:'10',hint:'5!/(2!×3!)'},
+    {q:'Реши: |2x - 4| = 6. Положительный корень.',a:'5'},
+    {q:'В классе 20 учеников. Вероятность, что выбранный — мальчик, если мальчиков 12. Ответ: 12/20 = ?/5',a:'3/5'},
+    {q:'Сколькими способами выбрать 2 из 4? C(4,2)',a:'6'},
+    {q:'Реши: |x + 3| = 7. Положительный корень.',a:'4'},
+    {q:'Вероятность чётного числа на кубике',a:'1/2'},
+    {q:'Перестановок из 4 элементов: P(4) = 4! = ?',a:'24'},
+    {q:'Реши: |3x| = 12',a:'4',hint:'Положительный корень'},
+  ]
+};
+
+// ══════════════════════════════════════════════════════════════════
+// КЛЕТКИ ПОЛЯ
+// ══════════════════════════════════════════════════════════════════
+const CELLS = [
+  // 0-8: верхний ряд (слева направо)
+  {id:0,label:'СТАРТ',icon:'🚀',type:'start'},
+  {id:1,label:'ЛИНЕЙНЫЕ УРВ.',icon:'?',type:'algebra'},
+  {id:2,label:'КВАДРАТНЫЕ УРВ.',icon:'?',type:'algebra'},
+  {id:3,label:'ФУНКЦИИ',icon:'?',type:'algebra'},
+  {id:4,label:'СИСТЕМЫ УРВ.',icon:'?',type:'algebra'},
+  {id:5,label:'КОНТРОЛЬНАЯ',icon:'📋',type:'special-orange'},
+  {id:6,label:'ПРОГРЕССИИ',icon:'?',type:'algebra'},
+  {id:7,label:'НЕРАВЕНСТВА',icon:'?',type:'algebra'},
+  {id:8,label:'ФОРМУЛА УДАЧИ',icon:'⭐',type:'special-gold'},
+  // 9-14: правый столбец (сверху вниз)
+  {id:9,label:'ТРЕУГОЛЬНИКИ',icon:'?',type:'geometry'},
+  {id:10,label:'ОКРУЖНОСТЬ',icon:'?',type:'geometry'},
+  {id:11,label:'ПЛОЩАДИ',icon:'?',type:'geometry'},
+  {id:12,label:'ОШИБКА!',icon:'⚠️',type:'special-red'},
+  {id:13,label:'ТЕОРЕМА ПИФАГОРА',icon:'?',type:'geometry'},
+  {id:14,label:'ФИНИШ',icon:'🏁',type:'finish'},
+  // 15-21: нижний ряд (справа налево)
+  {id:15,label:'МОД. ВЫРАЖЕНИЯ',icon:'?',type:'logic'},
+  {id:16,label:'ТЕКСТ. ЗАДАЧИ',icon:'?',type:'logic'},
+  {id:17,label:'ПЕРЕСДАЧА',icon:'🔄',type:'special-orange'},
+  {id:18,label:'КОМБИНАТОРИКА',icon:'?',type:'logic'},
+  {id:19,label:'ВЕРОЯТНОСТЬ',icon:'?',type:'logic'},
+  {id:20,label:'ВЕКТОРЫ',icon:'?',type:'geometry'},
+  {id:21,label:'ПОДОБИЕ',icon:'?',type:'geometry'},
+  // 22-26: левый столбец (снизу вверх)
+  {id:22,label:'УЧИТЕЛЬ МАТЕМ.',icon:'👩‍🏫',type:'special-gold'},
+  {id:23,label:'ГРАФИК',icon:'?',type:'algebra'},
+  {id:24,label:'КОНТРОЛЬНАЯ',icon:'📋',type:'special-orange'},
+  {id:25,label:'СЛУЧАЙНЫЙ ЭКЗАМЕН',icon:'❓',type:'special-orange'},
+  {id:26,label:'ФОРМУЛА УДАЧИ',icon:'⭐',type:'special-gold'},
+];
+const TOTAL_CELLS = CELLS.length; // 27
+
+// ══════════════════════════════════════════════════════════════════
+// ONLINE — Firebase Realtime DB (бесплатный tier)
+// ══════════════════════════════════════════════════════════════════
+const FB_URL = 'https://mathopoly-game-default-rtdb.firebaseio.com';
+
+let myName = '', roomCode = '', myIndex = -1;
+let gameState = null;
+let pollTimer = null;
+let qTimer = null, qSeconds = 0;
+let answered = false;
+
+function showS(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if(el) el.classList.remove('hidden');
+}
+
+function toast(msg, dur=2500){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(window._toastT);
+  window._toastT = setTimeout(()=>t.classList.add('hidden'), dur);
+}
+
+function setStatus(id, msg, cls=''){
+  const el = document.getElementById(id);
+  if(el){el.textContent=msg;el.className='status-msg '+(cls||'');}
+}
+
+// ── Firebase helpers ──
+async function fbSet(path, data){
+  await fetch(`${FB_URL}/${path}.json`, {
+    method:'PUT', body:JSON.stringify(data),
+    headers:{'Content-Type':'application/json'}
+  });
+}
+async function fbPatch(path, data){
+  await fetch(`${FB_URL}/${path}.json`, {
+    method:'PATCH', body:JSON.stringify(data),
+    headers:{'Content-Type':'application/json'}
+  });
+}
+async function fbGet(path){
+  const r = await fetch(`${FB_URL}/${path}.json`);
+  return await r.json();
+}
+async function fbDelete(path){
+  await fetch(`${FB_URL}/${path}.json`, {method:'DELETE'});
+}
+
+// ── Генерация кода комнаты ──
+function genCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c='';
+  for(let i=0;i<4;i++) c += chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+
+// ── Создать комнату ──
+async function createRoom(){
+  myName = (document.getElementById('player-name').value||'').trim().toUpperCase();
+  if(!myName){setStatus('lobby-status','Введи имя!','status-err');return;}
+  myName = myName.substring(0,10);
+
+  setStatus('lobby-status','Создаём комнату...','status-wait');
+  roomCode = genCode();
+  myIndex = 0;
+
+  const initState = {
+    players:[
+      {name:myName,pos:0,score:0,ready:true},
+      {name:'',pos:0,score:0,ready:false}
+    ],
+    turn:0,
+    phase:'waiting', // waiting | rolling | question | end
+    dice:0,
+    question:null,
+    answers:{},
+    log:''
+  };
+
+  await fbSet(`rooms/${roomCode}`, initState);
+  gameState = initState;
+
+  document.getElementById('room-code-display').textContent = roomCode;
+  document.getElementById('players-list').innerHTML =
+    `✅ ${myName}<br>⏳ Ожидаем второго...`;
+  showS('waiting-screen');
+  startPoll();
+}
+
+// ── Войти в комнату ──
+async function joinRoom(){
+  myName = (document.getElementById('player-name').value||'').trim().toUpperCase();
+  if(!myName){setStatus('lobby-status','Введи имя!','status-err');return;}
+  myName = myName.substring(0,10);
+
+  const code = (document.getElementById('room-code-inp').value||'').trim().toUpperCase();
+  if(code.length !== 4){setStatus('lobby-status','Введи 4-значный код!','status-err');return;}
+
+  setStatus('lobby-status','Подключаемся...','status-wait');
+  const room = await fbGet(`rooms/${code}`);
+  if(!room){setStatus('lobby-status','Комната не найдена!','status-err');return;}
+  if(room.phase !== 'waiting'){setStatus('lobby-status','Игра уже началась!','status-err');return;}
+  if(room.players[1].ready){setStatus('lobby-status','Комната занята!','status-err');return;}
+
+  roomCode = code;
+  myIndex = 1;
+  gameState = room;
+
+  await fbPatch(`rooms/${code}/players/1`, {name:myName,ready:true});
+  // Запускаем игру
+  await fbPatch(`rooms/${code}`, {phase:'rolling', log:`${room.players[0].name} vs ${myName}. Ход игрока 1!`});
+
+  showS('waiting-screen');
+  document.getElementById('room-code-display').textContent = code;
+  startPoll();
+}
+
+// ── Покинуть комнату ──
+async function leaveRoom(){
+  stopPoll();
+  if(roomCode) await fbDelete(`rooms/${roomCode}`);
+  roomCode=''; myIndex=-1;
+  showS('lobby');
+}
+
+function goMenu(){
+  stopPoll();
+  if(roomCode && gameState && gameState.phase !== 'end'){
+    fbDelete(`rooms/${roomCode}`);
+  }
+  roomCode=''; myIndex=-1; gameState=null;
+  // Возврат в главное меню NUMBRA
+  if(window.parent && window.parent !== window){
+    window.parent.postMessage('goMenu','*');
+  } else if(typeof showMainMenu === 'function'){
+    showMainMenu();
+  } else {
+    showS('lobby');
+  }
+}
+
+// ── Поллинг Firebase ──
+function startPoll(){
+  stopPoll();
+  pollTimer = setInterval(poll, 1500);
+}
+function stopPoll(){
+  if(pollTimer) clearInterval(pollTimer);
+  pollTimer = null;
+}
+
+async function poll(){
+  if(!roomCode) return;
+  try{
+    const room = await fbGet(`rooms/${roomCode}`);
+    if(!room){
+      stopPoll();
+      toast('Комната закрыта');
+      showS('lobby');
+      return;
+    }
+    const prev = gameState;
+    gameState = room;
+
+    if(room.phase === 'waiting'){
+      // Обновляем список
+      const p = room.players;
+      document.getElementById('players-list').innerHTML =
+        `✅ ${p[0].name||'—'}<br>${p[1].ready?'✅':'⏳'} ${p[1].name||'Ожидаем...'}`;
+      return;
+    }
+
+    // Игра началась
+    if(document.getElementById('waiting-screen').classList.contains('hidden') === false &&
+       room.phase !== 'waiting'){
+      buildBoard();
+      showS('game-screen');
+    }
+
+    renderHUD(room);
+    renderPawns(room);
+
+    // Если фаза вопроса и вопрос для меня
+    if(room.phase === 'question' && room.question){
+      const myTurn = (room.turn === myIndex);
+      if(myTurn && !answered){
+        showQuestion(room.question);
+      }
+    } else if(room.phase === 'rolling'){
+      document.getElementById('q-modal').classList.add('hidden');
+      answered = false;
+      stopQTimer();
+    }
+
+    if(room.phase === 'end'){
+      stopPoll();
+      showEnd(room);
+    }
+  } catch(e){}
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ПОСТРОЕНИЕ ПОЛЯ
+// ══════════════════════════════════════════════════════════════════
+const CELL_W = 58, CELL_H = 64;
+const COLS = 9, ROWS = 6; // сетка 9x6 клеток
+// Периметр: top(0-8), right(9-14), bottom(15-21), left(22-26)
+
+function cellPos(id){
+  // top row: 0-8 → col 0-8, row 0
+  if(id <= 8) return {col:id, row:0};
+  // right col: 9-14 → col 8, row 1-6
+  if(id <= 14) return {col:8, row:id-8};
+  // bottom row: 15-21 → col 7-1, row 6 (right to left)
+  if(id <= 21) return {col:8-(id-14), row:6};
+  // left col: 22-26 → col 0, row 5-1
+  return {col:0, row:6-(id-21)};
+}
+
+function buildBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  const bW = (COLS+1)*CELL_W + CELL_W; // ~640
+  const bH = (ROWS+1)*CELL_H;
+  board.style.width = (COLS*CELL_W + CELL_W*2)+'px';
+  board.style.height = ((ROWS)*CELL_H + CELL_H*2)+'px';
+
+  CELLS.forEach(cell => {
+    const pos = cellPos(cell.id);
+    const el = document.createElement('div');
+    el.className = `cell cell-${cell.type}`;
+    el.id = `cell-${cell.id}`;
+    el.style.left = (pos.col*CELL_W + CELL_W/2)+'px';
+    el.style.top = (pos.row*CELL_H + CELL_H/2)+'px';
+    el.style.width = CELL_W+'px';
+    el.style.height = CELL_H+'px';
+
+    el.innerHTML = `
+      <span class="cell-num">${cell.id}</span>
+      <div class="cell-inner">
+        <div class="cell-icon">${cell.icon}</div>
+        <div class="cell-label">${cell.label}</div>
+      </div>`;
+    board.appendChild(el);
+  });
+
+  // Центр
+  const centerEl = document.createElement('div');
+  centerEl.className = 'board-center';
+  centerEl.style.cssText = `
+    left:${CELL_W*1.5}px; top:${CELL_H*1.5}px;
+    width:${CELL_W*6}px; height:${CELL_H*5}px;`;
+  centerEl.innerHTML = `
+    <div class="center-title" style="font-size:clamp(1.2rem,4vw,1.6rem);">MATHOPOLY</div>
+    <div class="center-sub" style="font-size:.6rem;">9 КЛАСС · КАЗАХСТАН</div>
+    <div class="center-formulas">
+      x²+bx+c=0 · a²+b²=c²<br>
+      y=kx+b · C(n,k) · P(A)<br>
+      S=πr² · ∑aₙ · |x|=a<br>
+      sin²α+cos²α=1
+    </div>`;
+  board.appendChild(centerEl);
+
+  // Фишки
+  for(let i=0;i<2;i++){
+    const pawn = document.createElement('div');
+    pawn.className = `pawn pawn-${i}`;
+    pawn.id = `pawn-${i}`;
+    pawn.textContent = i===0?'P1':'P2';
+    board.appendChild(pawn);
+  }
+}
+
+function placePawn(pawnIdx, cellId, offset){
+  const pawn = document.getElementById(`pawn-${pawnIdx}`);
+  if(!pawn) return;
+  const pos = cellPos(cellId % TOTAL_CELLS);
+  const ox = offset ? 10 : -10;
+  pawn.style.left = (pos.col*CELL_W + CELL_W/2 + CELL_W/4 + ox - 11)+'px';
+  pawn.style.top = (pos.row*CELL_H + CELL_H/2 + 8)+'px';
+}
+
+function renderPawns(room){
+  if(!room.players) return;
+  room.players.forEach((p,i)=>{
+    placePawn(i, p.pos||0, i===1);
+    // Подсвечиваем клетку текущего игрока
+    document.querySelectorAll('.cell').forEach(c=>c.classList.remove('highlight'));
+    if(room.turn !== undefined){
+      const curPos = room.players[room.turn]?.pos || 0;
+      const curCell = document.getElementById(`cell-${curPos%TOTAL_CELLS}`);
+      if(curCell) curCell.classList.add('highlight');
+    }
+  });
+}
+
+function renderHUD(room){
+  if(!room.players) return;
+  const names = room.players.map(p=>p.name||'—');
+  const scores = room.players.map(p=>p.score||0);
+  const positions = room.players.map(p=>p.pos||0);
+
+  document.getElementById('hud-p0').querySelector('.hud-name').textContent = '🟣 '+names[0];
+  document.getElementById('hud-p1').querySelector('.hud-name').textContent = '🔵 '+names[1];
+  document.getElementById('score-0').textContent = scores[0]+' pts';
+  document.getElementById('score-1').textContent = scores[1]+' pts';
+  document.getElementById('pos-0').textContent = 'кл. '+positions[0];
+  document.getElementById('pos-1').textContent = 'кл. '+positions[1];
+
+  const turnName = names[room.turn] || '?';
+  document.getElementById('hud-turn').textContent = `ХОД: ${turnName}`;
+
+  const isMyTurn = (room.turn === myIndex);
+  const diceBtn = document.getElementById('dice-btn');
+
+  if(room.phase === 'rolling' && isMyTurn){
+    diceBtn.removeAttribute('disabled');
+    document.getElementById('turn-info').textContent = 'Твой ход — брось кубик!';
+    diceBtn.style.borderColor='var(--gold)';diceBtn.style.color='var(--gold)';
+  } else {
+    diceBtn.setAttribute('disabled','');
+    document.getElementById('turn-info').textContent = `Ход ${turnName}...`;
+    diceBtn.style.borderColor='var(--purple)';diceBtn.style.color='var(--purple)';
+  }
+
+  if(room.dice) document.getElementById('dice-val').textContent = room.dice;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// БРОСОК КУБИКА
+// ══════════════════════════════════════════════════════════════════
+async function rollDice(){
+  if(!gameState || gameState.phase !== 'rolling') return;
+  if(gameState.turn !== myIndex) return;
+
+  const dice = Math.floor(Math.random()*6)+1;
+  const newPos = ((gameState.players[myIndex].pos || 0) + dice) % TOTAL_CELLS;
+  const cell = CELLS[newPos];
+
+  // Анимация
+  document.getElementById('dice-btn').setAttribute('disabled','');
+  let anim = 0;
+  const animT = setInterval(()=>{
+    document.getElementById('dice-val').textContent = Math.floor(Math.random()*6)+1;
+    if(++anim > 8){ clearInterval(animT);
+      document.getElementById('dice-val').textContent = dice; }
+  }, 80);
+
+  await new Promise(r=>setTimeout(r,800));
+
+  // Обновляем позицию
+  await fbPatch(`rooms/${roomCode}/players/${myIndex}`, {pos: newPos});
+  await fbPatch(`rooms/${roomCode}`, {dice: dice});
+
+  // Определяем что происходит на клетке
+  await handleCell(cell, newPos);
+}
+
+async function handleCell(cell, newPos){
+  if(cell.type === 'finish'){
+    // Финиш!
+    const scores = gameState.players.map(p=>p.score||0);
+    scores[myIndex] += 50;
+    await fbPatch(`rooms/${roomCode}/players/${myIndex}`,{score: scores[myIndex]});
+    await fbPatch(`rooms/${roomCode}`,{phase:'end', log:'ФИНИШ!'});
+    return;
+  }
+
+  if(cell.type === 'special-red'){
+    // Ошибка — теряем очки
+    const sc = Math.max(0,(gameState.players[myIndex].score||0)-5);
+    await fbPatch(`rooms/${roomCode}/players/${myIndex}`,{score:sc});
+    toast('⚠️ ОШИБКА! -5 очков');
+    await nextTurn();
+    return;
+  }
+
+  if(cell.type === 'special-gold'){
+    // Бонус
+    const sc = (gameState.players[myIndex].score||0)+10;
+    await fbPatch(`rooms/${roomCode}/players/${myIndex}`,{score:sc});
+    toast('⭐ ФОРМУЛА УДАЧИ! +10 очков!');
+    await nextTurn();
+    return;
+  }
+
+  if(cell.type === 'start'){
+    toast('🚀 СТАРТ! Продолжай!');
+    await nextTurn();
+    return;
+  }
+
+  // Обычные и special-orange — задаём вопрос
+  const cat = cell.type === 'geometry' ? 'geometry' :
+              cell.type === 'logic' ? 'logic' : 'algebra';
+  const pool = QUESTIONS[cat];
+  const q = pool[Math.floor(Math.random()*pool.length)];
+
+  await fbPatch(`rooms/${roomCode}`, {
+    phase: 'question',
+    question: {text:q.q, answer:q.a, category:cell.label, cell:cell.type},
+    answers: {}
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ВОПРОС
+// ══════════════════════════════════════════════════════════════════
+function showQuestion(q){
+  document.getElementById('q-cat').textContent = q.category || 'ЗАДАЧА';
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-input').value = '';
+  document.getElementById('q-result').className = 'hidden';
+  document.getElementById('q-modal').classList.remove('hidden');
+  startQTimer(30);
+  document.getElementById('q-input').focus();
+}
+
+function startQTimer(sec){
+  stopQTimer();
+  qSeconds = sec;
+  document.getElementById('q-timer').textContent = '⏱ '+qSeconds;
+  qTimer = setInterval(()=>{
+    qSeconds--;
+    document.getElementById('q-timer').textContent = '⏱ '+qSeconds;
+    if(qSeconds <= 0){ stopQTimer(); autoSubmit(); }
+  },1000);
+}
+function stopQTimer(){ if(qTimer){clearInterval(qTimer);qTimer=null;} }
+function autoSubmit(){ if(!answered){ submitAnswer(true); } }
+
+async function submitAnswer(timeout=false){
+  if(answered) return;
+  answered = true;
+  stopQTimer();
+
+  const inp = document.getElementById('q-input').value.trim().toLowerCase()
+    .replace(/\s/g,'');
+  const correct = (gameState.question?.answer||'').toLowerCase().replace(/\s/g,'');
+
+  const isRight = !timeout && inp === correct;
+
+  const resultEl = document.getElementById('q-result');
+  resultEl.className = 'q-result '+(isRight?'ok':'bad');
+  resultEl.textContent = isRight
+    ? '✓ ВЕРНО! +15 очков'
+    : `✗ НЕВЕРНО. Правильно: ${gameState.question?.answer}`;
+  resultEl.classList.remove('hidden');
+
+  // Обновляем счёт
+  if(isRight){
+    const sc = (gameState.players[myIndex].score||0)+15;
+    await fbPatch(`rooms/${roomCode}/players/${myIndex}`,{score:sc});
+  }
+
+  // Ждём чтобы показать результат
+  await new Promise(r=>setTimeout(r,2000));
+  document.getElementById('q-modal').classList.add('hidden');
+
+  // Следующий ход
+  await nextTurn();
+}
+
+async function nextTurn(){
+  const nextPlayer = gameState.turn === 0 ? 1 : 0;
+  const p = gameState.players[nextPlayer];
+  await fbPatch(`rooms/${roomCode}`, {
+    phase: 'rolling',
+    turn: nextPlayer,
+    question: null,
+    log: `Ход игрока ${p.name}`
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ФИНИШ
+// ══════════════════════════════════════════════════════════════════
+function showEnd(room){
+  stopPoll();
+  const p = room.players;
+  const winner = p[0].score > p[1].score ? p[0].name :
+                 p[1].score > p[0].score ? p[1].name : 'НИЧЬЯ';
+
+  document.getElementById('end-title').textContent =
+    winner === 'НИЧЬЯ' ? '🤝 НИЧЬЯ!' : `🏆 ${winner} ПОБЕДИЛ!`;
+  document.getElementById('end-winner').textContent = winner;
+  document.getElementById('end-p0-name').textContent = p[0].name;
+  document.getElementById('end-p1-name').textContent = p[1].name;
+  document.getElementById('end-p0-score').textContent = p[0].score+' pts';
+  document.getElementById('end-p1-score').textContent = p[1].score+' pts';
+
+  document.getElementById('q-modal').classList.add('hidden');
+  showS('end-screen');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ENTER на вопрос
+// ══════════════════════════════════════════════════════════════════
+document.getElementById('q-input').addEventListener('keydown', e=>{
+  if(e.key==='Enter') submitAnswer();
+});
+
+// INIT
+showS('lobby');
+</script>
+</body>
+</html>
