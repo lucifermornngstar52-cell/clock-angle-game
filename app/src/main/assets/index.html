@@ -688,16 +688,18 @@ function fitClock(){
 }
 
 /* ══ СОХРАНЕНИЕ ══ */
-const SAVE={coins:0,ach:[],lvCount:[0,0,0,0]};
+const SAVE={coins:0,ach:[],lvCount:[0,0,0,0],ckWins:0};
 function saveData(){
   localStorage.setItem('cag_coins',SAVE.coins);
   localStorage.setItem('cag_ach',JSON.stringify(SAVE.ach));
   localStorage.setItem('cag_lv_cnt',JSON.stringify(SAVE.lvCount));
+  localStorage.setItem('cag_ck_wins',SAVE.ckWins);
 }
 function loadData(){
   SAVE.coins=parseInt(localStorage.getItem('cag_coins')||'0');
   try{SAVE.ach=JSON.parse(localStorage.getItem('cag_ach')||'[]');}catch(e){SAVE.ach=[];}
   try{SAVE.lvCount=JSON.parse(localStorage.getItem('cag_lv_cnt')||'[0,0,0,0]');}catch(e){SAVE.lvCount=[0,0,0,0];}
+  SAVE.ckWins=parseInt(localStorage.getItem('cag_ck_wins')||'0');
 }
 loadData();
 // стартовый бонус 500 монет отключён
@@ -724,6 +726,12 @@ const ACHIEVEMENTS=[
   {id:'lv2x10',icon:'🌀', name:'Спец по путешествиям',     desc:'Пройди 2 уровень 10 раз', cond:s=>s.lvCount[1]>=10},
   {id:'lv3x10',icon:'🌌', name:'Мастер путешествий',       desc:'Пройди 3 уровень 10 раз', cond:s=>s.lvCount[2]>=10},
   {id:'lv4x10',icon:'👑', name:'Повелитель времени',       desc:'Пройди 4 уровень 10 раз', cond:s=>s.lvCount[3]>=10},
+  // ── ХРАНИТЕЛИ ВРЕМЕНИ: КВАНТОВЫЙ СДВИГ ──
+  {id:'ck1', icon:'🎓', name:'Бакалавр времени',             desc:'Победи в «Хранителях Времени» 1 раз',   cond:s=>s.ckWins>=1},
+  {id:'ck2', icon:'🌀', name:'Специалист временной петли',   desc:'Победи в «Хранителях Времени» 2 раза',  cond:s=>s.ckWins>=2},
+  {id:'ck3', icon:'🌌', name:'Магистр временного хаоса',     desc:'Победи в «Хранителях Времени» 3 раза',  cond:s=>s.ckWins>=3},
+  {id:'ck4', icon:'⚛️', name:'Академик часовой переменной',  desc:'Победи в «Хранителях Времени» 4 раза',  cond:s=>s.ckWins>=4},
+  {id:'ck5', icon:'👑', name:'Профессор минутного постоянства', desc:'Победи в «Хранителях Времени» 5 раз', cond:s=>s.ckWins>=5},
 ];
 function checkAchievements(){
   ACHIEVEMENTS.forEach(a=>{
