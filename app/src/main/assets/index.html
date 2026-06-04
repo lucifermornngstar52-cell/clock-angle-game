@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Угол Стрелок</title>
+<title>Numbra</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
   :root{--g:#00ff41;--dg:#008f11;--bg:#0a0a0a;--panel:rgba(0,18,0,0.93);--border:rgba(0,255,65,0.25);}
@@ -17,8 +17,7 @@
   .screen.hidden{display:none!important;}
   #rc{position:fixed;top:10px;left:12px;z-index:100;font-family:'Orbitron',monospace;
     font-size:.85rem;color:var(--g);text-shadow:0 0 8px var(--g);
-    background:rgba(0,0,0,.6);border:1px solid var(--border);
-    padding:3px 10px;border-radius:6px;letter-spacing:2px;}
+    background:rgba(0,0,0,.6);border:1px solid var(--border);padding:3px 10px;border-radius:6px;letter-spacing:2px;}
 
   /* ИНТРО */
   #intro-screen{gap:0;justify-content:center;padding:24px 20px;}
@@ -41,7 +40,7 @@
 
   /* МЕНЮ */
   #menu-screen{gap:11px;}
-  .mtitle{font-family:'Orbitron',monospace;font-size:clamp(1.2rem,5vw,1.9rem);font-weight:900;
+  .mtitle{font-family:'Orbitron',monospace;font-size:clamp(1.3rem,5.5vw,2rem);font-weight:900;
     color:var(--g);text-shadow:0 0 20px var(--g),0 0 40px var(--g);text-align:center;
     letter-spacing:4px;animation:flicker 5s infinite;margin-bottom:2px;}
   .msub{font-size:.62rem;color:var(--dg);letter-spacing:3px;text-align:center;margin-bottom:4px;}
@@ -59,69 +58,55 @@
   #game-screen{display:flex;flex-direction:column;align-items:center;
     justify-content:flex-start;gap:0;padding:6px 10px 6px;overflow-y:auto;overflow-x:hidden;}
   .hud{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;width:100%;margin-top:36px;}
-  .hbox{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:4px 4px;text-align:center;}
+  .hbox{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:4px;text-align:center;}
   .hbox .lb{font-size:.44rem;color:var(--dg);letter-spacing:1px;}
   .hbox .vl{font-size:.76rem;color:var(--g);text-shadow:0 0 5px var(--g);}
   .qbox{background:var(--panel);border:1px solid var(--border);border-radius:7px;
     padding:6px 10px;width:100%;text-align:center;margin-top:4px;}
   .qlb{font-size:.48rem;color:var(--dg);letter-spacing:1px;margin-bottom:2px;}
   .qtx{font-size:.74rem;color:var(--g);line-height:1.4;white-space:pre-line;}
-  /* подсказка для уровня 4 */
-  .q-multi-hint{font-size:.6rem;color:rgba(255,200,0,.8);margin-top:3px;letter-spacing:.5px;}
+  .q-hint{font-size:.6rem;color:rgba(255,200,0,.85);margin-top:3px;letter-spacing:.5px;}
 
-  .clock-wrap{margin:4px 0;flex-shrink:0;}
+  .clock-wrap{margin:5px 0;flex-shrink:0;}
   .clock-wrap svg{filter:drop-shadow(0 0 10px rgba(0,255,65,.45));}
 
-  /* Варианты 1-3 уровней: сетка 2x2 */
-  .choices-4{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;margin-top:4px;}
-  /* Варианты 4 уровня: сетка 2x4 */
-  .choices-8{display:grid;grid-template-columns:1fr 1fr;gap:5px;width:100%;margin-top:4px;}
-
+  /* Варианты */
+  .choices-grid{display:grid;gap:7px;width:100%;margin-top:4px;}
+  .choices-grid.g4{grid-template-columns:1fr 1fr;}
+  .choices-grid.g8{grid-template-columns:1fr 1fr;gap:5px;}
   .choice-btn{background:rgba(0,18,0,.9);border:1px solid var(--border);border-radius:6px;
-    color:var(--g);font-family:'Orbitron',monospace;font-size:.85rem;
-    padding:11px 6px;cursor:pointer;text-align:center;letter-spacing:1px;transition:all .15s;
-    position:relative;}
-  .choices-8 .choice-btn{padding:9px 4px;font-size:.78rem;}
+    color:var(--g);font-family:'Orbitron',monospace;font-size:.88rem;
+    padding:12px 6px;cursor:pointer;text-align:center;letter-spacing:1px;transition:all .15s;}
+  .choices-grid.g8 .choice-btn{padding:9px 4px;font-size:.78rem;}
   .choice-btn:active{transform:scale(.96);}
-  /* состояния */
-  .choice-btn.selected{border-color:#0ff;background:rgba(0,255,255,.12);
-    box-shadow:0 0 10px rgba(0,255,255,.4);color:#0ff;}
-  .choice-btn.correct{border-color:#00ff41;background:rgba(0,255,65,.22);
-    box-shadow:0 0 14px rgba(0,255,65,.6);color:#fff;}
-  .choice-btn.wrong{border-color:#ff3131;background:rgba(255,49,49,.15);
-    box-shadow:0 0 12px rgba(255,49,49,.4);color:#ff3131;}
-  .choice-btn.missed{border-color:rgba(255,200,0,.7);background:rgba(255,200,0,.08);
-    box-shadow:0 0 8px rgba(255,200,0,.3);color:rgba(255,200,0,.9);}
-  .choice-btn.hint-reveal{border-color:#ffd700;background:rgba(255,215,0,.15);
-    box-shadow:0 0 14px rgba(255,215,0,.5);color:#ffd700;animation:pulse .6s 3;}
+  .choice-btn.selected{border-color:#0ff;background:rgba(0,255,255,.12);color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.4);}
+  .choice-btn.correct{border-color:#00ff41!important;background:rgba(0,255,65,.22)!important;box-shadow:0 0 14px rgba(0,255,65,.6)!important;color:#fff!important;}
+  .choice-btn.wrong{border-color:#ff3131!important;background:rgba(255,49,49,.15)!important;box-shadow:0 0 12px rgba(255,49,49,.4)!important;color:#ff3131!important;}
+  .choice-btn.missed{border-color:rgba(255,200,0,.7)!important;background:rgba(255,200,0,.08)!important;color:rgba(255,200,0,.9)!important;}
+  .choice-btn.hint-hl{border-color:#ffd700!important;background:rgba(255,215,0,.18)!important;color:#ffd700!important;animation:glow .5s ease 3;}
+  @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(255,215,0,.3);}50%{box-shadow:0 0 20px rgba(255,215,0,.8);}}
 
-  /* кнопка подтверждения для уровня 4 */
-  #confirm-btn{display:none;width:100%;margin-top:6px;
+  #confirm-btn{width:100%;margin-top:6px;
     font-family:'Orbitron',monospace;font-size:.82rem;
     background:rgba(0,255,65,.12);border:1px solid var(--g);border-radius:6px;
     color:var(--g);padding:11px 0;cursor:pointer;letter-spacing:2px;
-    text-shadow:0 0 6px var(--g);transition:all .2s;}
+    text-shadow:0 0 6px var(--g);transition:all .2s;display:none;}
   #confirm-btn:active{background:rgba(0,255,65,.28);}
-  #confirm-btn.pulse-green{animation:pulseGreen .5s 2;}
-  @keyframes pulseGreen{0%,100%{box-shadow:0 0 10px rgba(0,255,65,.4);}50%{box-shadow:0 0 22px rgba(0,255,65,.8);}}
 
   .fb{font-family:'Orbitron',monospace;font-size:.74rem;text-align:center;
     min-height:16px;margin-top:3px;letter-spacing:1px;}
   .fb.ok{color:#00ff41;text-shadow:0 0 8px #00ff41;}
   .fb.bad{color:#ff3131;text-shadow:0 0 8px #ff3131;}
   .fb.hint{color:#ffd700;text-shadow:0 0 8px #ffd700;}
-  .fb.partial{color:#ffa500;text-shadow:0 0 8px #ffa500;}
 
   .hops-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:4px;}
   .hops-label{font-size:.48rem;color:var(--dg);letter-spacing:2px;margin-bottom:2px;}
   .hops-row{display:flex;gap:4px;}
   .hop{width:30px;height:30px;border:2px solid var(--border);border-radius:4px;
     display:flex;align-items:center;justify-content:center;
-    font-family:'Orbitron',monospace;font-size:.6rem;color:var(--dg);
-    background:rgba(0,10,0,.6);transition:all .35s;}
+    font-family:'Orbitron',monospace;font-size:.6rem;color:var(--dg);background:rgba(0,10,0,.6);transition:all .35s;}
   .hop.done{border-color:var(--g);background:rgba(0,255,65,.12);color:var(--g);box-shadow:0 0 7px rgba(0,255,65,.35);}
-  .hop.act{border-color:#0ff;background:rgba(0,255,255,.13);color:#0ff;
-    box-shadow:0 0 10px rgba(0,255,255,.45);animation:pulse .9s infinite;}
+  .hop.act{border-color:#0ff;background:rgba(0,255,255,.13);color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.45);animation:pulse .9s infinite;}
 
   .bot-row{display:flex;gap:5px;width:100%;margin-top:4px;}
   .hbtn{flex:1;background:transparent;border:1px solid rgba(255,200,0,.5);border-radius:6px;
@@ -133,7 +118,7 @@
     color:var(--dg);font-family:'Share Tech Mono',monospace;font-size:.64rem;padding:8px 4px;cursor:pointer;}
   .mbtn:active{background:rgba(0,255,65,.07);}
 
-  /* РЕЗУЛЬТАТ / ГЕЙМОВЕР */
+  /* РЕЗУЛЬТАТЫ */
   #result-screen,#gameover-screen{gap:13px;}
   .rtitle{font-family:'Orbitron',monospace;font-size:clamp(1rem,4.5vw,1.7rem);
     font-weight:900;text-align:center;letter-spacing:2px;text-shadow:0 0 16px var(--g);}
@@ -181,7 +166,6 @@
   .ach-item.unlocked .ach-name{color:var(--g);}
   .ach-desc{font-size:.56rem;color:var(--dg);margin-top:1px;}
   .ach-check{font-size:.93rem;min-width:20px;text-align:right;}
-
   #ach-toast{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);z-index:300;
     background:rgba(0,20,0,.96);border:1px solid var(--g);border-radius:8px;
     padding:8px 18px;font-family:'Orbitron',monospace;font-size:.68rem;
@@ -215,8 +199,8 @@
 
 <!-- МЕНЮ -->
 <div class="screen" id="menu-screen">
-  <div class="mtitle">&gt; УГОЛ СТРЕЛОК_</div>
-  <div class="msub">// CLOCK ANGLE CRACKER v4.0 //</div>
+  <div class="mtitle">NUMBRA</div>
+  <div class="msub">// CLOCK ANGLE CRACKER v4.1 //</div>
   <div class="menu-coins" id="menu-coins">💰 0 монет</div>
   <button class="btn" onclick="startGame()">[ ИГРАТЬ ]</button>
   <button class="btn" onclick="openAch()">[ 🏆 ДОСТИЖЕНИЯ ]</button>
@@ -235,23 +219,21 @@
   <div class="qbox">
     <div class="qlb" id="qlb">УРОВЕНЬ 1</div>
     <div class="qtx" id="qtx">Найди угол</div>
-    <div class="q-multi-hint hidden" id="q-multi-hint"></div>
+    <div class="q-hint" id="q-hint" style="display:none"></div>
   </div>
   <div class="clock-wrap">
-    <svg id="clk" width="180" height="180" viewBox="-90 -90 180 180">
-      <circle r="88" fill="rgba(0,10,0,.95)" stroke="#00ff41" stroke-width="2"/>
-      <circle r="83" fill="none" stroke="rgba(0,255,65,.1)" stroke-width="1"/>
+    <svg id="clk" width="185" height="185" viewBox="-92 -92 184 184">
+      <circle r="90" fill="rgba(0,10,0,.95)" stroke="#00ff41" stroke-width="2"/>
+      <circle r="85" fill="none" stroke="rgba(0,255,65,.1)" stroke-width="1"/>
       <g id="ticks"></g><g id="nums"></g>
       <path id="arc" fill="rgba(255,255,0,.07)" stroke="rgba(255,255,0,.5)" stroke-width="1.5" d=""/>
-      <line id="hh" x1="0" y1="0" x2="0" y2="-44" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/>
-      <line id="mh" x1="0" y1="0" x2="0" y2="-60" stroke="#00ff41" stroke-width="3" stroke-linecap="round"/>
-      <line id="sh" x1="0" y1="5" x2="0" y2="-68" stroke="#00cfff" stroke-width="1.5" stroke-linecap="round"/>
+      <line id="hh" x1="0" y1="0" x2="0" y2="-45" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/>
+      <line id="mh" x1="0" y1="0" x2="0" y2="-62" stroke="#00ff41" stroke-width="3" stroke-linecap="round"/>
+      <line id="sh" x1="0" y1="5" x2="0" y2="-70" stroke="#00cfff" stroke-width="1.5" stroke-linecap="round"/>
       <circle r="4" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
     </svg>
   </div>
-  <!-- контейнер вариантов — заполняется JS -->
   <div id="choices-wrap"></div>
-  <!-- кнопка подтверждения (только для уровня 4) -->
   <button id="confirm-btn" onclick="confirmMulti()">✓ ПОДТВЕРДИТЬ ВЫБОР</button>
   <div class="fb" id="fb"></div>
   <div class="hops-wrap">
@@ -336,7 +318,7 @@
   },55);
 })();
 
-/* ══ ЧАСЫ ══ */
+/* ══ РЕАЛЬНЫЕ ЧАСЫ ══ */
 setInterval(()=>{const n=new Date(),p=v=>String(v).padStart(2,'0');
   document.getElementById('rc').textContent=p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());},1000);
 
@@ -356,13 +338,8 @@ loadData();
 if(!localStorage.getItem('cag_test500')){SAVE.coins+=500;localStorage.setItem('cag_test500','1');saveData();}
 
 /* ══ ИНТРО ══ */
-function checkIntro(){
-  if(!localStorage.getItem('cag_intro_shown'))showS('intro-screen');
-}
-function closeIntro(){
-  localStorage.setItem('cag_intro_shown','1');
-  showS('menu-screen');updMenuCoins();
-}
+function checkIntro(){if(!localStorage.getItem('cag_intro_shown'))showS('intro-screen');}
+function closeIntro(){localStorage.setItem('cag_intro_shown','1');showS('menu-screen');updMenuCoins();}
 
 /* ══ ДОСТИЖЕНИЯ ══ */
 const ACHIEVEMENTS=[
@@ -377,17 +354,13 @@ const ACHIEVEMENTS=[
 ];
 function checkAchievements(){
   ACHIEVEMENTS.forEach(a=>{
-    if(!SAVE.ach.includes(a.id)&&a.cond(SAVE)){
-      SAVE.ach.push(a.id);saveData();showAchToast(a.icon+' '+a.name);
-    }
+    if(!SAVE.ach.includes(a.id)&&a.cond(SAVE)){SAVE.ach.push(a.id);saveData();showAchToast(a.icon+' '+a.name);}
   });
 }
 let toastT=null;
 function showAchToast(msg){
-  const t=document.getElementById('ach-toast');
-  t.textContent='🏆 '+msg;t.classList.add('show');
-  if(toastT)clearTimeout(toastT);
-  toastT=setTimeout(()=>t.classList.remove('show'),3500);
+  const t=document.getElementById('ach-toast');t.textContent='🏆 '+msg;t.classList.add('show');
+  if(toastT)clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3500);
 }
 function openAch(){
   const list=document.getElementById('ach-list');list.innerHTML='';
@@ -434,17 +407,14 @@ function setSV(v){sv=v/100;document.getElementById('vsl').textContent=v+'%';if(S
 function openSound(){document.getElementById('sound-popup').classList.remove('hidden');}
 function closeSound(){document.getElementById('sound-popup').classList.add('hidden');}
 
-/* ══ УРОВНИ ══ */
-// Уровни 1-3: 5 вопросов, 4 варианта, 1 правильный
-// Уровень 4: 5 вопросов, 8 вариантов, 1-3 правильных (все три угла сразу)
+/* ══ КОНФИГ УРОВНЕЙ ══ */
 const LVS=[
-  {title:'УРОВЕНЬ 1',desc:'МИНУТНАЯ И СЕКУНДНАЯ',type:'ms', qc:5,cp:1},
-  {title:'УРОВЕНЬ 2',desc:'ЧАСОВАЯ И СЕКУНДНАЯ', type:'hs', qc:5,cp:2},
-  {title:'УРОВЕНЬ 3',desc:'ЧАСОВАЯ И МИНУТНАЯ',  type:'hm', qc:5,cp:4},
-  {title:'УРОВЕНЬ 4',desc:'ВСЕ УГЛЫ',            type:'all',qc:5,cp:6},
+  {title:'УРОВЕНЬ 1',desc:'МИНУТНАЯ ↔ СЕКУНДНАЯ', type:'ms',  qc:5, cp:1},
+  {title:'УРОВЕНЬ 2',desc:'ЧАСОВАЯ ↔ СЕКУНДНАЯ',  type:'hs',  qc:5, cp:2},
+  {title:'УРОВЕНЬ 3',desc:'ЧАСОВАЯ ↔ МИНУТНАЯ',   type:'hm',  qc:5, cp:4},
+  {title:'УРОВЕНЬ 4',desc:'ВСЕ УГЛЫ',              type:'all', qc:5, cp:6},
 ];
 const HOP_AFTER=[1,3,5,8];
-
 const WIN_YEARS=[
   {y:300,era:'до н.э.',place:'Древняя Греция',desc:'эпоха Александра Македонского'},
   {y:44, era:'до н.э.',place:'Древний Рим',   desc:'год гибели Юлия Цезаря'},
@@ -456,385 +426,428 @@ const WIN_YEARS=[
   {y:1274,era:'до н.э.',place:'Египет',       desc:'битва при Кадеше'},
 ];
 
-let ST={}, locked=false, hintUsed=false;
-// Для уровня 4: массив правильных индексов и выбранных игроком
-let multiCorrect=[], multiSelected=new Set();
-// Для уровней 1-3: индекс правильного
-let singleCorrectIdx=0;
-// Текущие варианты (массив значений)
-let currentOpts=[];
+/* ══ СОСТОЯНИЕ ИГРЫ ══ */
+let ST = {};        // {lv, qi, lives, hops, time:{h,m,s}}
+let locked = false;
+let hintUsed = false;
 
-function rndTime(){return{h:Math.floor(Math.random()*12),m:Math.floor(Math.random()*60),s:Math.floor(Math.random()*60)};}
-function angles(t){return{s:t.s*6,m:t.m*6+t.s*.1,h:(t.h%12)*30+t.m*.5+t.s/120};}
-function angBetween(a,b){let d=Math.abs(a-b)%360;return d>180?360-d:d;}
-function r1(x){return Math.round(x*10)/10;}
+// Уровни 1-3
+let single_correctIdx = 0;   // индекс правильной кнопки
+let single_opts = [];         // массив числовых значений [°]
 
-/* Правильные углы для текущего вопроса (уровни 1-3 → 1 угол, уровень 4 → 1..3 угла) */
-function getCorrectAngles(){
-  const a=angles(ST.time);
-  if(ST.lv<3){
-    const tp=LVS[ST.lv].type;
-    if(tp==='ms')return[r1(angBetween(a.m,a.s))];
-    if(tp==='hs')return[r1(angBetween(a.h,a.s))];
-    return[r1(angBetween(a.h,a.m))];
-  }
-  // Уровень 4: случайно выбираем 1, 2 или 3 из трёх возможных углов
-  const all=[
-    {v:r1(angBetween(a.m,a.s)),label:'мин↔сек'},
-    {v:r1(angBetween(a.h,a.s)),label:'час↔сек'},
-    {v:r1(angBetween(a.h,a.m)),label:'час↔мин'},
-  ];
-  // Рандомное количество правильных: 1, 2 или 3
-  const count=Math.floor(Math.random()*3)+1;
-  // Перемешиваем и берём count
-  const shuffled=[...all].sort(()=>Math.random()-.5);
-  return shuffled.slice(0,count);
+// Уровень 4
+let multi_correctVals = [];   // Set значений правильных ответов
+let multi_opts = [];          // массив числовых значений [°]
+let multi_selected = new Set(); // индексы выбранных кнопок
+
+/* ══ МАТЕМАТИКА ══ */
+function rndTime(){
+  return {h:Math.floor(Math.random()*12), m:Math.floor(Math.random()*60), s:Math.floor(Math.random()*60)};
+}
+function calcAngles(time){
+  const s = time.s * 6;
+  const m = time.m * 6 + time.s * 0.1;
+  const h = (time.h % 12) * 30 + time.m * 0.5 + time.s / 120;
+  return {h, m, s};
+}
+function angleBetween(a, b){
+  let d = Math.abs(a - b) % 360;
+  return d > 180 ? 360 - d : d;
+}
+function round1(x){ return Math.round(x * 10) / 10; }
+
+/* Правильный угол для уровней 1-3 — возвращает число */
+function getCorrectAngle(){
+  const a = calcAngles(ST.time);
+  const tp = LVS[ST.lv].type;
+  if(tp === 'ms') return round1(angleBetween(a.m, a.s));
+  if(tp === 'hs') return round1(angleBetween(a.h, a.s));
+  if(tp === 'hm') return round1(angleBetween(a.h, a.m));
+  return 0;
 }
 
-/* Генерация 4 вариантов (уровни 1-3) */
-function genChoices4(correctVal){
-  const opts=new Set([correctVal]);let tries=0;
-  while(opts.size<4&&tries<60){
+/* Правильные углы для уровня 4 — возвращает массив чисел (1, 2 или 3) */
+function getCorrectAnglesL4(){
+  const a = calcAngles(ST.time);
+  const all = [
+    round1(angleBetween(a.m, a.s)),
+    round1(angleBetween(a.h, a.s)),
+    round1(angleBetween(a.h, a.m)),
+  ];
+  // Убираем дубли (иногда углы совпадают)
+  const unique = [...new Set(all)];
+  // Случайно 1, 2 или 3 из уникальных
+  const count = Math.min(Math.floor(Math.random() * 3) + 1, unique.length);
+  // Перемешиваем и берём count
+  const shuffled = unique.sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+/* Генерация 4 вариантов для уровней 1-3 */
+function makeOpts4(correctVal){
+  const set = new Set([correctVal]);
+  let tries = 0;
+  while(set.size < 4 && tries < 80){
     tries++;
-    let delta=(Math.floor(Math.random()*8)+1)*5*(Math.random()>.5?1:-1);
-    let v=r1(((correctVal+delta)%360+360)%360);
-    if(v>180)v=r1(360-v);
-    if(v>=0&&v<=180)opts.add(v);
+    const delta = (Math.floor(Math.random() * 9) + 1) * 5 * (Math.random() > 0.5 ? 1 : -1);
+    let v = round1(((correctVal + delta) % 360 + 360) % 360);
+    if(v > 180) v = round1(360 - v);
+    if(v >= 1 && v <= 179 && !set.has(v)) set.add(v);
   }
-  const fb=[10,20,30,45,60,75,90,120,135,150];let fi=0;
-  while(opts.size<4)opts.add(fb[fi++%fb.length]);
-  const arr=Array.from(opts).slice(0,4);
-  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  // Фолбэк если мало
+  const fb = [15,30,45,60,75,90,105,120,135,150,165];
+  let fi = 0;
+  while(set.size < 4){ const v = fb[fi++ % fb.length]; if(!set.has(v)) set.add(v); }
+  const arr = Array.from(set).slice(0, 4);
+  // Перемешиваем
+  for(let i = arr.length-1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
   return arr;
 }
 
-/* Генерация 8 вариантов для уровня 4 (включает 1-3 правильных) */
-function genChoices8(correctVals){
-  const correctSet=new Set(correctVals);
-  const opts=new Set(correctVals); // сначала добавляем все правильные
-  let tries=0;
-  while(opts.size<8&&tries<120){
+/* Генерация 8 вариантов для уровня 4 */
+function makeOpts8(correctVals){
+  const cSet = new Set(correctVals);
+  const set = new Set(correctVals); // правильные сразу включаем
+  let tries = 0;
+  while(set.size < 8 && tries < 150){
     tries++;
-    const base=correctVals[Math.floor(Math.random()*correctVals.length)];
-    let delta=(Math.floor(Math.random()*9)+2)*5*(Math.random()>.5?1:-1);
-    let v=r1(((base+delta)%360+360)%360);
-    if(v>180)v=r1(360-v);
-    if(v>=1&&v<=179&&!correctSet.has(v))opts.add(v);
+    const base = correctVals[Math.floor(Math.random() * correctVals.length)];
+    const delta = (Math.floor(Math.random() * 10) + 2) * 5 * (Math.random() > 0.5 ? 1 : -1);
+    let v = round1(((base + delta) % 360 + 360) % 360);
+    if(v > 180) v = round1(360 - v);
+    if(v >= 1 && v <= 179 && !cSet.has(v) && !set.has(v)) set.add(v);
   }
-  // Добиваем если мало
-  const fb=[8,16,24,32,48,56,64,72,80,88,96,104,112,128,136,144,152,160,168];
-  let fi=0;
-  while(opts.size<8){const v=fb[fi++%fb.length];if(!correctSet.has(v))opts.add(v);}
-  const arr=Array.from(opts).slice(0,8);
-  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  const fb = [8,16,24,32,40,48,56,64,72,88,96,104,112,128,136,144,152,160];
+  let fi = 0;
+  while(set.size < 8){ const v = fb[fi++ % fb.length]; if(!set.has(v)) set.add(v); }
+  const arr = Array.from(set).slice(0, 8);
+  for(let i = arr.length-1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
   return arr;
 }
 
 /* ══ ЦИФЕРБЛАТ ══ */
 function drawTicks(){
-  const tg=document.getElementById('ticks'),ng=document.getElementById('nums');
-  tg.innerHTML='';ng.innerHTML='';
+  const tg=document.getElementById('ticks'), ng=document.getElementById('nums');
+  tg.innerHTML=''; ng.innerHTML='';
   for(let i=0;i<60;i++){
-    const r=i*6*Math.PI/180,maj=i%5===0,r1v=maj?68:73,r2v=80;
+    const rad=i*6*Math.PI/180, maj=i%5===0, r1=maj?70:76, r2=83;
     const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',Math.sin(r)*r1v);line.setAttribute('y1',-Math.cos(r)*r1v);
-    line.setAttribute('x2',Math.sin(r)*r2v);line.setAttribute('y2',-Math.cos(r)*r2v);
-    line.setAttribute('stroke',maj?'#00ff41':'rgba(0,255,65,.3)');line.setAttribute('stroke-width',maj?'2':'1');
+    line.setAttribute('x1', Math.sin(rad)*r1); line.setAttribute('y1', -Math.cos(rad)*r1);
+    line.setAttribute('x2', Math.sin(rad)*r2); line.setAttribute('y2', -Math.cos(rad)*r2);
+    line.setAttribute('stroke', maj ? '#00ff41' : 'rgba(0,255,65,.3)');
+    line.setAttribute('stroke-width', maj ? '2' : '1');
     tg.appendChild(line);
-    if(maj){const num=i/5||12,nr=59,t=document.createElementNS('http://www.w3.org/2000/svg','text');
-      t.setAttribute('x',Math.sin(r)*nr);t.setAttribute('y',-Math.cos(r)*nr+3.5);
-      t.setAttribute('text-anchor','middle');t.setAttribute('fill','rgba(0,255,65,.55)');
-      t.setAttribute('font-size','7');t.setAttribute('font-family','Orbitron,monospace');
-      t.textContent=num;ng.appendChild(t);}
+    if(maj){
+      const num=i/5||12, nr=61;
+      const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x', Math.sin(rad)*nr); t.setAttribute('y', -Math.cos(rad)*nr+3.5);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('fill','rgba(0,255,65,.55)');
+      t.setAttribute('font-size','7.5'); t.setAttribute('font-family','Orbitron,monospace');
+      t.textContent = num; ng.appendChild(t);
+    }
   }
 }
-function setHand(id,deg,lenY,tailY=0){
-  const el=document.getElementById(id),r=deg*Math.PI/180;
-  el.setAttribute('x1',tailY?-Math.sin(r)*tailY:0);el.setAttribute('y1',tailY?Math.cos(r)*tailY:0);
-  el.setAttribute('x2',Math.sin(r)*lenY);el.setAttribute('y2',-Math.cos(r)*lenY);
+function setHand(id, deg, lenY, tailY=0){
+  const el=document.getElementById(id), r=deg*Math.PI/180;
+  el.setAttribute('x1', tailY ? -Math.sin(r)*tailY : 0);
+  el.setAttribute('y1', tailY ?  Math.cos(r)*tailY : 0);
+  el.setAttribute('x2', Math.sin(r)*lenY);
+  el.setAttribute('y2', -Math.cos(r)*lenY);
 }
 function renderClock(){
-  const a=angles(ST.time);
-  setHand('hh',a.h,44);setHand('mh',a.m,60);setHand('sh',a.s,68,5);
-  // На уровне 4 — все стрелки яркие
-  const dim=ST.lv<3;
-  const ltp=LVS[ST.lv].type;
-  document.getElementById('hh').setAttribute('opacity',!dim||(ltp==='hs'||ltp==='hm')?'1':'.2');
-  document.getElementById('mh').setAttribute('opacity',!dim||(ltp==='ms'||ltp==='hm')?'1':'.2');
-  document.getElementById('sh').setAttribute('opacity',!dim||(ltp==='ms'||ltp==='hs')?'1':'.2');
-  // Дуга (только для уровней 1-3)
-  const arc=document.getElementById('arc');
-  if(ST.lv<3){
+  const a = calcAngles(ST.time);
+  setHand('hh', a.h, 45); setHand('mh', a.m, 62); setHand('sh', a.s, 70, 5);
+  const tp = LVS[ST.lv].type;
+  const isL4 = ST.lv === 3;
+  document.getElementById('hh').setAttribute('opacity', (isL4 || tp==='hs' || tp==='hm') ? '1' : '.15');
+  document.getElementById('mh').setAttribute('opacity', (isL4 || tp==='ms' || tp==='hm') ? '1' : '.15');
+  document.getElementById('sh').setAttribute('opacity', (isL4 || tp==='ms' || tp==='hs') ? '1' : '.15');
+  // Дуга (только уровни 1-3)
+  const arc = document.getElementById('arc');
+  if(!isL4){
     const R=28;
-    let a1,a2;
-    if(ltp==='ms'){a1=a.m;a2=a.s;}else if(ltp==='hs'){a1=a.h;a2=a.s;}else{a1=a.h;a2=a.m;}
-    const r1r=a1*Math.PI/180,r2r=a2*Math.PI/180;
-    const x1=Math.sin(r1r)*R,y1=-Math.cos(r1r)*R,x2=Math.sin(r2r)*R,y2=-Math.cos(r2r)*R;
-    let diff=((a2-a1)%360+360)%360,lg=diff>180?1:0;
-    arc.setAttribute('d',`M0 0 L${x1} ${y1} A${R} ${R} 0 ${lg} 1 ${x2} ${y2}Z`);
-  }else{arc.setAttribute('d','');}
+    let a1, a2;
+    if(tp==='ms'){a1=a.m;a2=a.s;} else if(tp==='hs'){a1=a.h;a2=a.s;} else {a1=a.h;a2=a.m;}
+    const r1r=a1*Math.PI/180, r2r=a2*Math.PI/180;
+    const x1=Math.sin(r1r)*R, y1=-Math.cos(r1r)*R, x2=Math.sin(r2r)*R, y2=-Math.cos(r2r)*R;
+    const diff=((a2-a1)%360+360)%360, lg=diff>180?1:0;
+    arc.setAttribute('d', `M0 0 L${x1} ${y1} A${R} ${R} 0 ${lg} 1 ${x2} ${y2}Z`);
+  } else {
+    arc.setAttribute('d','');
+  }
 }
 
 /* ══ HUD ══ */
 function updHUD(){
-  const lv=LVS[ST.lv];
-  document.getElementById('h-lv').textContent=ST.lv+1;
-  document.getElementById('h-q').textContent=(ST.qi+1)+'/'+lv.qc;
-  document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-  document.getElementById('h-l').textContent='❤️'.repeat(ST.lives)+'🖤'.repeat(3-ST.lives);
-  document.getElementById('qlb').textContent=lv.title+' — '+lv.desc;
-  const pad=n=>String(n).padStart(2,'0');
-  const ts=pad(ST.time.h)+':'+pad(ST.time.m)+':'+pad(ST.time.s);
-  if(ST.lv<3){
-    const tp=lv.type;
-    let q='';
-    if(tp==='ms')q=`Время ${ts}\nНайди угол: МИНУТНАЯ ↔ СЕКУНДНАЯ`;
-    else if(tp==='hs')q=`Время ${ts}\nНайди угол: ЧАСОВАЯ ↔ СЕКУНДНАЯ`;
-    else q=`Время ${ts}\nНайди угол: ЧАСОВАЯ ↔ МИНУТНАЯ`;
-    document.getElementById('qtx').textContent=q;
-    document.getElementById('q-multi-hint').classList.add('hidden');
-  }else{
-    // Уровень 4
-    const cnt=multiCorrect.length;
-    document.getElementById('qtx').textContent=`Время ${ts}\nВыбери ВСЕ верные углы`;
-    const mh=document.getElementById('q-multi-hint');
-    mh.classList.remove('hidden');
-    mh.textContent=`Правильных ответов: ${cnt} из 8 вариантов`;
+  const lv = LVS[ST.lv];
+  document.getElementById('h-lv').textContent = ST.lv + 1;
+  document.getElementById('h-q').textContent = (ST.qi + 1) + '/' + lv.qc;
+  document.getElementById('h-c').textContent = SAVE.coins + '🪙';
+  document.getElementById('h-l').textContent = '❤️'.repeat(ST.lives) + '🖤'.repeat(3 - ST.lives);
+  document.getElementById('qlb').textContent = lv.title + ' — ' + lv.desc;
+  const pad = n => String(n).padStart(2,'0');
+  const ts = pad(ST.time.h) + ':' + pad(ST.time.m) + ':' + pad(ST.time.s);
+  const tp = lv.type;
+  let qText = '';
+  if(tp === 'ms') qText = 'Время ' + ts + '\nНайди угол: МИНУТНАЯ ↔ СЕКУНДНАЯ';
+  else if(tp === 'hs') qText = 'Время ' + ts + '\nНайди угол: ЧАСОВАЯ ↔ СЕКУНДНАЯ';
+  else if(tp === 'hm') qText = 'Время ' + ts + '\nНайди угол: ЧАСОВАЯ ↔ МИНУТНАЯ';
+  else qText = 'Время ' + ts + '\nВыбери ВСЕ верные углы и нажми ПОДТВЕРДИТЬ';
+  document.getElementById('qtx').textContent = qText;
+  const hint = document.getElementById('q-hint');
+  if(ST.lv === 3){
+    hint.style.display = '';
+    hint.textContent = '⚠ Правильных ответов: ' + multi_correctVals.length + ' из 8';
+  } else {
+    hint.style.display = 'none';
   }
 }
 
 /* ══ КЛАССИКИ ══ */
 function buildHops(){
-  const w=document.getElementById('hops');w.innerHTML='';
+  const w = document.getElementById('hops'); w.innerHTML = '';
   [[1],[2],[3],[4,5],[6],[7,8]].forEach(row=>{
-    const d=document.createElement('div');d.className='hops-row';
-    row.forEach(n=>{const c=document.createElement('div');c.className='hop';c.textContent=n;
-      if(n<=ST.hops)c.classList.add('done');else if(n===ST.hops+1)c.classList.add('act');d.appendChild(c);});
+    const d = document.createElement('div'); d.className = 'hops-row';
+    row.forEach(n=>{
+      const c = document.createElement('div'); c.className = 'hop'; c.textContent = n;
+      if(n <= ST.hops) c.classList.add('done');
+      else if(n === ST.hops + 1) c.classList.add('act');
+      d.appendChild(c);
+    });
     w.appendChild(d);
   });
 }
 
-/* ══ РЕНДЕР ВАРИАНТОВ ══ */
+/* ══ РЕНДЕР ВАРИАНТОВ — главная функция ══ */
 function renderChoices(){
-  hintUsed=false;
-  multiSelected=new Set();
-  document.getElementById('hint-btn').disabled=false;
-  document.getElementById('fb').textContent='';
-  const wrap=document.getElementById('choices-wrap');
-  wrap.innerHTML='';
-  const cb=document.getElementById('confirm-btn');
+  hintUsed = false;
+  multi_selected = new Set();
+  document.getElementById('hint-btn').disabled = false;
+  document.getElementById('fb').textContent = '';
+  const wrap = document.getElementById('choices-wrap');
+  wrap.innerHTML = '';
+  const confirmBtn = document.getElementById('confirm-btn');
 
-  if(ST.lv<3){
-    // 4 варианта, 1 правильный
-    cb.style.display='none';
-    const correctAngles=getCorrectAngles();
-    const correctVal=correctAngles[0].v;
-    currentOpts=genChoices4(correctVal);
-    singleCorrectIdx=currentOpts.indexOf(correctVal);
-    const grid=document.createElement('div');grid.className='choices-4';
-    currentOpts.forEach((v,i)=>{
-      const btn=document.createElement('button');
-      btn.className='choice-btn';btn.textContent=v+'°';
-      btn.onclick=()=>pickSingle(i);
-      btn.id='cb'+i;grid.appendChild(btn);
+  if(ST.lv < 3){
+    // ── Уровни 1-3: 4 кнопки, 1 правильный ──
+    confirmBtn.style.display = 'none';
+    const correctVal = getCorrectAngle();
+    single_opts = makeOpts4(correctVal);
+    single_correctIdx = single_opts.indexOf(correctVal);
+    const grid = document.createElement('div');
+    grid.className = 'choices-grid g4';
+    single_opts.forEach((val, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.id = 'cb' + i;
+      btn.textContent = val + '°';
+      btn.onclick = () => pickSingle(i);
+      grid.appendChild(btn);
     });
     wrap.appendChild(grid);
-  }else{
-    // 8 вариантов, 1-3 правильных
-    cb.style.display='';
-    const correctAngles=getCorrectAngles();
-    multiCorrect=correctAngles; // массив объектов {v,label}
-    const correctVals=correctAngles.map(a=>a.v);
-    currentOpts=genChoices8(correctVals);
-    const grid=document.createElement('div');grid.className='choices-8';
-    currentOpts.forEach((v,i)=>{
-      const btn=document.createElement('button');
-      btn.className='choice-btn';btn.textContent=v+'°';
-      btn.onclick=()=>toggleMulti(i,btn);
-      btn.id='cb'+i;grid.appendChild(btn);
+  } else {
+    // ── Уровень 4: 8 кнопок, 1-3 правильных ──
+    confirmBtn.style.display = '';
+    multi_correctVals = getCorrectAnglesL4();
+    multi_opts = makeOpts8(multi_correctVals);
+    const grid = document.createElement('div');
+    grid.className = 'choices-grid g8';
+    multi_opts.forEach((val, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.id = 'cb' + i;
+      btn.textContent = val + '°';
+      btn.onclick = () => toggleMulti(i);
+      grid.appendChild(btn);
     });
     wrap.appendChild(grid);
-    updHUD(); // обновляем подсказку с кол-вом правильных
-    return; // updHUD уже вызван
   }
+  // Обновляем HUD ПОСЛЕ того как multi_correctVals уже заполнен
   updHUD();
+  renderClock();
 }
 
-/* ══ УРОВНИ 1-3: клик по одному варианту ══ */
+/* ══ УРОВНИ 1-3: клик ══ */
 function pickSingle(idx){
-  if(locked)return;initA();
-  locked=true;
-  const ok=(idx===singleCorrectIdx);
-  document.getElementById('cb'+idx).classList.add(ok?'correct':'wrong');
+  if(locked) return;
+  initA(); locked = true;
+  const ok = (idx === single_correctIdx);
+  document.getElementById('cb' + idx).classList.add(ok ? 'correct' : 'wrong');
   if(!ok){
-    document.getElementById('cb'+singleCorrectIdx).classList.add('correct');
-    for(let i=0;i<4;i++)document.getElementById('cb'+i).disabled=true;
+    document.getElementById('cb' + single_correctIdx).classList.add('correct');
+    for(let i=0;i<4;i++) document.getElementById('cb'+i).disabled = true;
     ST.lives--;
-    showFb('✗ НЕВЕРНО!','bad');
-    document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-ST.lives);
+    document.getElementById('h-l').textContent = '❤️'.repeat(Math.max(0,ST.lives)) + '🖤'.repeat(3-Math.max(0,ST.lives));
     sfx('no');
-    if(ST.lives<=0){setTimeout(gameOver,1100);}else{setTimeout(advance,1200);}
-  }else{
+    showFb('✗ НЕВЕРНО!', 'bad');
+    if(ST.lives <= 0) setTimeout(gameOver, 1100);
+    else setTimeout(advance, 1200);
+  } else {
     sfx('ok');
-    SAVE.coins+=LVS[ST.lv].cp;saveData();
-    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
-    document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-    setTimeout(advance,900);
+    SAVE.coins += LVS[ST.lv].cp; saveData();
+    document.getElementById('h-c').textContent = SAVE.coins + '🪙';
+    showFb('✓ ВЕРНО! +' + LVS[ST.lv].cp + '🪙', 'ok');
+    setTimeout(advance, 900);
   }
 }
 
-/* ══ УРОВЕНЬ 4: тоггл выбора ══ */
-function toggleMulti(idx,btn){
-  if(locked)return;
-  if(multiSelected.has(idx)){
-    multiSelected.delete(idx);btn.classList.remove('selected');
-  }else{
-    multiSelected.add(idx);btn.classList.add('selected');
-  }
-}
-
-/* ══ УРОВЕНЬ 4: подтверждение ══ */
-function confirmMulti(){
-  if(locked)return;
-  if(multiSelected.size===0){showFb('Выбери хотя бы один вариант!','hint');return;}
-  initA();locked=true;
-  const correctVals=new Set(multiCorrect.map(a=>a.v));
-  const selectedVals=new Set([...multiSelected].map(i=>currentOpts[i]));
-  // Проверка: все правильные выбраны И ни одного лишнего
-  const allCorrectChosen=[...correctVals].every(v=>selectedVals.has(v));
-  const noExtraChosen=[...selectedVals].every(v=>correctVals.has(v));
-  const perfectMatch=allCorrectChosen&&noExtraChosen;
-
-  // Подсвечиваем все кнопки
-  for(let i=0;i<8;i++){
-    const btn=document.getElementById('cb'+i);
-    if(!btn)continue;
-    btn.disabled=true;
-    const val=currentOpts[i];
-    const isCorrect=correctVals.has(val);
-    const isSelected=multiSelected.has(i);
-    if(isCorrect&&isSelected) btn.classList.add('correct');       // выбрал правильный ✓
-    else if(isCorrect&&!isSelected) btn.classList.add('missed');  // пропустил правильный
-    else if(!isCorrect&&isSelected) btn.classList.add('wrong');   // выбрал неправильный ✗
+/* ══ УРОВЕНЬ 4: тоггл и подтверждение ══ */
+function toggleMulti(idx){
+  if(locked) return;
+  const btn = document.getElementById('cb' + idx);
+  if(multi_selected.has(idx)){
+    multi_selected.delete(idx);
     btn.classList.remove('selected');
+  } else {
+    multi_selected.add(idx);
+    btn.classList.add('selected');
   }
-
-  if(perfectMatch){
+}
+function confirmMulti(){
+  if(locked) return;
+  if(multi_selected.size === 0){ showFb('Выбери хотя бы один ответ!', 'hint'); return; }
+  initA(); locked = true;
+  const cSet = new Set(multi_correctVals);
+  const selVals = new Set([...multi_selected].map(i => multi_opts[i]));
+  const perfect = [...cSet].every(v => selVals.has(v)) && [...selVals].every(v => cSet.has(v));
+  // Подсвечиваем все 8 кнопок
+  for(let i=0;i<8;i++){
+    const btn = document.getElementById('cb'+i);
+    if(!btn) continue;
+    btn.disabled = true;
+    btn.classList.remove('selected');
+    const val = multi_opts[i];
+    const isC = cSet.has(val);
+    const isSel = multi_selected.has(i);
+    if(isC && isSel)   btn.classList.add('correct');
+    else if(isC)       btn.classList.add('missed');
+    else if(isSel)     btn.classList.add('wrong');
+  }
+  if(perfect){
     sfx('ok');
-    SAVE.coins+=LVS[ST.lv].cp;saveData();
-    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
-    document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-    setTimeout(advance,1000);
-  }else{
+    SAVE.coins += LVS[ST.lv].cp; saveData();
+    document.getElementById('h-c').textContent = SAVE.coins + '🪙';
+    showFb('✓ ВЕРНО! +' + LVS[ST.lv].cp + '🪙', 'ok');
+    setTimeout(advance, 1000);
+  } else {
     sfx('no');
     ST.lives--;
-    const missed=[...correctVals].filter(v=>!selectedVals.has(v));
-    const extra=[...selectedVals].filter(v=>!correctVals.has(v));
-    let msg='✗ НЕВЕРНО!';
-    if(missed.length&&extra.length)msg='✗ Пропущены и лишние ответы!';
-    else if(missed.length)msg='✗ Пропущены правильные ответы!';
-    else if(extra.length)msg='✗ Есть лишние ответы!';
-    showFb(msg,'bad');
-    document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-ST.lives);
-    if(ST.lives<=0){setTimeout(gameOver,1200);}else{setTimeout(advance,1400);}
+    document.getElementById('h-l').textContent = '❤️'.repeat(Math.max(0,ST.lives)) + '🖤'.repeat(3-Math.max(0,ST.lives));
+    const missed = [...cSet].filter(v => !selVals.has(v)).length;
+    const extra  = [...selVals].filter(v => !cSet.has(v)).length;
+    let msg = '✗ НЕВЕРНО!';
+    if(missed && extra) msg = '✗ Есть пропущенные и лишние!';
+    else if(missed) msg = '✗ Не все правильные выбраны!';
+    else if(extra)  msg = '✗ Есть лишние ответы!';
+    showFb(msg, 'bad');
+    if(ST.lives <= 0) setTimeout(gameOver, 1200);
+    else setTimeout(advance, 1400);
   }
 }
 
-/* ══ ADVANCE ══ */
+/* ══ СЛЕДУЮЩИЙ ВОПРОС ══ */
 function advance(){
-  locked=false;document.getElementById('fb').textContent='';
+  locked = false;
+  document.getElementById('fb').textContent = '';
   ST.qi++;
-  if(ST.qi>=LVS[ST.lv].qc){levelDone();return;}
-  ST.time=rndTime();
-  const hopStart=ST.lv===0?0:HOP_AFTER[ST.lv-1];
-  const hopEnd=HOP_AFTER[ST.lv];
-  ST.hops=Math.min(hopEnd,hopStart+Math.floor(ST.qi/LVS[ST.lv].qc*(hopEnd-hopStart)));
-  buildHops();renderChoices();
+  if(ST.qi >= LVS[ST.lv].qc){ levelDone(); return; }
+  ST.time = rndTime();  // НОВОЕ ВРЕМЯ для каждого вопроса
+  // Прогресс классиков
+  const hopStart = ST.lv === 0 ? 0 : HOP_AFTER[ST.lv-1];
+  const hopEnd = HOP_AFTER[ST.lv];
+  ST.hops = Math.min(hopEnd, hopStart + Math.floor(ST.qi / LVS[ST.lv].qc * (hopEnd - hopStart)));
+  buildHops();
+  renderChoices(); // renderChoices сам вызывает updHUD и renderClock
 }
 
 function levelDone(){
-  sfx('up');ST.hops=HOP_AFTER[ST.lv];buildHops();
-  SAVE.lvCount[ST.lv]++;saveData();checkAchievements();
-  if(ST.lv>=3){
-    const dest=WIN_YEARS[Math.floor(Math.random()*WIN_YEARS.length)];
-    document.getElementById('win-text').innerHTML=
+  sfx('up');
+  ST.hops = HOP_AFTER[ST.lv]; buildHops();
+  SAVE.lvCount[ST.lv]++; saveData(); checkAchievements();
+  if(ST.lv >= 3){
+    const dest = WIN_YEARS[Math.floor(Math.random() * WIN_YEARS.length)];
+    document.getElementById('win-text').innerHTML =
       `Система взломана. Координаты установлены.<br><br>
        Вы перенеслись в <span class="yr">${dest.y} год ${dest.era}</span><br>
        📍 ${dest.place} — ${dest.desc}.<br><br>
-       Оглядитесь. История открыта перед вами. Изучайте, не вмешивайтесь... или всё же вмешайтесь? 😏`;
-    document.getElementById('win-stats').innerHTML=
-      `Монет накоплено: <b>${SAVE.coins}🪙</b> &nbsp;|&nbsp; Жизней: <b>${ST.lives}</b>`;
-    showS('win-screen');updMenuCoins();return;
+       Оглядитесь. История открыта перед вами. Изучайте, не вмешивайтесь... или всё же? 😏`;
+    document.getElementById('win-stats').innerHTML =
+      `Монет: <b>${SAVE.coins}🪙</b> &nbsp;|&nbsp; Жизней: <b>${ST.lives}</b>`;
+    showS('win-screen'); updMenuCoins(); return;
   }
   showS('result-screen');
-  document.getElementById('next-btn').style.display='';
-  document.getElementById('rt').textContent=LVS[ST.lv].title+' ВЗЛОМАН!';
-  document.getElementById('ri').innerHTML='Монет: <b>'+SAVE.coins+'🪙</b> &nbsp;|&nbsp; Жизней: <b>'+ST.lives+'</b>';
+  document.getElementById('rt').textContent = LVS[ST.lv].title + ' ВЗЛОМАН!';
+  document.getElementById('ri').innerHTML = 'Монет: <b>' + SAVE.coins + '🪙</b> &nbsp;|&nbsp; Жизней: <b>' + ST.lives + '</b>';
   updMenuCoins();
 }
 function nextLevel(){
-  ST.lv++;ST.qi=0;ST.time=rndTime();locked=false;
-  showS('game-screen');buildHops();renderChoices();
-  document.getElementById('fb').textContent='';
+  ST.lv++; ST.qi = 0; ST.time = rndTime(); locked = false;
+  showS('game-screen'); buildHops(); renderChoices();
+  document.getElementById('fb').textContent = '';
 }
 function gameOver(){
   showS('gameover-screen');
-  document.getElementById('gi').innerHTML='Уровень: <b>'+(ST.lv+1)+'</b><br>Монет: <b>'+SAVE.coins+'🪙</b>';
+  document.getElementById('gi').innerHTML = 'Уровень: <b>' + (ST.lv+1) + '</b><br>Монет: <b>' + SAVE.coins + '🪙</b>';
   updMenuCoins();
 }
 
 /* ══ СТАРТ / РЕСТАРТ ══ */
 function startGame(){
-  initA();locked=false;
-  ST={lv:0,qi:0,lives:3,hops:0,time:rndTime()};
-  showS('game-screen');drawTicks();buildHops();renderChoices();
-  document.getElementById('fb').textContent='';
+  initA(); locked = false;
+  ST = {lv:0, qi:0, lives:3, hops:0, time:rndTime()};
+  showS('game-screen'); drawTicks(); buildHops(); renderChoices();
+  document.getElementById('fb').textContent = '';
 }
 function restartGame(){
-  initA();locked=false;
-  ST={lv:0,qi:0,lives:3,hops:0,time:rndTime()};
-  showS('game-screen');buildHops();renderChoices();
-  document.getElementById('fb').textContent='';
+  initA(); locked = false;
+  ST = {lv:0, qi:0, lives:3, hops:0, time:rndTime()};
+  showS('game-screen'); buildHops(); renderChoices();
+  document.getElementById('fb').textContent = '';
 }
 
 /* ══ ПОДСКАЗКА ══ */
 function useHint(){
   initA();
-  if(hintUsed){showFb('Подсказка уже использована!','hint');return;}
-  if(SAVE.coins<15){showFb('Нужно 15🪙!','bad');return;}
-  if(locked)return;
-  SAVE.coins-=15;saveData();
-  document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-  document.getElementById('hint-btn').disabled=true;
-  hintUsed=true;
-
-  if(ST.lv<3){
-    // Подсвечиваем правильную кнопку
-    document.getElementById('cb'+singleCorrectIdx).classList.add('hint-reveal');
-    showFb('💡 Правильный ответ выделен!','hint');
-  }else{
-    // Для уровня 4: подсвечиваем ОДИН из правильных (случайный)
-    const correctVals=multiCorrect.map(a=>a.v);
-    // Находим индексы правильных в currentOpts
-    const correctIdxs=currentOpts.reduce((acc,v,i)=>{if(correctVals.includes(v))acc.push(i);return acc;},[]);
-    const revealIdx=correctIdxs[Math.floor(Math.random()*correctIdxs.length)];
-    document.getElementById('cb'+revealIdx).classList.add('hint-reveal');
-    showFb('💡 Один из правильных ответов выделен!','hint');
+  if(hintUsed){ showFb('Подсказка уже использована!', 'hint'); return; }
+  if(SAVE.coins < 15){ showFb('Нужно 15🪙!', 'bad'); return; }
+  if(locked) return;
+  SAVE.coins -= 15; saveData();
+  document.getElementById('h-c').textContent = SAVE.coins + '🪙';
+  document.getElementById('hint-btn').disabled = true;
+  hintUsed = true;
+  if(ST.lv < 3){
+    document.getElementById('cb' + single_correctIdx).classList.add('hint-hl');
+    showFb('💡 Правильный ответ выделен!', 'hint');
+  } else {
+    // Подсвечиваем один случайный правильный
+    const cIdxs = multi_opts.reduce((acc, v, i) => { if(multi_correctVals.includes(v)) acc.push(i); return acc; }, []);
+    const ri = cIdxs[Math.floor(Math.random() * cIdxs.length)];
+    document.getElementById('cb' + ri).classList.add('hint-hl');
+    showFb('💡 Один из правильных ответов выделен!', 'hint');
   }
 }
 
-/* ══ ВСПОМОГАТЕЛЬНЫЕ ══ */
-function updMenuCoins(){document.getElementById('menu-coins').textContent='💰 '+SAVE.coins+' монет';}
-function showFb(msg,cls){const e=document.getElementById('fb');e.textContent=msg;e.className='fb '+cls;}
+/* ══ УТИЛИТЫ ══ */
+function updMenuCoins(){ document.getElementById('menu-coins').textContent = '💰 ' + SAVE.coins + ' монет'; }
+function showFb(msg, cls){ const e=document.getElementById('fb'); e.textContent=msg; e.className='fb '+cls; }
 function showS(id){
   ['intro-screen','menu-screen','game-screen','result-screen','gameover-screen','win-screen']
-    .forEach(s=>document.getElementById(s).classList.add('hidden'));
+    .forEach(s => document.getElementById(s).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
-function goMenu(){updMenuCoins();showS('menu-screen');}
+function goMenu(){ updMenuCoins(); showS('menu-screen'); }
 
-document.body.addEventListener('click',initA,{once:true});
-drawTicks();updMenuCoins();checkIntro();
+/* ══ INIT ══ */
+document.body.addEventListener('click', initA, {once:true});
+drawTicks();
+updMenuCoins();
+checkIntro();
 </script>
 </body>
 </html>
