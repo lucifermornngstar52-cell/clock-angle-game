@@ -1234,14 +1234,15 @@ let vlState = {
   skipNext:false, extraRoll:false,
   examQ:0, examCorrect:0,
   currentQ:null, currentP:null,
-  diceVal:0
+  diceVal:0,
+  usedQuestions: {green:[], yellow:[], red:[]}
 };
 
 function vlRnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function vlShuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 function vlStart(){
-  vlState={pos:0,sand:0,phase:'start',skipNext:false,extraRoll:false,examQ:0,examCorrect:0,currentQ:null,currentP:null,diceVal:0};
+  vlState={pos:0,sand:0,phase:'start',skipNext:false,extraRoll:false,examQ:0,examCorrect:0,usedQuestions:{green:[],yellow:[],red:[]},currentQ:null,currentP:null,diceVal:0};
   showS('vl-game');
   document.getElementById('vl-question-card').style.display='block';
   document.getElementById('vl-paradox-card').style.display='none';
@@ -1296,7 +1297,13 @@ function vlAskQuestion(){
   if(type==='paradox'){vlShowParadox();return;}
   if(type==='finish'){vlStartExam();return;}
   pool=type==='green'?VL_Q.green:type==='yellow'?VL_Q.yellow:VL_Q.red;
-  vlState.currentQ=vlRnd(pool);
+  // Уникальные вопросы — не повторять в одной игре
+  const used = vlState.usedQuestions[type] || [];
+  let available = pool.filter((_,i) => !used.includes(i));
+  if(available.length === 0){ vlState.usedQuestions[type]=[]; available=pool; } // сброс если все использованы
+  const qIdx = pool.indexOf(available[Math.floor(Math.random()*available.length)]);
+  vlState.usedQuestions[type].push(qIdx);
+  vlState.currentQ = pool[qIdx];
   vlRenderQuestion(vlState.currentQ,type,false);
   vlState.phase='question';
 }
@@ -1378,11 +1385,18 @@ function vlAfterRoll(val){
 }
 
 function vlShowParadox(){
-  const p=vlRnd(VL_PARADOX);
+  const p=VL_PARADOX[Math.floor(Math.random()*VL_PARADOX.length)];
   vlState.currentP=p;
+  // Применяем эффект карты автоматически
+  if(p.reward !== 0){
+    vlState.sand = Math.max(0, vlState.sand + p.reward);
+    vlUpdateHUD();
+  }
+  if(p.skip) vlState.skipNext = true;
+  if(p.extraRoll) vlState.extraRoll = true;
   document.getElementById('vl-question-card').style.display='none';
   document.getElementById('vl-paradox-card').style.display='block';
-  document.getElementById('vl-paradox-text').textContent=p.text;
+  document.getElementById('vl-paradox-text').textContent=p.text + (p.hint ? ' [' + p.hint + ']' : '');
   document.getElementById('vl-action-btn').style.display='block';
   document.getElementById('vl-action-btn').textContent='[ ✓ ПОНЯЛ ]';
   vlState.phase='paradox';
