@@ -87,6 +87,49 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 
 /* ФИНИШ */
 #end-screen{gap:14px;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,0,.08),var(--bg) 70%);}
+
+  /* ══ ЭКРАН ПРАВИЛ ══ */
+  #rules-screen{gap:0;justify-content:center;padding:20px 16px;}
+  .rules-frame{background:rgba(0,5,20,.97);border:2px solid var(--purple);border-radius:12px;
+    padding:20px 16px;max-width:400px;width:100%;box-shadow:0 0 30px rgba(123,47,255,.3);}
+  .rules-title{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;color:var(--gold);
+    text-shadow:0 0 14px var(--gold);text-align:center;letter-spacing:3px;margin-bottom:4px;}
+  .rules-sub{font-size:.55rem;color:rgba(255,215,0,.45);letter-spacing:3px;text-align:center;margin-bottom:14px;}
+  .rules-list{font-size:.74rem;color:rgba(200,220,255,.85);line-height:2;list-style:none;padding:0;}
+  .rules-list li{border-left:3px solid var(--purple);padding-left:10px;margin-bottom:6px;}
+  .rules-list li span{color:var(--cyan);font-weight:bold;}
+  .rules-countdown{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;
+    color:var(--gold);text-shadow:0 0 20px var(--gold);text-align:center;margin-top:14px;letter-spacing:4px;}
+  .rules-countdown-label{font-size:.52rem;color:rgba(255,215,0,.5);letter-spacing:2px;text-align:center;margin-top:2px;}
+
+  /* ══ ФИНАЛЬНЫЙ ЭКРАН (расширенный) ══ */
+  #end-screen .diploma-frame{background:rgba(5,3,0,.98);border:2px solid var(--gold);
+    border-radius:14px;padding:22px 16px;max-width:400px;width:100%;
+    box-shadow:0 0 40px rgba(255,215,0,.25);text-align:center;}
+  #end-screen .diploma-icon{font-size:3rem;margin-bottom:6px;}
+  #end-screen .diploma-title{font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:900;
+    letter-spacing:2px;margin-bottom:4px;line-height:1.3;}
+  #end-screen .diploma-name{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;
+    color:var(--gold);text-shadow:0 0 20px var(--gold);margin:8px 0;}
+  #end-screen .diploma-desc{font-size:.72rem;color:rgba(200,220,255,.75);line-height:1.8;margin-bottom:14px;}
+  #end-screen .diploma-scores{display:flex;gap:10px;justify-content:center;margin-bottom:14px;}
+  #end-screen .dscore{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);
+    border-radius:8px;padding:8px 14px;text-align:center;min-width:100px;}
+  #end-screen .dscore .dn{font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:1px;margin-bottom:2px;}
+  #end-screen .dscore .dv{font-family:'Orbitron',monospace;font-size:.95rem;}
+  #end-screen .loser-frame{background:rgba(20,0,0,.98);border:2px solid var(--red);
+    border-radius:14px;padding:22px 16px;max-width:400px;width:100%;
+    box-shadow:0 0 30px rgba(255,49,49,.2);text-align:center;margin-top:16px;}
+  #end-screen .loser-icon{font-size:2.5rem;margin-bottom:6px;}
+  #end-screen .loser-title{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:900;
+    color:var(--red);text-shadow:0 0 12px var(--red);letter-spacing:2px;margin-bottom:4px;}
+  #end-screen .loser-name{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;
+    color:rgba(255,100,100,.9);margin:6px 0;}
+  #end-screen .loser-desc{font-size:.68rem;color:rgba(255,150,150,.65);line-height:1.8;margin-bottom:12px;}
+  #end-screen .topics-title{font-size:.55rem;color:rgba(255,100,100,.5);letter-spacing:2px;margin-bottom:6px;}
+  #end-screen .topics-list{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
+  #end-screen .topic-tag{font-size:.58rem;color:rgba(255,150,100,.8);border:1px solid rgba(255,100,100,.3);
+    border-radius:4px;padding:3px 8px;background:rgba(255,50,50,.08);}
 .end-title{font-family:'Orbitron',monospace;font-size:clamp(1.3rem,5.5vw,1.9rem);font-weight:900;text-align:center;letter-spacing:3px;}
 .end-box{background:rgba(5,5,22,.97);border:1px solid rgba(255,215,0,.35);border-radius:12px;padding:18px;max-width:330px;width:100%;}
 .end-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.78rem;}
@@ -115,6 +158,24 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 </div>
 
 <!-- ОЖИДАНИЕ -->
+<div class="screen hidden" id="rules-screen">
+  <div class="rules-frame">
+    <div class="rules-title">📋 ПРАВИЛА ИГРЫ</div>
+    <div class="rules-sub">// MATHOPOLY · ИНСТРУКЦИЯ //</div>
+    <ul class="rules-list">
+      <li>🎲 Бросай кубик и двигай фишку по полю</li>
+      <li>❓ Попав на клетку — отвечай на вопрос по <span>9 классу</span></li>
+      <li>✅ Правильный ответ — получаешь <span>очки</span></li>
+      <li>⏱ На каждый вопрос <span>15 секунд</span></li>
+      <li>🔄 Ходы чередуются между игроками</li>
+      <li>🏁 Игра заканчивается когда кто-то <span>доходит до финиша</span></li>
+      <li>🏆 Побеждает тот кто набрал <span>больше очков</span></li>
+    </ul>
+    <div class="rules-countdown" id="rules-countdown">30</div>
+    <div class="rules-countdown-label">сек. до начала игры</div>
+  </div>
+</div>
+
 <div class="screen hidden" id="waiting">
   <div class="lobby-title">MATHOPOLY</div>
   <div class="lbox" style="text-align:center;">
@@ -166,13 +227,35 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 
 <!-- ФИНИШ -->
 <div class="screen hidden" id="end-screen">
-  <div class="end-title" id="etitle" style="color:var(--gold);">🏆 ПОБЕДА!</div>
-  <div class="end-box">
-    <div class="end-row"><span>Победитель</span><span id="ewinner" style="color:var(--gold);">—</span></div>
-    <div class="end-row"><span id="en0">P1</span><span id="es0" style="color:var(--purple);">0</span></div>
-    <div class="end-row"><span id="en1">P2</span><span id="es1" style="color:var(--cyan);">0</span></div>
+  <div style="width:100%;max-width:400px;overflow-y:auto;padding-bottom:20px;">
+    <!-- Победитель -->
+    <div class="diploma-frame" id="winner-block">
+      <div class="diploma-icon">🎓</div>
+      <div class="diploma-title" style="color:var(--gold);">ПОЗДРАВЛЯЕМ!</div>
+      <div class="diploma-title" style="color:rgba(255,255,255,.6);font-size:.7rem;letter-spacing:1px;margin-top:2px;">С УСПЕШНЫМ ОКОНЧАНИЕМ ШКОЛЫ</div>
+      <div class="diploma-name" id="ewinner">—</div>
+      <div class="diploma-desc" id="winner-desc">Ты блестяще справился с испытанием и доказал, что готов к взрослой жизни. Аттестат зрелости заслужен!</div>
+      <div class="diploma-scores" id="diploma-scores"></div>
+    </div>
+    <!-- Проигравший -->
+    <div class="loser-frame" id="loser-block">
+      <div class="loser-icon">📚</div>
+      <div class="loser-title">ВТОРОЙ ГОД</div>
+      <div class="loser-name" id="eloser">—</div>
+      <div class="loser-desc" id="loser-desc">К сожалению, знаний пока недостаточно для получения аттестата. Придётся остаться на второй год и подтянуть программу.</div>
+      <div class="topics-title">// ТЕМЫ ДЛЯ ПОВТОРЕНИЯ //</div>
+      <div class="topics-list">
+        <span class="topic-tag">Алгебра</span>
+        <span class="topic-tag">Геометрия</span>
+        <span class="topic-tag">Физика</span>
+        <span class="topic-tag">Тригонометрия</span>
+        <span class="topic-tag">Уравнения</span>
+        <span class="topic-tag">Статистика</span>
+      </div>
+    </div>
+    <!-- Кнопка -->
+    <button class="mbtn btn-gold" style="max-width:100%;margin-top:16px;padding:14px 0;" onclick="goMenu()">[ 🏠 В МЕНЮ ]</button>
   </div>
-  <button class="mbtn btn-gold" style="max-width:280px;margin-top:8px;" onclick="goMenu()">[ 🏠 В МЕНЮ ]</button>
 </div>
 
 <script>
@@ -424,10 +507,21 @@ function onMsg(msg){
 // ════════════════════════════════════════════
 function startGame(){
   if(!boardBuilt){buildBoard();boardBuilt=true;}
-  showS('game-screen');
-  renderHUD();
-  renderPawns();
-  renderDiceBtn();
+  showS('rules-screen');
+  let countdown=30;
+  document.getElementById('rules-countdown').textContent=countdown;
+  const rulesTimer=setInterval(()=>{
+    countdown--;
+    const el=document.getElementById('rules-countdown');
+    if(el) el.textContent=countdown;
+    if(countdown<=0){
+      clearInterval(rulesTimer);
+      showS('game-screen');
+      renderHUD();
+      renderPawns();
+      renderDiceBtn();
+    }
+  },1000);
 }
 
 // ════════════════════════════════════════════
@@ -774,13 +868,41 @@ function showEnd(gs){
   stopQT();
   closeQModal();
   const p=gs.players;
-  const w=p[0].score>p[1].score?p[0].name:p[1].score>p[0].score?p[1].name:'НИЧЬЯ';
-  document.getElementById('etitle').textContent=w==='НИЧЬЯ'?'🤝 НИЧЬЯ!':'🏆 '+w+' ПОБЕДИЛ!';
-  document.getElementById('ewinner').textContent=w;
-  document.getElementById('en0').textContent=p[0].name;
-  document.getElementById('en1').textContent=p[1].name;
-  document.getElementById('es0').textContent=p[0].score+' pts';
-  document.getElementById('es1').textContent=p[1].score+' pts';
+  const isDraw=p[0].score===p[1].score;
+  const winnerIdx=p[0].score>=p[1].score?0:1;
+  const loserIdx=winnerIdx===0?1:0;
+  const winner=p[winnerIdx];
+  const loser=p[loserIdx];
+
+  if(isDraw){
+    // Ничья — оба молодцы
+    document.getElementById('winner-block').style.borderColor='var(--cyan)';
+    document.getElementById('winner-block').querySelector('.diploma-icon').textContent='🤝';
+    document.getElementById('winner-block').querySelector('.diploma-title').textContent='НИЧЬЯ!';
+    document.getElementById('winner-block').querySelector('.diploma-title').style.color='var(--cyan)';
+    document.getElementById('ewinner').textContent=p[0].name+' и '+p[1].name;
+    document.getElementById('winner-desc').textContent='Оба показали одинаковый результат — это редкость! Оба заслуживают аттестата зрелости.';
+    document.getElementById('loser-block').style.display='none';
+  } else {
+    // Победитель
+    document.getElementById('ewinner').textContent='🎓 '+winner.name;
+    document.getElementById('winner-desc').textContent=
+      winner.name+' блестяще справился с испытанием и доказал, что готов к взрослой жизни. '+
+      'Набрано '+winner.score+' очков — аттестат зрелости заслужен!';
+    // Проигравший
+    document.getElementById('eloser').textContent='📚 '+loser.name;
+    document.getElementById('loser-desc').textContent=
+      loser.name+', к сожалению знаний пока недостаточно. '+
+      'Набрано всего '+loser.score+' очков — придётся остаться на второй год '+
+      'и как следует подтянуть школьную программу перед следующей попыткой.';
+  }
+
+  // Счёт
+  const scoresEl=document.getElementById('diploma-scores');
+  scoresEl.innerHTML=
+    '<div class="dscore"><div class="dn">'+p[0].name+'</div><div class="dv" style="color:var(--purple);">'+p[0].score+' pts</div></div>'+
+    '<div class="dscore"><div class="dn">'+p[1].name+'</div><div class="dv" style="color:var(--cyan);">'+p[1].score+' pts</div></div>';
+
   showS('end-screen');
 }
 
