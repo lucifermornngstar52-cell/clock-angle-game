@@ -404,10 +404,24 @@ function createRoom(){
   });
   peer.on('open',()=>{
     document.getElementById('code-show').textContent=roomCode;
-    document.getElementById('wplayers').innerHTML=`✅ ${myName}<br>⏳ Ожидаем...`;
+    document.getElementById('wplayers').innerHTML='✅ '+myName+'<br>⏳ Ожидаем...';
     showS('waiting');
   });
-  peer.on('connection',c=>{conn=c; setupConn();});
+  // Хост: получаем входящее соединение
+  peer.on('connection',c=>{
+    conn=c;
+    // Навешиваем обработчики ДО того как open сработает
+    conn.on('close',()=>{toast('Соперник отключился'); showS('lobby');});
+    conn.on('data',onMsg);
+    // Если уже открыто — сразу обрабатываем
+    if(conn.open){
+      document.getElementById('wstatus').textContent='⏳ Ожидаем имя игрока...';
+    } else {
+      conn.on('open',()=>{
+        document.getElementById('wstatus').textContent='⏳ Ожидаем имя игрока...';
+      });
+    }
+  });
 }
 
 function joinRoom(){
@@ -422,38 +436,28 @@ function joinRoom(){
   peer.on('open',()=>{
     conn=peer.connect('mathopoly-'+roomCode,{reliable:true,serialization:'json'});
     conn.on('error',()=>setLS('Комната не найдена!','err-c'));
-    setupConn();
+    conn.on('close',()=>{toast('Соперник отключился'); showS('lobby');});
+    conn.on('data',onMsg);
+    // Гость ждёт open, потом шлёт hello
+    conn.on('open',()=>{
+      send({type:'hello',name:myName});
+      showS('waiting');
+      document.getElementById('code-show').textContent=roomCode;
+      document.getElementById('wstatus').textContent='✅ Подключено! Ожидаем хоста...';
+    });
   });
 }
 
-function setupConn(){
-  // Навешиваем data сразу — чтобы не пропустить сообщения
-  conn.on('data',onMsg);
-  conn.on('close',()=>{toast('Соперник отключился'); showS('lobby');});
-  conn.on('open',()=>{
-    if(myIdx===1){
-      // Гость: отправляем hello хосту и показываем ожидание
-      send({type:'hello',name:myName});
-      showS('waiting');
-      document.getElementById('code-show').textContent=roomCode;
-      document.getElementById('wstatus').textContent='✅ Подключено!';
-    } else {
-      // Хост: соединение установлено — обновляем UI ожидания
-      document.getElementById('wstatus').textContent='⏳ Ожидаем имя игрока...';
-    }
-  });
-  // Если соединение уже открыто (race condition в PeerJS) — дублируем логику
-  if(conn.open){
-    if(myIdx===1){
-      send({type:'hello',name:myName});
-      showS('waiting');
-      document.getElementById('code-show').textContent=roomCode;
-      document.getElementById('wstatus').textContent='✅ Подключено!';
-    }
+function send(msg){
+  if(conn&&conn.open){ conn.send(msg); return; }
+  // Если соединение ещё не открыто — ждём и шлём
+  if(conn){
+    const check=setInterval(()=>{
+      if(conn&&conn.open){ clearInterval(check); conn.send(msg); }
+    },100);
+    setTimeout(()=>clearInterval(check),5000);
   }
 }
-
-function send(msg){ if(conn&&conn.open) conn.send(msg); }
 
 // ════════════════════════════════════════════
 // СООБЩЕНИЯ
