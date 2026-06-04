@@ -472,12 +472,16 @@ function onData(msg){
       renderAll();
       if(GS.phase==='question' && GS.q){
         if(GS.turn===myIdx){
-          // Мой вопрос — показываю поле ввода
-          showQuestion(GS.q);
+          // Мой ход — показываю вопрос с таймером (только если ещё не отвечал)
+          if(!answered) showQuestion(GS.q);
         } else {
-          // Чужой вопрос — просто жду, модал скрыт
-          document.getElementById('qmodal').classList.add('hidden');
+          // Чужой ход — показываю ожидание БЕЗ таймера
+          showQWait();
         }
+      } else if(GS.phase==='rolling'){
+        // Сбрасываем модал если фаза сменилась
+        document.getElementById('qmodal').classList.add('hidden');
+        answered=false;
       }
       break;
 
@@ -687,14 +691,17 @@ function nextTurn(){
   GS.turn=GS.turn===0?1:0;
   GS.phase='rolling';
   GS.q=null;
+  GS.pendingPos=undefined;
+  answered=false;
+  stopQT();
   syncGuest();
   renderAll();
   document.getElementById('qmodal').classList.add('hidden');
-  answered=false; stopQT();
 }
 
 // ── ВОПРОС ──
 function showQuestion(q){
+  // Только тому чей ход — с таймером и полем ввода
   document.getElementById('qcat').textContent=q.category||'ЗАДАЧА';
   document.getElementById('qtxt').textContent=q.text;
   document.getElementById('qinp').value='';
@@ -702,17 +709,21 @@ function showQuestion(q){
   document.getElementById('qwait').classList.add('hidden');
   document.getElementById('qsub').removeAttribute('disabled');
   document.getElementById('qmodal').classList.remove('hidden');
-  startQT(30);
+  answered=false;
+  startQT(30); // таймер запускается ТОЛЬКО здесь
   document.getElementById('qinp').focus();
 }
 
 function showQWait(){
+  // Ждущий игрок — БЕЗ таймера, только индикатор ожидания
+  stopQT(); // на всякий случай останавливаем любой таймер
   document.getElementById('qcat').textContent='ВОПРОС';
   document.getElementById('qtxt').textContent=GS.q?.text||'...';
   document.getElementById('qres').className='q-res hidden';
   document.getElementById('qwait').classList.remove('hidden');
   document.getElementById('qsub').setAttribute('disabled','');
   document.getElementById('qmodal').classList.remove('hidden');
+  document.getElementById('qtmr').textContent=''; // скрываем таймер у ждущего
 }
 
 function startQT(s){
@@ -720,14 +731,21 @@ function startQT(s){
   document.getElementById('qtmr').textContent='⏱ '+qSec;
   qTimer=setInterval(()=>{
     qSec--;
-    document.getElementById('qtmr').textContent='⏱ '+qSec;
-    if(qSec<=0){stopQT();submitAns(true);}
+    const el=document.getElementById('qtmr');
+    if(el) el.textContent='⏱ '+qSec;
+    if(qSec<=0){
+      stopQT();
+      // Таймер срабатывает только у того чей ход
+      if(GS && GS.turn===myIdx) submitAns(true);
+    }
   },1000);
 }
 function stopQT(){if(qTimer){clearInterval(qTimer);qTimer=null;}}
 
 async function submitAns(timeout=false){
   if(answered) return;
+  // Только активный игрок может отвечать
+  if(GS && GS.turn!==myIdx) return;
   answered=true; stopQT();
   const inp=document.getElementById('qinp').value.trim().toLowerCase().replace(/\s/g,'');
   const correct=(GS.q?.answer||'').toLowerCase().replace(/\s/g,'');
@@ -735,21 +753,18 @@ async function submitAns(timeout=false){
 
   const res=document.getElementById('qres');
   res.className='q-res '+(isRight?'ok':'bad');
-  res.textContent=isRight?'✓ ВЕРНО! +15':'✗ Неверно. Правильно: '+GS.q?.answer;
+  res.textContent=isRight?'✓ ВЕРНО! +15':(timeout?'⏱ Время вышло! Правильно: ':'✗ Неверно. Правильно: ')+GS.q?.answer;
   res.classList.remove('hidden');
 
-  // Отправляем хосту
+  await sleep(1500);
+
+  // Отправляем результат хосту
   if(myIdx===0){
     processAnswer(0, isRight);
   } else {
     send({type:'answer', playerIdx:myIdx, correct:isRight});
-    // Показываем ожидание
-    setTimeout(()=>{
-      document.getElementById('qwait').classList.remove('hidden');
-    },1800);
+    document.getElementById('qwait').classList.remove('hidden');
   }
-
-  await sleep(2000);
 }
 
 function processAnswer(playerIdx, correct){
