@@ -363,9 +363,9 @@ const CELLS = [
 const TOTAL_CELLS = CELLS.length; // 27
 
 // ══════════════════════════════════════════════════════════════════
-// ONLINE — Firebase Realtime DB (бесплатный tier)
+// ONLINE — Base44 Backend API
 // ══════════════════════════════════════════════════════════════════
-const FB_URL = 'https://mathopoly-game-default-rtdb.firebaseio.com';
+const API_URL = 'https://6a028ccae8e8cb2174460af0.base44.app/functions/mathopolyRoom';
 
 let myName = '', roomCode = '', myIndex = -1;
 let gameState = null;
@@ -392,25 +392,14 @@ function setStatus(id, msg, cls=''){
   if(el){el.textContent=msg;el.className='status-msg '+(cls||'');}
 }
 
-// ── Firebase helpers ──
-async function fbSet(path, data){
-  await fetch(`${FB_URL}/${path}.json`, {
-    method:'PUT', body:JSON.stringify(data),
-    headers:{'Content-Type':'application/json'}
+// ── Base44 API helpers ──
+async function apiCall(action, data={}){
+  const r = await fetch(API_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action, code:roomCode, data})
   });
-}
-async function fbPatch(path, data){
-  await fetch(`${FB_URL}/${path}.json`, {
-    method:'PATCH', body:JSON.stringify(data),
-    headers:{'Content-Type':'application/json'}
-  });
-}
-async function fbGet(path){
-  const r = await fetch(`${FB_URL}/${path}.json`);
   return await r.json();
-}
-async function fbDelete(path){
-  await fetch(`${FB_URL}/${path}.json`, {method:'DELETE'});
 }
 
 // ── Генерация кода комнаты ──
@@ -426,66 +415,41 @@ async function createRoom(){
   myName = (document.getElementById('player-name').value||'').trim().toUpperCase();
   if(!myName){setStatus('lobby-status','Введи имя!','status-err');return;}
   myName = myName.substring(0,10);
-
   setStatus('lobby-status','Создаём комнату...','status-wait');
   roomCode = genCode();
   myIndex = 0;
-
-  const initState = {
-    players:[
-      {name:myName,pos:0,score:0,ready:true},
-      {name:'',pos:0,score:0,ready:false}
-    ],
-    turn:0,
-    phase:'waiting', // waiting | rolling | question | end
-    dice:0,
-    question:null,
-    answers:{},
-    log:''
-  };
-
-  await fbSet(`rooms/${roomCode}`, initState);
-  gameState = initState;
-
+  const res = await apiCall('create', {p0_name: myName});
+  if(!res.ok){setStatus('lobby-status','Ошибка сервера!','status-err');return;}
+  gameState = flatToState(res.room);
   document.getElementById('room-code-display').textContent = roomCode;
-  document.getElementById('players-list').innerHTML =
-    `✅ ${myName}<br>⏳ Ожидаем второго...`;
+  document.getElementById('players-list').innerHTML = `✅ ${myName}<br>⏳ Ожидаем второго...`;
   showS('waiting-screen');
   startPoll();
 }
-
-// ── Войти в комнату ──
 async function joinRoom(){
   myName = (document.getElementById('player-name').value||'').trim().toUpperCase();
   if(!myName){setStatus('lobby-status','Введи имя!','status-err');return;}
   myName = myName.substring(0,10);
-
   const code = (document.getElementById('room-code-inp').value||'').trim().toUpperCase();
   if(code.length !== 4){setStatus('lobby-status','Введи 4-значный код!','status-err');return;}
-
   setStatus('lobby-status','Подключаемся...','status-wait');
-  const room = await fbGet(`rooms/${code}`);
-  if(!room){setStatus('lobby-status','Комната не найдена!','status-err');return;}
-  if(room.phase !== 'waiting'){setStatus('lobby-status','Игра уже началась!','status-err');return;}
-  if(room.players[1].ready){setStatus('lobby-status','Комната занята!','status-err');return;}
-
   roomCode = code;
-  myIndex = 1;
-  gameState = room;
-
-  await fbPatch(`rooms/${code}/players/1`, {name:myName,ready:true});
-  // Запускаем игру
-  await fbPatch(`rooms/${code}`, {phase:'rolling', log:`${room.players[0].name} vs ${myName}. Ход игрока 1!`});
-
+  const res = await apiCall('join', {p1_name: myName});
+  if(res.error){
+    const msg = res.error==='Room not found'?'Комната не найдена!':
+                res.error==='Room is full'?'Комната занята!':'Ошибка!';
+    setStatus('lobby-status',msg,'status-err');return;
+  }
+  myIndex=1;
+  gameState=flatToState(res.room);
   showS('waiting-screen');
-  document.getElementById('room-code-display').textContent = code;
+  document.getElementById('room-code-display').textContent=code;
   startPoll();
 }
-
 // ── Покинуть комнату ──
 async function leaveRoom(){
   stopPoll();
-  if(roomCode) await fbDelete(`rooms/${roomCode}`);
+  if(roomCode) await apiCall('delete');
   roomCode=''; myIndex=-1;
   showS('lobby');
 }
@@ -493,7 +457,7 @@ async function leaveRoom(){
 function goMenu(){
   stopPoll();
   if(roomCode && gameState && gameState.phase !== 'end'){
-    fbDelete(`rooms/${roomCode}`);
+    apiCall('delete');
   }
   roomCode=''; myIndex=-1; gameState=null;
   // Возврат в главное меню NUMBRA
@@ -506,10 +470,26 @@ function goMenu(){
   }
 }
 
-// ── Поллинг Firebase ──
+// ── Конвертация flat→state ──
+function flatToState(r){
+  if(!r) return null;
+  return {
+    phase: r.phase,
+    turn: r.turn||0,
+    dice: r.dice||0,
+    log: r.log||'',
+    question: r.q_text ? {text:r.q_text, answer:r.q_answer, category:r.q_category} : null,
+    players:[
+      {name:r.p0_name||'',pos:r.p0_pos||0,score:r.p0_score||0,ready:r.p0_ready||false},
+      {name:r.p1_name||'',pos:r.p1_pos||0,score:r.p1_score||0,ready:r.p1_ready||false}
+    ]
+  };
+}
+
+// ── Поллинг API ──
 function startPoll(){
   stopPoll();
-  pollTimer = setInterval(poll, 1500);
+  pollTimer = setInterval(poll, 2000);
 }
 function stopPoll(){
   if(pollTimer) clearInterval(pollTimer);
@@ -519,26 +499,21 @@ function stopPoll(){
 async function poll(){
   if(!roomCode) return;
   try{
-    const room = await fbGet(`rooms/${roomCode}`);
-    if(!room){
-      stopPoll();
-      toast('Комната закрыта');
-      showS('lobby');
-      return;
+    const res = await apiCall('get');
+    if(!res.room){
+      stopPoll(); toast('Комната закрыта'); showS('lobby'); return;
     }
-    const prev = gameState;
+    const room = flatToState(res.room);
     gameState = room;
 
     if(room.phase === 'waiting'){
-      // Обновляем список
       const p = room.players;
       document.getElementById('players-list').innerHTML =
         `✅ ${p[0].name||'—'}<br>${p[1].ready?'✅':'⏳'} ${p[1].name||'Ожидаем...'}`;
       return;
     }
 
-    // Игра началась
-    if(document.getElementById('waiting-screen').classList.contains('hidden') === false &&
+    if(!document.getElementById('waiting-screen').classList.contains('hidden') &&
        room.phase !== 'waiting'){
       buildBoard();
       showS('game-screen');
@@ -547,10 +522,8 @@ async function poll(){
     renderHUD(room);
     renderPawns(room);
 
-    // Если фаза вопроса и вопрос для меня
     if(room.phase === 'question' && room.question){
-      const myTurn = (room.turn === myIndex);
-      if(myTurn && !answered){
+      if(room.turn === myIndex && !answered){
         showQuestion(room.question);
       }
     } else if(room.phase === 'rolling'){
@@ -560,10 +533,9 @@ async function poll(){
     }
 
     if(room.phase === 'end'){
-      stopPoll();
-      showEnd(room);
+      stopPoll(); showEnd(room);
     }
-  } catch(e){}
+  } catch(e){ console.error(e); }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -705,7 +677,6 @@ async function rollDice(){
   const newPos = ((gameState.players[myIndex].pos || 0) + dice) % TOTAL_CELLS;
   const cell = CELLS[newPos];
 
-  // Анимация
   document.getElementById('dice-btn').setAttribute('disabled','');
   let anim = 0;
   const animT = setInterval(()=>{
@@ -713,61 +684,44 @@ async function rollDice(){
     if(++anim > 8){ clearInterval(animT);
       document.getElementById('dice-val').textContent = dice; }
   }, 80);
-
   await new Promise(r=>setTimeout(r,800));
 
-  // Обновляем позицию
-  await fbPatch(`rooms/${roomCode}/players/${myIndex}`, {pos: newPos});
-  await fbPatch(`rooms/${roomCode}`, {dice: dice});
-
-  // Определяем что происходит на клетке
+  const posKey = `p${myIndex}_pos`;
+  await apiCall('update', {[posKey]: newPos, dice: dice});
   await handleCell(cell, newPos);
 }
 
 async function handleCell(cell, newPos){
+  const scoreKey = `p${myIndex}_score`;
+  const curScore = gameState.players[myIndex].score||0;
+
   if(cell.type === 'finish'){
-    // Финиш!
-    const scores = gameState.players.map(p=>p.score||0);
-    scores[myIndex] += 50;
-    await fbPatch(`rooms/${roomCode}/players/${myIndex}`,{score: scores[myIndex]});
-    await fbPatch(`rooms/${roomCode}`,{phase:'end', log:'ФИНИШ!'});
+    await apiCall('update', {[scoreKey]: curScore+50, phase:'end', log:'ФИНИШ!'});
     return;
   }
-
   if(cell.type === 'special-red'){
-    // Ошибка — теряем очки
-    const sc = Math.max(0,(gameState.players[myIndex].score||0)-5);
-    await fbPatch(`rooms/${roomCode}/players/${myIndex}`,{score:sc});
+    await apiCall('update', {[scoreKey]: Math.max(0,curScore-5)});
     toast('⚠️ ОШИБКА! -5 очков');
-    await nextTurn();
-    return;
+    await nextTurn(); return;
   }
-
   if(cell.type === 'special-gold'){
-    // Бонус
-    const sc = (gameState.players[myIndex].score||0)+10;
-    await fbPatch(`rooms/${roomCode}/players/${myIndex}`,{score:sc});
+    await apiCall('update', {[scoreKey]: curScore+10});
     toast('⭐ ФОРМУЛА УДАЧИ! +10 очков!');
-    await nextTurn();
-    return;
+    await nextTurn(); return;
   }
-
   if(cell.type === 'start'){
     toast('🚀 СТАРТ! Продолжай!');
-    await nextTurn();
-    return;
+    await nextTurn(); return;
   }
-
-  // Обычные и special-orange — задаём вопрос
-  const cat = cell.type === 'geometry' ? 'geometry' :
-              cell.type === 'logic' ? 'logic' : 'algebra';
+  // Вопрос
+  const cat = cell.type==='geometry'?'geometry':cell.type==='logic'?'logic':'algebra';
   const pool = QUESTIONS[cat];
   const q = pool[Math.floor(Math.random()*pool.length)];
-
-  await fbPatch(`rooms/${roomCode}`, {
+  await apiCall('update', {
     phase: 'question',
-    question: {text:q.q, answer:q.a, category:cell.label, cell:cell.type},
-    answers: {}
+    q_text: q.q,
+    q_answer: q.a,
+    q_category: cell.label
   });
 }
 
@@ -818,7 +772,7 @@ async function submitAnswer(timeout=false){
   // Обновляем счёт
   if(isRight){
     const sc = (gameState.players[myIndex].score||0)+15;
-    await fbPatch(`rooms/${roomCode}/players/${myIndex}`,{score:sc});
+    await apiCall('update', {[`p${myIndex}_score`]: sc});
   }
 
   // Ждём чтобы показать результат
@@ -832,11 +786,13 @@ async function submitAnswer(timeout=false){
 async function nextTurn(){
   const nextPlayer = gameState.turn === 0 ? 1 : 0;
   const p = gameState.players[nextPlayer];
-  await fbPatch(`rooms/${roomCode}`, {
+  await apiCall('update', {
     phase: 'rolling',
     turn: nextPlayer,
-    question: null,
-    log: `Ход игрока ${p.name}`
+    q_text: '',
+    q_answer: '',
+    q_category: '',
+    log: `Ход ${p.name}`
   });
 }
 
