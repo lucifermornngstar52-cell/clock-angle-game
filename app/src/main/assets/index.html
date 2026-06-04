@@ -1105,7 +1105,7 @@ function useHint(){
 function updMenuCoins(){document.getElementById('menu-coins').textContent='💰 '+SAVE.coins+' монет';}
 function showFb(msg,cls){const e=document.getElementById('fb');e.textContent=msg;e.className='fb '+cls;}
 function showS(id){
-  ['intro-screen','main-menu','game-menu','vl-menu','vl-cards','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','result-screen','gameover-screen','win-screen']
+  ['intro-screen','main-menu','game-menu','vl-menu','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','result-screen','gameover-screen','win-screen']
     .forEach(s=>document.getElementById(s).classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
 }
