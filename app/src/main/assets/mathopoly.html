@@ -2,22 +2,24 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MATHOPOLY</title>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-:root{--bg:#0a0a1a;--purple:#7b2fff;--cyan:#00f5ff;--gold:#ffd700;--red:#ff3131;--g:#00ff41;}
+:root{--g:#00ff41;--dg:#008f11;--bg:#0a0a1a;--purple:#7b2fff;--cyan:#00f5ff;--gold:#ffd700;--red:#ff3131;--orange:#ff8c00;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Share Tech Mono',monospace;overflow:hidden;}
 .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;overflow-y:auto;}
 .screen.hidden{display:none!important;}
+
+/* ЛОББИ */
 #lobby{gap:12px;background:radial-gradient(ellipse at 50% 30%,rgba(123,47,255,.15),var(--bg) 70%);}
 .lobby-title{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,7vw,2.6rem);font-weight:900;color:var(--gold);text-shadow:0 0 30px var(--gold);text-align:center;letter-spacing:4px;}
 .lobby-sub{font-size:.6rem;color:rgba(255,215,0,.5);letter-spacing:3px;text-align:center;}
 .lbox{background:rgba(5,5,25,.97);border:1px solid rgba(123,47,255,.4);border-radius:12px;padding:18px;max-width:340px;width:100%;}
 .lbl{font-size:.55rem;color:var(--purple);letter-spacing:2px;margin-bottom:5px;}
-.inp{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(123,47,255,.4);border-radius:6px;color:#fff;font-family:'Share Tech Mono',monospace;font-size:.95rem;padding:10px 12px;letter-spacing:2px;text-transform:uppercase;outline:none;margin-bottom:12px;}
+.inp{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(123,47,255,.4);border-radius:6px;color:#fff;font-family:'Share Tech Mono',monospace;font-size:.95rem;padding:10px 12px;letter-spacing:3px;text-transform:uppercase;outline:none;margin-bottom:12px;}
 .inp:focus{border-color:var(--purple);}
 .mbtn{font-family:'Orbitron',monospace;font-size:.78rem;border-radius:6px;padding:12px;cursor:pointer;letter-spacing:2px;width:100%;text-align:center;transition:all .2s;border:2px solid;}
 .btn-gold{background:rgba(255,215,0,.1);border-color:var(--gold);color:var(--gold);}
@@ -28,15 +30,21 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 .divider{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.2);font-size:.58rem;margin:8px 0;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1);}
 .status{font-size:.65rem;text-align:center;min-height:16px;letter-spacing:1px;margin-top:8px;}
-.ok-c{color:#00c853;}.err-c{color:var(--red);}.wait-c{color:var(--cyan);animation:blink .9s infinite;}
+.ok{color:#00c853;}.err{color:var(--red);}.wait{color:var(--cyan);animation:blink .9s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+/* ОЖИДАНИЕ */
 #waiting{gap:14px;}
 .code-big{font-family:'Orbitron',monospace;font-size:3rem;color:var(--gold);text-shadow:0 0 25px var(--gold);letter-spacing:10px;text-align:center;}
+
+/* HUD */
 .game-hud{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:rgba(3,3,15,.97);border-bottom:1px solid rgba(123,47,255,.3);}
 .hp{display:flex;flex-direction:column;align-items:center;}
 .hp-name{font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:1px;}
 .hp-score{font-size:.82rem;font-weight:bold;}
 .hud-turn{font-family:'Orbitron',monospace;font-size:.58rem;color:var(--cyan);text-shadow:0 0 8px var(--cyan);letter-spacing:2px;text-align:center;}
+
+/* ПОЛЕ */
 .board-wrap{position:fixed;top:50px;left:0;right:0;bottom:78px;overflow:auto;display:flex;align-items:center;justify-content:center;}
 .board{position:relative;background:rgba(4,4,22,.97);border:2px solid rgba(123,47,255,.35);border-radius:8px;}
 .cell{position:absolute;border:1px solid rgba(255,255,255,.12);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
@@ -53,11 +61,19 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 .cstart{background:linear-gradient(135deg,rgba(0,255,65,.18),rgba(0,90,25,.45));border-color:var(--g);}
 .cfin{background:linear-gradient(135deg,rgba(255,215,0,.28),rgba(140,95,0,.5));border-color:var(--gold);}
 .cell.hl{box-shadow:0 0 14px rgba(255,215,0,.85);border-color:var(--gold)!important;}
+
+/* Центр */
 .board-center{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
-.bc-fml{color:rgba(123,47,255,.35);font-size:.46rem;text-align:center;line-height:1.9;}
-.pawn{position:absolute;width:20px;height:20px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:.6rem;z-index:20;pointer-events:none;transition:left .5s,top .5s;font-weight:bold;}
+.bc-title{font-family:'Orbitron',monospace;font-weight:900;color:var(--gold);text-shadow:0 0 20px var(--gold);text-align:center;letter-spacing:3px;}
+.bc-sub{font-family:'Orbitron',monospace;color:rgba(255,215,0,.55);letter-spacing:2px;text-align:center;}
+.bc-fml{color:rgba(123,47,255,.35);font-size:.46rem;text-align:center;line-height:1.9;letter-spacing:.8px;}
+
+/* ФИШКИ */
+.pawn{position:absolute;width:20px;height:20px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:.6rem;z-index:20;pointer-events:none;transition:all .5s;font-weight:bold;}
 .pawn-0{background:rgba(123,47,255,.85);border-color:var(--purple);box-shadow:0 0 10px var(--purple);}
 .pawn-1{background:rgba(0,200,255,.85);border-color:var(--cyan);box-shadow:0 0 10px var(--cyan);}
+
+/* НИЖНЯЯ ПАНЕЛЬ */
 .game-bot{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(3,3,15,.97);border-top:1px solid rgba(123,47,255,.3);padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .dice-btn{font-family:'Orbitron',monospace;font-size:.72rem;background:rgba(123,47,255,.12);border:2px solid var(--purple);color:var(--purple);border-radius:7px;padding:9px 18px;cursor:pointer;letter-spacing:2px;transition:all .2s;}
 .dice-btn:active{background:rgba(123,47,255,.32);}
@@ -65,79 +81,74 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 .dice-val{font-family:'Orbitron',monospace;font-size:1.6rem;color:var(--gold);text-shadow:0 0 12px var(--gold);min-width:36px;text-align:center;}
 .turn-lbl{font-size:.55rem;color:rgba(255,255,255,.4);text-align:center;letter-spacing:1px;flex:1;}
 
-/* ВОПРОС */
-#qmodal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:12px;}
+/* ВОПРОС МОДАЛ */
+#qmodal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:14px;}
 #qmodal.hidden{display:none!important;}
-.qbox{background:rgba(4,4,22,.99);border:2px solid var(--purple);border-radius:14px;padding:16px;max-width:370px;width:100%;box-shadow:0 0 40px rgba(123,47,255,.4);}
-.q-cat{font-size:.52rem;color:var(--purple);letter-spacing:3px;margin-bottom:5px;}
-.q-text{font-size:.8rem;color:#fff;line-height:1.55;margin-bottom:10px;min-height:36px;white-space:pre-line;}
-.q-timer{font-family:'Orbitron',monospace;font-size:.9rem;color:var(--gold);text-align:right;margin-bottom:10px;}
-.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-.choice{background:rgba(0,0,30,.7);border:1px solid rgba(123,47,255,.35);border-radius:8px;color:#fff;font-family:'Share Tech Mono',monospace;font-size:.78rem;padding:11px 6px;cursor:pointer;text-align:center;transition:all .15s;letter-spacing:1px;line-height:1.3;}
-.choice:active:not(:disabled){transform:scale(.96);}
-.choice.sel{border-color:var(--cyan);background:rgba(0,200,255,.12);color:var(--cyan);}
-.choice.correct{border-color:var(--g)!important;background:rgba(0,255,65,.18)!important;color:#fff!important;box-shadow:0 0 12px rgba(0,255,65,.5)!important;}
-.choice.wrong{border-color:var(--red)!important;background:rgba(255,49,49,.12)!important;color:var(--red)!important;}
-.choice:disabled{pointer-events:none;}
-.q-res{font-family:'Orbitron',monospace;font-size:.78rem;text-align:center;padding:8px;border-radius:6px;margin-top:4px;}
+.qbox{background:rgba(4,4,22,.99);border:2px solid var(--purple);border-radius:14px;padding:18px;max-width:370px;width:100%;box-shadow:0 0 40px rgba(123,47,255,.4);}
+.q-cat{font-size:.52rem;color:var(--purple);letter-spacing:3px;margin-bottom:6px;}
+.q-text{font-size:.82rem;color:#fff;line-height:1.6;margin-bottom:10px;}
+.q-timer{font-family:'Orbitron',monospace;font-size:.95rem;color:var(--gold);text-align:right;margin-bottom:8px;}
+.q-inp{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(123,47,255,.4);border-radius:6px;color:#fff;font-family:'Share Tech Mono',monospace;font-size:.95rem;padding:9px 11px;outline:none;margin-bottom:9px;}
+.q-inp:focus{border-color:var(--purple);}
+.q-sub{font-family:'Orbitron',monospace;font-size:.72rem;background:rgba(123,47,255,.18);border:2px solid var(--purple);color:var(--purple);border-radius:7px;padding:11px;cursor:pointer;letter-spacing:2px;width:100%;}
+.q-sub:active{background:rgba(123,47,255,.38);}
+.q-res{font-family:'Orbitron',monospace;font-size:.82rem;text-align:center;padding:9px;border-radius:6px;margin-top:7px;}
 .q-res.ok{background:rgba(0,255,65,.08);border:1px solid var(--g);color:var(--g);}
 .q-res.bad{background:rgba(255,49,49,.08);border:1px solid var(--red);color:var(--red);}
 .q-res.hidden{display:none;}
-.q-watch{font-size:.62rem;color:rgba(255,255,255,.35);text-align:center;margin-top:6px;font-style:italic;}
+.q-wait{font-size:.65rem;color:var(--cyan);text-align:center;margin-top:8px;animation:blink .9s infinite;}
 
 /* ФИНИШ */
 #end-screen{gap:14px;background:radial-gradient(ellipse at 50% 30%,rgba(255,215,0,.08),var(--bg) 70%);}
-
-  /* ══ ЭКРАН ПРАВИЛ ══ */
-  #rules-screen{gap:0;justify-content:center;padding:20px 16px;}
-  .rules-frame{background:rgba(0,5,20,.97);border:2px solid var(--purple);border-radius:12px;
-    padding:20px 16px;max-width:400px;width:100%;box-shadow:0 0 30px rgba(123,47,255,.3);}
-  .rules-title{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;color:var(--gold);
-    text-shadow:0 0 14px var(--gold);text-align:center;letter-spacing:3px;margin-bottom:4px;}
-  .rules-sub{font-size:.55rem;color:rgba(255,215,0,.45);letter-spacing:3px;text-align:center;margin-bottom:14px;}
-  .rules-list{font-size:.74rem;color:rgba(200,220,255,.85);line-height:2;list-style:none;padding:0;}
-  .rules-list li{border-left:3px solid var(--purple);padding-left:10px;margin-bottom:6px;}
-  .rules-list li span{color:var(--cyan);font-weight:bold;}
-  .rules-countdown{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;
-    color:var(--gold);text-shadow:0 0 20px var(--gold);text-align:center;margin-top:14px;letter-spacing:4px;}
-  .rules-countdown-label{font-size:.52rem;color:rgba(255,215,0,.5);letter-spacing:2px;text-align:center;margin-top:2px;}
-
-  /* ══ ФИНАЛЬНЫЙ ЭКРАН (расширенный) ══ */
-  #end-screen .diploma-frame{background:rgba(5,3,0,.98);border:2px solid var(--gold);
-    border-radius:14px;padding:22px 16px;max-width:400px;width:100%;
-    box-shadow:0 0 40px rgba(255,215,0,.25);text-align:center;}
-  #end-screen .diploma-icon{font-size:3rem;margin-bottom:6px;}
-  #end-screen .diploma-title{font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:900;
-    letter-spacing:2px;margin-bottom:4px;line-height:1.3;}
-  #end-screen .diploma-name{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;
-    color:var(--gold);text-shadow:0 0 20px var(--gold);margin:8px 0;}
-  #end-screen .diploma-desc{font-size:.72rem;color:rgba(200,220,255,.75);line-height:1.8;margin-bottom:14px;}
-  #end-screen .diploma-scores{display:flex;gap:10px;justify-content:center;margin-bottom:14px;}
-  #end-screen .dscore{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);
-    border-radius:8px;padding:8px 14px;text-align:center;min-width:100px;}
-  #end-screen .dscore .dn{font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:1px;margin-bottom:2px;}
-  #end-screen .dscore .dv{font-family:'Orbitron',monospace;font-size:.95rem;}
-  #end-screen .loser-frame{background:rgba(20,0,0,.98);border:2px solid var(--red);
-    border-radius:14px;padding:22px 16px;max-width:400px;width:100%;
-    box-shadow:0 0 30px rgba(255,49,49,.2);text-align:center;margin-top:16px;}
-  #end-screen .loser-icon{font-size:2.5rem;margin-bottom:6px;}
-  #end-screen .loser-title{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:900;
-    color:var(--red);text-shadow:0 0 12px var(--red);letter-spacing:2px;margin-bottom:4px;}
-  #end-screen .loser-name{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;
-    color:rgba(255,100,100,.9);margin:6px 0;}
-  #end-screen .loser-desc{font-size:.68rem;color:rgba(255,150,150,.65);line-height:1.8;margin-bottom:12px;}
-  #end-screen .topics-title{font-size:.55rem;color:rgba(255,100,100,.5);letter-spacing:2px;margin-bottom:6px;}
-  #end-screen .topics-list{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
-  #end-screen .topic-tag{font-size:.58rem;color:rgba(255,150,100,.8);border:1px solid rgba(255,100,100,.3);
-    border-radius:4px;padding:3px 8px;background:rgba(255,50,50,.08);}
 .end-title{font-family:'Orbitron',monospace;font-size:clamp(1.3rem,5.5vw,1.9rem);font-weight:900;text-align:center;letter-spacing:3px;}
 .end-box{background:rgba(5,5,22,.97);border:1px solid rgba(255,215,0,.35);border-radius:12px;padding:18px;max-width:330px;width:100%;}
 .end-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.78rem;}
+
+/* ТОСТ */
 #toast{position:fixed;top:58px;left:50%;transform:translateX(-50%);z-index:200;background:rgba(5,5,20,.97);border:1px solid var(--cyan);border-radius:8px;padding:8px 18px;font-size:.7rem;color:var(--cyan);text-align:center;pointer-events:none;transition:opacity .3s;white-space:nowrap;}
 #toast.hidden{opacity:0;}
+
+  /* ══ ЭКРАН ПРАВИЛ ══ */
+  #rules-screen{gap:0;justify-content:center;padding:20px 16px;background:var(--bg);}
+  .rules-frame{background:rgba(0,5,20,.97);border:2px solid var(--purple);border-radius:12px;
+    padding:20px 16px;max-width:400px;width:100%;box-shadow:0 0 30px rgba(123,47,255,.3);}
+  .rules-badge{font-size:.55rem;color:rgba(255,215,0,.45);letter-spacing:3px;text-align:center;margin-bottom:14px;}
+  .rules-title{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;color:var(--gold);
+    text-shadow:0 0 14px var(--gold);text-align:center;letter-spacing:3px;margin-bottom:4px;}
+  .rules-list{font-size:.74rem;color:rgba(200,220,255,.85);line-height:2;list-style:none;padding:0;margin-bottom:14px;}
+  .rules-list li{border-left:3px solid var(--purple);padding-left:10px;margin-bottom:6px;}
+  .rules-list li span{color:var(--cyan);font-weight:bold;}
+  .rules-cd{font-family:'Orbitron',monospace;font-size:2.2rem;font-weight:900;
+    color:var(--gold);text-shadow:0 0 20px var(--gold);text-align:center;letter-spacing:4px;}
+  .rules-cd-label{font-size:.52rem;color:rgba(255,215,0,.5);letter-spacing:2px;text-align:center;margin-top:2px;}
+  /* ══ ФИНАЛ ══ */
+  .fin-winner{background:rgba(5,3,0,.98);border:2px solid var(--gold);border-radius:14px;
+    padding:22px 16px;max-width:400px;width:100%;box-shadow:0 0 40px rgba(255,215,0,.2);text-align:center;margin-bottom:14px;}
+  .fin-winner .fi{font-size:3rem;margin-bottom:6px;}
+  .fin-winner .ft{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;color:var(--gold);
+    text-shadow:0 0 14px var(--gold);letter-spacing:2px;margin-bottom:4px;}
+  .fin-winner .fn{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;color:var(--gold);margin:8px 0;}
+  .fin-winner .fd{font-size:.72rem;color:rgba(200,220,255,.75);line-height:1.8;margin-bottom:14px;}
+  .fin-scores{display:flex;gap:10px;justify-content:center;}
+  .fin-sc{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);border-radius:8px;
+    padding:8px 14px;text-align:center;min-width:100px;}
+  .fin-sc .sn{font-size:.58rem;color:rgba(255,255,255,.4);margin-bottom:2px;}
+  .fin-sc .sv{font-family:'Orbitron',monospace;font-size:.95rem;}
+  .fin-loser{background:rgba(20,0,0,.98);border:2px solid var(--red);border-radius:14px;
+    padding:22px 16px;max-width:400px;width:100%;box-shadow:0 0 30px rgba(255,49,49,.2);text-align:center;margin-bottom:14px;}
+  .fin-loser .li2{font-size:2.5rem;margin-bottom:6px;}
+  .fin-loser .lt{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:900;color:var(--red);
+    text-shadow:0 0 12px var(--red);letter-spacing:2px;margin-bottom:4px;}
+  .fin-loser .ln{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;color:rgba(255,100,100,.9);margin:6px 0;}
+  .fin-loser .ld{font-size:.68rem;color:rgba(255,150,150,.65);line-height:1.8;margin-bottom:12px;}
+  .topics-t{font-size:.52rem;color:rgba(255,100,100,.5);letter-spacing:2px;margin-bottom:6px;}
+  .topics-w{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
+  .ttag{font-size:.58rem;color:rgba(255,150,100,.8);border:1px solid rgba(255,100,100,.3);
+    border-radius:4px;padding:3px 8px;background:rgba(255,50,50,.08);}
 </style>
 </head>
 <body>
+
 <div id="toast" class="hidden"></div>
 
 <!-- ЛОББИ -->
@@ -161,27 +172,26 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 <div class="screen hidden" id="rules-screen">
   <div class="rules-frame">
     <div class="rules-title">📋 ПРАВИЛА ИГРЫ</div>
-    <div class="rules-sub">// MATHOPOLY · ИНСТРУКЦИЯ //</div>
+    <div class="rules-badge">// MATHOPOLY · ИНСТРУКЦИЯ //</div>
     <ul class="rules-list">
-      <li>🎲 Бросай кубик и двигай фишку по полю</li>
+      <li>🎲 Бросай кубик — двигай фишку по полю</li>
       <li>❓ Попав на клетку — отвечай на вопрос по <span>9 классу</span></li>
-      <li>✅ Правильный ответ — получаешь <span>очки</span></li>
+      <li>✅ Правильный ответ = <span>очки</span></li>
       <li>⏱ На каждый вопрос <span>15 секунд</span></li>
       <li>🔄 Ходы чередуются между игроками</li>
-      <li>🏁 Игра заканчивается когда кто-то <span>доходит до финиша</span></li>
+      <li>🏁 Игра кончается когда кто-то <span>доходит до финиша</span></li>
       <li>🏆 Побеждает тот кто набрал <span>больше очков</span></li>
     </ul>
-    <div class="rules-countdown" id="rules-countdown">30</div>
-    <div class="rules-countdown-label">сек. до начала игры</div>
+    <div class="rules-cd" id="rules-cd">30</div>
+    <div class="rules-cd-label">секунд до начала игры</div>
   </div>
 </div>
-
 <div class="screen hidden" id="waiting">
   <div class="lobby-title">MATHOPOLY</div>
   <div class="lbox" style="text-align:center;">
-    <div class="lbl">КОД — ОТПРАВЬ ДРУГУ:</div>
+    <div class="lbl">КОД КОМНАТЫ — ОТПРАВЬ ДРУГУ:</div>
     <div class="code-big" id="code-show">----</div>
-    <div class="status wait-c" id="wstatus">⏳ ОЖИДАЕМ ВТОРОГО ИГРОКА...</div>
+    <div class="status wait" id="wstatus">⏳ ОЖИДАЕМ ВТОРОГО ИГРОКА...</div>
     <div id="wplayers" style="font-size:.68rem;color:rgba(255,255,255,.45);line-height:2;margin-top:8px;"></div>
     <button class="mbtn btn-gray" onclick="leaveRoom()" style="margin-top:14px;">[ ✕ ОТМЕНА ]</button>
   </div>
@@ -189,7 +199,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 
 <!-- ИГРА -->
 <div class="screen hidden" id="game-screen">
-  <div class="game-hud">
+  <div class="game-hud" id="ghud">
     <div class="hp">
       <div class="hp-name" id="n0" style="color:var(--purple);">🟣 P1</div>
       <div class="hp-score" id="s0" style="color:var(--purple);">0</div>
@@ -211,154 +221,124 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 <!-- ВОПРОС -->
 <div id="qmodal" class="hidden">
   <div class="qbox">
-    <div class="q-cat" id="qcat">ЗАДАЧА</div>
+    <div class="q-cat" id="qcat">АЛГЕБРА</div>
     <div class="q-text" id="qtxt">...</div>
-    <div class="q-timer" id="qtmr" style="display:none;">⏱ 30</div>
-    <div class="choices" id="choices">
-      <button class="choice" id="ch0" onclick="pick(0)"></button>
-      <button class="choice" id="ch1" onclick="pick(1)"></button>
-      <button class="choice" id="ch2" onclick="pick(2)"></button>
-      <button class="choice" id="ch3" onclick="pick(3)"></button>
-    </div>
+    <div class="q-timer" id="qtmr">⏱ 30</div>
+    <input class="q-inp" id="qinp" placeholder="Ответ..." type="text" autocomplete="off">
+    <button class="q-sub" id="qsub" onclick="submitAns()">[ ✓ ОТВЕТИТЬ ]</button>
     <div class="q-res hidden" id="qres"></div>
-    <div class="q-watch hidden" id="qwatch">👁 Наблюдаешь за ходом соперника</div>
+    <div class="q-wait hidden" id="qwait">⏳ Ждём ответа соперника...</div>
   </div>
 </div>
 
 <!-- ФИНИШ -->
 <div class="screen hidden" id="end-screen">
-  <div style="width:100%;max-width:400px;overflow-y:auto;padding-bottom:20px;">
-    <!-- Победитель -->
-    <div class="diploma-frame" id="winner-block">
-      <div class="diploma-icon">🎓</div>
-      <div class="diploma-title" style="color:var(--gold);">ПОЗДРАВЛЯЕМ!</div>
-      <div class="diploma-title" style="color:rgba(255,255,255,.6);font-size:.7rem;letter-spacing:1px;margin-top:2px;">С УСПЕШНЫМ ОКОНЧАНИЕМ ШКОЛЫ</div>
-      <div class="diploma-name" id="ewinner">—</div>
-      <div class="diploma-desc" id="winner-desc">Ты блестяще справился с испытанием и доказал, что готов к взрослой жизни. Аттестат зрелости заслужен!</div>
-      <div class="diploma-scores" id="diploma-scores"></div>
-    </div>
-    <!-- Проигравший -->
-    <div class="loser-frame" id="loser-block">
-      <div class="loser-icon">📚</div>
-      <div class="loser-title">ВТОРОЙ ГОД</div>
-      <div class="loser-name" id="eloser">—</div>
-      <div class="loser-desc" id="loser-desc">К сожалению, знаний пока недостаточно для получения аттестата. Придётся остаться на второй год и подтянуть программу.</div>
-      <div class="topics-title">// ТЕМЫ ДЛЯ ПОВТОРЕНИЯ //</div>
-      <div class="topics-list">
-        <span class="topic-tag">Алгебра</span>
-        <span class="topic-tag">Геометрия</span>
-        <span class="topic-tag">Физика</span>
-        <span class="topic-tag">Тригонометрия</span>
-        <span class="topic-tag">Уравнения</span>
-        <span class="topic-tag">Статистика</span>
-      </div>
-    </div>
-    <!-- Кнопка -->
-    <button class="mbtn btn-gold" style="max-width:100%;margin-top:16px;padding:14px 0;" onclick="goMenu()">[ 🏠 В МЕНЮ ]</button>
+  <div class="end-title" id="etitle" style="color:var(--gold);">🏆 ПОБЕДА!</div>
+  <div class="end-box">
+    <div class="end-row"><span>Победитель</span><span id="ewinner" style="color:var(--gold);">—</span></div>
+    <div class="end-row"><span id="en0">P1</span><span id="es0" style="color:var(--purple);">0</span></div>
+    <div class="end-row"><span id="en1">P2</span><span id="es1" style="color:var(--cyan);">0</span></div>
   </div>
+  <button class="mbtn btn-gold" style="max-width:280px;" onclick="goMenu()">[ 🏠 В МЕНЮ ]</button>
 </div>
 
 <script>
-// ════════════════════════════════════════════
-// ВОПРОСЫ — {q, a (правильный), w[3 неправильных]}
-// ════════════════════════════════════════════
-const QS={
+// ═══════════════════════════════════════════════
+// ВОПРОСЫ — Математика 9 класс КЗ
+// ═══════════════════════════════════════════════
+const QS = {
   algebra:[
-    {q:'Реши: 2x + 5 = 17',a:'6',w:['4','8','7']},
-    {q:'x² - 9 = 0\n(положительный корень)',a:'3',w:['9','6','4']},
-    {q:'y = 2x+3, при x=4. y=?',a:'11',w:['10','9','13']},
-    {q:'x+y=10, x-y=4. Найди x.',a:'7',w:['6','8','5']},
-    {q:'a₁=3, d=5. Найди a₄',a:'18',w:['15','13','20']},
-    {q:'3x - 6 > 0. x > ?',a:'2',w:['3','1','0']},
-    {q:'Дискриминант x²-5x+6=0',a:'1',w:['0','4','7']},
-    {q:'Меньший корень x²-5x+6=0',a:'2',w:['3','1','4']},
-    {q:'Реши: 3x = 21',a:'7',w:['6','8','9']},
-    {q:'1+3+5+7+9 = ?',a:'25',w:['20','30','15']},
-    {q:'y=x², при x=-3. y=?',a:'9',w:['6','-9','3']},
-    {q:'a₁=2, q=3. Геом. прог. a₃=?',a:'18',w:['12','6','24']},
-    {q:'Реши: 5x - 10 = 0',a:'2',w:['5','1','3']},
-    {q:'|x| = 5, положит. корень',a:'5',w:['10','2','3']},
+    {q:'Реши: 2x + 5 = 17',a:'6'},
+    {q:'Реши: x² - 9 = 0\n(положительный корень)',a:'3'},
+    {q:'y = 2x + 3, при x = 4. Найди y.',a:'11'},
+    {q:'x + y = 10, x - y = 4. Найди x.',a:'7'},
+    {q:'Арифм. прогрессия: a₁=3, d=5. a₄=?',a:'18'},
+    {q:'Реши неравенство: 3x - 6 > 0. x > ?',a:'2'},
+    {q:'Дискриминант x² - 5x + 6 = 0',a:'1'},
+    {q:'Меньший корень x² - 5x + 6 = 0',a:'2'},
+    {q:'Реши: 3x = 21',a:'7'},
+    {q:'1+3+5+7+9 = ?',a:'25'},
+    {q:'Реши: |x| = 5 (положит. корень)',a:'5'},
+    {q:'y = x², при x = -3. y = ?',a:'9'},
+    {q:'Реши: 5x - 10 = 0',a:'2'},
+    {q:'a₁=2, q=3. Геометр. прогрессия. a₃=?',a:'18'},
   ],
   geometry:[
-    {q:'Катеты 3 и 4. Гипотенуза?',a:'5',w:['6','7','4']},
-    {q:'Площадь квадрата, сторона=7',a:'49',w:['28','14','56']},
-    {q:'Площадь прямоугольника 5×8',a:'40',w:['26','13','45']},
-    {q:'Сумма углов треугольника (°)',a:'180',w:['90','360','270']},
-    {q:'Периметр квадрата, сторона=6',a:'24',w:['12','36','18']},
-    {q:'Пл. прямоуг. треуг., катеты 6 и 8',a:'24',w:['48','12','36']},
-    {q:'Угол правильного шестиугольника (°)',a:'120',w:['90','108','135']},
-    {q:'R описан. окружности, гипотенуза=10',a:'5',w:['10','8','6']},
-    {q:'Пл. трапеции: осн.4 и 6, h=5',a:'25',w:['30','20','50']},
-    {q:'Вектор (3,4). Длина?',a:'5',w:['7','6','4']},
-    {q:'Пл. ромба, диагонали 6 и 8',a:'24',w:['48','12','36']},
-    {q:'Внешний угол треуг. = 40°+70°',a:'110',w:['100','120','70']},
+    {q:'Катеты 3 и 4. Гипотенуза?',a:'5'},
+    {q:'Площадь квадрата со стороной 7',a:'49'},
+    {q:'Площадь прямоугольника 5×8',a:'40'},
+    {q:'Сумма углов треугольника (°)',a:'180'},
+    {q:'Периметр квадрата со стороной 6',a:'24'},
+    {q:'Площадь прямоуг. треуг. с катетами 6 и 8',a:'24'},
+    {q:'Угол правильного шестиугольника (°)',a:'120'},
+    {q:'R описанной окружности, если гипотенуза=10',a:'5'},
+    {q:'Площадь трапеции: осн. 4 и 6, высота 5',a:'25'},
+    {q:'Вектор (3,4). Его длина?',a:'5'},
+    {q:'Площадь ромба с диагоналями 6 и 8',a:'24'},
+    {q:'Внешний угол треугольника = сумма... (°) двух несмежных. Если они 40° и 70°?',a:'110'},
   ],
   logic:[
-    {q:'P(выпадет 6 на кубике)',a:'1/6',w:['1/3','1/2','1/4']},
-    {q:'C(5,2) = ?',a:'10',w:['20','5','15']},
-    {q:'|2x-4|=6, положит. корень',a:'5',w:['1','3','7']},
-    {q:'12 маль. из 20. P(маль.) = ?',a:'3/5',w:['1/2','2/5','4/5']},
-    {q:'C(4,2) = ?',a:'6',w:['8','4','12']},
-    {q:'|x+3|=7, положит. корень',a:'4',w:['10','3','7']},
-    {q:'P(чётное на кубике)',a:'1/2',w:['1/3','1/6','2/3']},
-    {q:'4! = ?',a:'24',w:['12','16','48']},
-    {q:'|3x|=12, положит. корень',a:'4',w:['3','6','36']},
-    {q:'Двузначных чисел кратных 5',a:'18',w:['17','19','20']},
-    {q:'A(4,2) = ?',a:'12',w:['6','24','8']},
+    {q:'Вероятность выпадения 6 на кубике',a:'1/6'},
+    {q:'C(5,2) = ?',a:'10'},
+    {q:'|2x - 4| = 6. Положит. корень?',a:'5'},
+    {q:'12 мальчиков из 20. P(мальчик) = ?',a:'3/5'},
+    {q:'C(4,2) = ?',a:'6'},
+    {q:'|x + 3| = 7. Положит. корень?',a:'4'},
+    {q:'Вероятность чётного числа на кубике',a:'1/2'},
+    {q:'P(4) = 4! = ?',a:'24'},
+    {q:'|3x| = 12. Положит. корень?',a:'4'},
+    {q:'Сколько двузначных чисел кратны 5?',a:'18'},
+    {q:'A(4,2) = 4!/(4-2)! = ?',a:'12'},
   ]
 };
 
-// ════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // КЛЕТКИ ПОЛЯ
-// ════════════════════════════════════════════
-const CELLS=[
-  {id:0, label:'СТАРТ',          icon:'🚀',cls:'cstart',cat:null},
-  {id:1, label:'ЛИНЕЙНЫЕ УРВ.', icon:'?', cls:'alg',   cat:'algebra'},
-  {id:2, label:'КВАДР. УРВ.',   icon:'?', cls:'alg',   cat:'algebra'},
-  {id:3, label:'ФУНКЦИИ',       icon:'?', cls:'alg',   cat:'algebra'},
-  {id:4, label:'СИСТЕМЫ УРВ.', icon:'?', cls:'alg',   cat:'algebra'},
-  {id:5, label:'КОНТРОЛЬНАЯ',   icon:'📋',cls:'sorg',  cat:'algebra'},
-  {id:6, label:'ПРОГРЕССИИ',    icon:'?', cls:'alg',   cat:'algebra'},
-  {id:7, label:'НЕРАВЕНСТВА',   icon:'?', cls:'alg',   cat:'algebra'},
-  {id:8, label:'ФОРМУЛА УДАЧИ', icon:'⭐',cls:'sgold', cat:null},
-  {id:9, label:'ТРЕУГОЛЬНИКИ',  icon:'?', cls:'geo',   cat:'geometry'},
-  {id:10,label:'ОКРУЖНОСТЬ',    icon:'?', cls:'geo',   cat:'geometry'},
-  {id:11,label:'ПЛОЩАДИ',       icon:'?', cls:'geo',   cat:'geometry'},
-  {id:12,label:'ОШИБКА!',       icon:'⚠️',cls:'sred',  cat:null},
-  {id:13,label:'ТЕОР. ПИФАГОРА',icon:'?', cls:'geo',   cat:'geometry'},
-  {id:14,label:'ФИНИШ',         icon:'🏁',cls:'cfin',  cat:null},
-  {id:15,label:'МОД. ВЫРАЖ.',   icon:'?', cls:'lgc',   cat:'logic'},
-  {id:16,label:'ТЕКСТ. ЗАДАЧИ', icon:'?', cls:'lgc',   cat:'logic'},
-  {id:17,label:'ПЕРЕСДАЧА',     icon:'🔄',cls:'sorg',  cat:'logic'},
-  {id:18,label:'КОМБИНАТОРИКА', icon:'?', cls:'lgc',   cat:'logic'},
-  {id:19,label:'ВЕРОЯТНОСТЬ',   icon:'?', cls:'lgc',   cat:'logic'},
-  {id:20,label:'ВЕКТОРЫ',       icon:'?', cls:'geo',   cat:'geometry'},
-  {id:21,label:'ПОДОБИЕ',       icon:'?', cls:'geo',   cat:'geometry'},
-  {id:22,label:'УЧИТЕЛЬ МАТЕМ.',icon:'👩‍🏫',cls:'sgold',cat:null},
-  {id:23,label:'ГРАФИК',        icon:'?', cls:'alg',   cat:'algebra'},
-  {id:24,label:'КОНТРОЛЬНАЯ',   icon:'📋',cls:'sorg',  cat:'algebra'},
-  {id:25,label:'СЛУЧ. ЭКЗАМЕН', icon:'❓',cls:'sorg',  cat:'logic'},
-  {id:26,label:'ФОРМУЛА УДАЧИ', icon:'⭐',cls:'sgold', cat:null},
+// ═══════════════════════════════════════════════
+const CELLS = [
+  {id:0, label:'СТАРТ',             icon:'🚀', cls:'cstart'},
+  {id:1, label:'ЛИНЕЙНЫЕ УРВ.',     icon:'?',  cls:'alg'},
+  {id:2, label:'КВАДРАТНЫЕ УРВ.',   icon:'?',  cls:'alg'},
+  {id:3, label:'ФУНКЦИИ',           icon:'?',  cls:'alg'},
+  {id:4, label:'СИСТЕМЫ УРВ.',      icon:'?',  cls:'alg'},
+  {id:5, label:'КОНТРОЛЬНАЯ',       icon:'📋', cls:'sorg'},
+  {id:6, label:'ПРОГРЕССИИ',        icon:'?',  cls:'alg'},
+  {id:7, label:'НЕРАВЕНСТВА',       icon:'?',  cls:'alg'},
+  {id:8, label:'ФОРМУЛА УДАЧИ',     icon:'⭐', cls:'sgold'},
+  {id:9, label:'ТРЕУГОЛЬНИКИ',      icon:'?',  cls:'geo'},
+  {id:10,label:'ОКРУЖНОСТЬ',        icon:'?',  cls:'geo'},
+  {id:11,label:'ПЛОЩАДИ',           icon:'?',  cls:'geo'},
+  {id:12,label:'ОШИБКА!',           icon:'⚠️', cls:'sred'},
+  {id:13,label:'ТЕОРЕМА ПИФАГОРА',  icon:'?',  cls:'geo'},
+  {id:14,label:'ФИНИШ 🏁',          icon:'🏆', cls:'cfin'},
+  {id:15,label:'МОД. ВЫРАЖЕНИЯ',    icon:'?',  cls:'lgc'},
+  {id:16,label:'ТЕКСТ. ЗАДАЧИ',     icon:'?',  cls:'lgc'},
+  {id:17,label:'ПЕРЕСДАЧА',         icon:'🔄', cls:'sorg'},
+  {id:18,label:'КОМБИНАТОРИКА',     icon:'?',  cls:'lgc'},
+  {id:19,label:'ВЕРОЯТНОСТЬ',       icon:'?',  cls:'lgc'},
+  {id:20,label:'ВЕКТОРЫ',           icon:'?',  cls:'geo'},
+  {id:21,label:'ПОДОБИЕ',           icon:'?',  cls:'geo'},
+  {id:22,label:'УЧИТЕЛЬ МАТЕМ.',    icon:'👩‍🏫',cls:'sgold'},
+  {id:23,label:'ГРАФИК',            icon:'?',  cls:'alg'},
+  {id:24,label:'КОНТРОЛЬНАЯ',       icon:'📋', cls:'sorg'},
+  {id:25,label:'СЛУЧ. ЭКЗАМЕН',     icon:'❓', cls:'sorg'},
+  {id:26,label:'ФОРМУЛА УДАЧИ',     icon:'⭐', cls:'sgold'},
 ];
-const TOTAL=CELLS.length;
+const TOTAL = CELLS.length;
 
-// ════════════════════════════════════════════
-// СОСТОЯНИЕ
-// ════════════════════════════════════════════
-// GS — единственный источник правды, живёт у ХОСТА
-// Гость получает GS через sync и только отображает
-// Вся игровая логика — ТОЛЬКО у хоста (myIdx===0)
-
-let peer=null, conn=null;
-let myIdx=-1, myName='', roomCode='';
-let GS=null;
-let qTimer=null, qSec=0;
-let answered=false;
-let boardBuilt=false;
+// ═══════════════════════════════════════════════
+// PEER.JS — P2P БЕЗ СЕРВЕРА
+// ═══════════════════════════════════════════════
+let peer = null, conn = null;
+let myIdx = -1, myName = '', roomCode = '';
+let GS = null; // game state (только у хоста)
+let qTimer = null, qSec = 0, answered = false;
+let boardBuilt = false;
 
 function showS(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
-  document.getElementById(id)?.classList.remove('hidden');
+  const el = document.getElementById(id);
+  if(el) el.classList.remove('hidden');
 }
 function toast(msg,dur=2500){
   const t=document.getElementById('toast');
@@ -366,561 +346,405 @@ function toast(msg,dur=2500){
   clearTimeout(window._tt);
   window._tt=setTimeout(()=>t.classList.add('hidden'),dur);
 }
-function setLS(msg,cls=''){
+function setLStatus(msg,cls=''){
   const el=document.getElementById('lstatus');
   el.textContent=msg; el.className='status '+(cls||'');
 }
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
 function genCode(){
   const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s=''; for(let i=0;i<4;i++) s+=c[~~(Math.random()*c.length)]; return s;
-}
-function shuffle(arr){
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){
-    const j=~~(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-function pickQ(cat){
-  const pool=QS[cat];
-  const q=pool[~~(Math.random()*pool.length)];
-  const opts=shuffle([q.a,...q.w.slice(0,3)]);
-  return {text:q.q, answer:q.a, category:cat, opts, ci:opts.indexOf(q.a)};
+  let s=''; for(let i=0;i<4;i++) s+=c[Math.floor(Math.random()*c.length)]; return s;
 }
 
-// ════════════════════════════════════════════
-// PEER.JS
-// ════════════════════════════════════════════
+// ── Создать комнату (хост = player 0) ──
 function createRoom(){
   myName=(document.getElementById('pname').value||'').trim().toUpperCase().substring(0,10);
-  if(!myName){setLS('Введи имя!','err-c');return;}
-  myIdx=0; roomCode=genCode();
-  setLS('Подключаемся...','wait-c');
-  peer=new Peer('mathopoly-'+roomCode,{debug:0});
-  peer.on('error',e=>{
-    if(e.type==='unavailable-id'){roomCode=genCode();peer.destroy();createRoom();}
-    else setLS('Ошибка: '+e.type,'err-c');
+  if(!myName){setLStatus('Введи имя!','err');return;}
+  myIdx=0;
+  roomCode=genCode();
+  setLStatus('Подключаемся к сети...','wait');
+
+  peer=new Peer('mathopoly-'+roomCode, {debug:0});
+  peer.on('error', e=>{
+    // Если ID занят — попробуем другой код
+    if(e.type==='unavailable-id'){
+      roomCode=genCode();
+      peer.destroy();
+      createRoom();
+    } else {
+      setLStatus('Ошибка сети: '+e.type,'err');
+    }
   });
-  peer.on('open',()=>{
+  peer.on('open', id=>{
     document.getElementById('code-show').textContent=roomCode;
-    document.getElementById('wplayers').innerHTML='✅ '+myName+'<br>⏳ Ожидаем...';
+    document.getElementById('wplayers').innerHTML=`✅ ${myName}<br>⏳ Ожидаем...`;
     showS('waiting');
   });
-  // Хост: получаем входящее соединение
-  peer.on('connection',c=>{
+  peer.on('connection', c=>{
     conn=c;
-    // Навешиваем обработчики ДО того как open сработает
-    conn.on('close',()=>{toast('Соперник отключился'); showS('lobby');});
-    conn.on('data',onMsg);
-    // Если уже открыто — сразу обрабатываем
-    if(conn.open){
-      document.getElementById('wstatus').textContent='⏳ Ожидаем имя игрока...';
-    } else {
-      conn.on('open',()=>{
-        document.getElementById('wstatus').textContent='⏳ Ожидаем имя игрока...';
-      });
-    }
+    setupConn();
+    // Инициализируем игру
+    GS={
+      phase:'rolling', turn:0, dice:0,
+      players:[
+        {name:myName,pos:0,score:0},
+        {name:'',pos:0,score:0}
+      ],
+      q:null
+    };
+    // Получим имя гостя через первое сообщение
   });
 }
 
+// ── Войти в комнату (гость = player 1) ──
 function joinRoom(){
   myName=(document.getElementById('pname').value||'').trim().toUpperCase().substring(0,10);
-  if(!myName){setLS('Введи имя!','err-c');return;}
+  if(!myName){setLStatus('Введи имя!','err');return;}
   const code=(document.getElementById('rcode').value||'').trim().toUpperCase();
-  if(code.length!==4){setLS('Введи 4-значный код!','err-c');return;}
-  myIdx=1; roomCode=code;
-  setLS('Подключаемся...','wait-c');
+  if(code.length!==4){setLStatus('Введи 4-значный код!','err');return;}
+  myIdx=1;
+  roomCode=code;
+  setLStatus('Подключаемся...','wait');
+
   peer=new Peer(undefined,{debug:0});
-  peer.on('error',e=>setLS('Ошибка: '+e.type,'err-c'));
+  peer.on('error',e=>setLStatus('Ошибка: '+e.type,'err'));
   peer.on('open',()=>{
-    conn=peer.connect('mathopoly-'+roomCode,{reliable:true,serialization:'json'});
-    conn.on('error',()=>setLS('Комната не найдена!','err-c'));
-    conn.on('close',()=>{toast('Соперник отключился'); showS('lobby');});
-    conn.on('data',onMsg);
-    // Гость ждёт open, потом шлёт hello
-    conn.on('open',()=>{
-      send({type:'hello',name:myName});
+    conn=peer.connect('mathopoly-'+roomCode,{reliable:true});
+    conn.on('error',e=>setLStatus('Комната не найдена!','err'));
+    setupConn();
+  });
+}
+
+function setupConn(){
+  if(!conn) return;
+  conn.on('open',()=>{
+    if(myIdx===1){
+      // Представляемся хосту
+      send({type:'join',name:myName});
       showS('waiting');
       document.getElementById('code-show').textContent=roomCode;
-      document.getElementById('wstatus').textContent='✅ Подключено! Ожидаем хоста...';
-    });
+      document.getElementById('wstatus').textContent='✅ Подключено! Ждём старта...';
+    }
   });
+  conn.on('data', onData);
+  conn.on('close',()=>{ toast('Соперник отключился'); showS('lobby'); });
 }
 
 function send(msg){
-  if(conn&&conn.open){ conn.send(msg); return; }
-  // Если соединение ещё не открыто — ждём и шлём
-  if(conn){
-    const check=setInterval(()=>{
-      if(conn&&conn.open){ clearInterval(check); conn.send(msg); }
-    },100);
-    setTimeout(()=>clearInterval(check),5000);
-  }
+  if(conn && conn.open) conn.send(msg);
 }
 
-// ════════════════════════════════════════════
-// СООБЩЕНИЯ
-// ════════════════════════════════════════════
-function onMsg(msg){
+// ── Получили сообщение ──
+function onData(msg){
   switch(msg.type){
-
-    // Хост получил имя гостя — инициализирует игру и шлёт sync
-    case 'hello':
-      GS={
-        phase:'rolling', turn:0, dice:0,
-        players:[
-          {name:myName, pos:0, score:0},
-          {name:msg.name, pos:0, score:0}
-        ],
-        q:null
-      };
+    case 'join': // хост получил имя гостя
+      GS.players[1].name=msg.name;
+      send({type:'start', gs: GS, myIdx:1, names:[GS.players[0].name,msg.name]});
       document.getElementById('wplayers').innerHTML=
         `✅ ${GS.players[0].name}<br>✅ ${msg.name}`;
-      // Шлём гостю его индекс и начальный стейт
-      send({type:'init', gs:GS, guestIdx:1});
-      setTimeout(()=>startGame(), 600);
+      setTimeout(()=>{ startGame(); },800);
       break;
 
-    // Гость получил начальный стейт
-    case 'init':
+    case 'start': // гость получил начальное состояние
       GS=msg.gs;
-      // myIdx уже=1
-      setTimeout(()=>startGame(), 600);
+      myIdx=1; // уже знаем
+      startGame();
       break;
 
-    // Хост→Гость: обновление состояния (единственный способ гость узнаёт что происходит)
-    case 'sync':
-      if(myIdx!==0){ // только гость принимает sync
-        GS=msg.gs;
-        applySync();
+    case 'sync': // хост→гость: синхронизация состояния
+      GS=msg.gs;
+      renderAll();
+      if(GS.phase==='question' && GS.q && myIdx!==GS.turn){
+        showQWait();
       }
       break;
 
-    // Гость→Хост: гость ответил на вопрос
-    case 'ans':
-      if(myIdx===0){ // только хост обрабатывает
-        hostApplyAnswer(msg.correct);
+    case 'roll': // гость→хост: бросок
+      if(myIdx===0){
+        processRoll(msg.dice, msg.newPos);
       }
+      break;
+
+    case 'answer': // любой→хост: ответ на вопрос
+      if(myIdx===0){
+        processAnswer(msg.playerIdx, msg.correct);
+      }
+      break;
+
+    case 'end':
+      showEnd(msg.gs);
       break;
   }
 }
 
-// ════════════════════════════════════════════
-// ИГРА — СТАРТ
-// ════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// ИГРА
+// ═══════════════════════════════════════════════
 function startGame(){
-  if(!boardBuilt){buildBoard();boardBuilt=true;}
-  showS('rules-screen');
-  let countdown=30;
-  document.getElementById('rules-countdown').textContent=countdown;
-  const rulesTimer=setInterval(()=>{
-    countdown--;
-    const el=document.getElementById('rules-countdown');
-    if(el) el.textContent=countdown;
-    if(countdown<=0){
-      clearInterval(rulesTimer);
-      showS('game-screen');
-      renderHUD();
-      renderPawns();
-      renderDiceBtn();
-    }
-  },1000);
+  if(!boardBuilt){ buildBoard(); boardBuilt=true; }
+  showS('game-screen');
+  renderAll();
 }
 
-// ════════════════════════════════════════════
-// СИНХРОНИЗАЦИЯ — только гость применяет это
-// ════════════════════════════════════════════
-function applySync(){
+// Хост синхронизирует состояние гостю
+function syncGuest(){
+  if(myIdx===0) send({type:'sync', gs:GS});
+}
+
+function renderAll(){
+  if(!GS) return;
   renderHUD();
   renderPawns();
   renderDiceBtn();
-
-  if(GS.phase==='question' && GS.q){
-    // Гость видит вопрос, но НЕ может отвечать если не его ход
-    if(GS.turn===myIdx){
-      // Мой ход — показываем вопрос с вариантами
-      openQModal(GS.q, true);
-    } else {
-      // Не мой ход — показываем только текст вопроса и варианты заблокированы
-      openQModal(GS.q, false);
-    }
-  } else {
-    // Не вопрос — закрываем модал
-    closeQModal();
-  }
 }
 
-// ════════════════════════════════════════════
-// РЕНДЕР
-// ════════════════════════════════════════════
 function renderHUD(){
-  if(!GS)return;
   const p=GS.players;
   document.getElementById('n0').textContent='🟣 '+(p[0].name||'P1');
   document.getElementById('n1').textContent='🔵 '+(p[1].name||'P2');
   document.getElementById('s0').textContent=p[0].score;
   document.getElementById('s1').textContent=p[1].score;
-  document.getElementById('hturn').textContent='ХОД: '+(p[GS.turn]?.name||'?');
+  const tn=p[GS.turn]?.name||'?';
+  document.getElementById('hturn').textContent='ХОД: '+tn;
 }
+
 function renderDiceBtn(){
-  if(!GS)return;
-  const mine=GS.turn===myIdx && GS.phase==='rolling';
+  const isMyTurn=(GS.turn===myIdx);
   const btn=document.getElementById('dbtn');
   const lbl=document.getElementById('tlbl');
-  if(mine){
+  if(GS.phase==='rolling' && isMyTurn){
     btn.removeAttribute('disabled');
-    btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold)';
-    lbl.textContent='Твой ход — брось кубик!';
+    btn.style.borderColor='var(--gold)';btn.style.color='var(--gold)';
+    lbl.textContent='Твой ход!';
   } else {
     btn.setAttribute('disabled','');
-    btn.style.borderColor='var(--purple)'; btn.style.color='var(--purple)';
-    lbl.textContent=GS.phase==='question'
-      ? (GS.turn===myIdx?'Ответь на вопрос!':'Соперник отвечает...')
-      : 'Ход '+(GS.players[GS.turn]?.name||'');
+    btn.style.borderColor='var(--purple)';btn.style.color='var(--purple)';
+    lbl.textContent=GS.phase==='question'?'Вопрос...':`Ход ${GS.players[GS.turn]?.name||''}`;
   }
   if(GS.dice) document.getElementById('dval').textContent=GS.dice;
 }
 
-// ════════════════════════════════════════════
-// ПОЛЕ
-// ════════════════════════════════════════════
-const CW=56,CH=62;
+// ── ПОЛЕ ──
+const CW=56, CH=62;
 function cellPos(id){
-  if(id<=8)  return{col:id,    row:0};
-  if(id<=14) return{col:8,     row:id-8};
-  if(id<=21) return{col:8-(id-14), row:6};
-  return{col:0, row:6-(id-21)};
+  if(id<=8) return {col:id,row:0};
+  if(id<=14) return {col:8,row:id-8};
+  if(id<=21) return {col:8-(id-14),row:6};
+  return {col:0,row:6-(id-21)};
 }
 function buildBoard(){
-  const b=document.getElementById('board');
-  b.innerHTML='';
-  b.style.width=(9*CW+CW*2)+'px';
-  b.style.height=(6*CH+CH*2)+'px';
+  const board=document.getElementById('board');
+  board.innerHTML='';
+  board.style.width=(9*CW+CW*2)+'px';
+  board.style.height=(6*CH+CH*2)+'px';
   CELLS.forEach(c=>{
-    const p=cellPos(c.id);
+    const pos=cellPos(c.id);
     const el=document.createElement('div');
-    el.className='cell '+c.cls; el.id='cell-'+c.id;
-    el.style.cssText=`left:${p.col*CW+CW/2}px;top:${p.row*CH+CH/2}px;width:${CW}px;height:${CH}px;`;
+    el.className='cell '+c.cls;
+    el.id='cell-'+c.id;
+    el.style.cssText=`left:${pos.col*CW+CW/2}px;top:${pos.row*CH+CH/2}px;width:${CW}px;height:${CH}px;`;
     el.innerHTML=`<span class="c-num">${c.id}</span><div class="c-inner"><div class="c-ico">${c.icon}</div><div class="c-lbl">${c.label}</div></div>`;
-    b.appendChild(el);
+    board.appendChild(el);
   });
+  // Центр
   const ctr=document.createElement('div');
   ctr.className='board-center';
   ctr.style.cssText=`left:${CW*1.5}px;top:${CH*1.5}px;width:${CW*6}px;height:${CH*5}px;`;
-  ctr.innerHTML=`<div style="font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(1rem,3.5vw,1.4rem);color:var(--gold);text-shadow:0 0 20px var(--gold);letter-spacing:3px;">MATHOPOLY</div>
-    <div style="font-family:'Orbitron',monospace;font-size:.52rem;color:rgba(255,215,0,.55);letter-spacing:2px;margin-top:3px;">9 КЛАСС · КАЗАХСТАН</div>
-    <div class="bc-fml" style="margin-top:6px;">x²+bx+c=0 · a²+b²=c²<br>y=kx+b · C(n,k)<br>S=πr² · |x|=a</div>`;
-  b.appendChild(ctr);
+  ctr.innerHTML=`<div class="bc-title" style="font-size:clamp(1.1rem,3.5vw,1.5rem);">MATHOPOLY</div>
+    <div class="bc-sub" style="font-size:.55rem;">9 КЛАСС · КАЗАХСТАН</div>
+    <div class="bc-fml">x²+bx+c=0 · a²+b²=c²<br>y=kx+b · C(n,k) · P(A)<br>S=πr² · ∑aₙ · |x|=a</div>`;
+  board.appendChild(ctr);
+  // Фишки
   [0,1].forEach(i=>{
     const p=document.createElement('div');
-    p.className=`pawn pawn-${i}`; p.id=`pawn-${i}`;
+    p.className=`pawn pawn-${i}`;p.id=`pawn-${i}`;
     p.textContent=i===0?'P1':'P2';
-    b.appendChild(p);
+    board.appendChild(p);
   });
 }
+
 function renderPawns(){
-  if(!GS)return;
+  if(!GS) return;
   document.querySelectorAll('.cell').forEach(c=>c.classList.remove('hl'));
   GS.players.forEach((p,i)=>{
     const pos=cellPos((p.pos||0)%TOTAL);
-    const ox=i===1?9:-9;
-    const pw=document.getElementById('pawn-'+i);
-    if(pw){
-      pw.style.left=(pos.col*CW+CW/2+CW/4+ox-10)+'px';
-      pw.style.top=(pos.row*CH+CH/2+6)+'px';
+    const ox=i===1?8:-8;
+    const pawn=document.getElementById('pawn-'+i);
+    if(pawn){
+      pawn.style.left=(pos.col*CW+CW/2+CW/4+ox-10)+'px';
+      pawn.style.top=(pos.row*CH+CH/2+6)+'px';
     }
   });
   const cp=document.getElementById('cell-'+((GS.players[GS.turn]?.pos||0)%TOTAL));
   if(cp) cp.classList.add('hl');
 }
 
-// ════════════════════════════════════════════
-// КУБИК — оба игрока бросают сами
-// ════════════════════════════════════════════
+// ── БРОСОК КУБИКА ──
 async function rollDice(){
   if(!GS||GS.phase!=='rolling'||GS.turn!==myIdx) return;
   const dice=Math.floor(Math.random()*6)+1;
+  const newPos=((GS.players[myIdx].pos||0)+dice)%TOTAL;
+
   document.getElementById('dbtn').setAttribute('disabled','');
-  // Анимация
   let a=0; const at=setInterval(()=>{
     document.getElementById('dval').textContent=Math.floor(Math.random()*6)+1;
-    if(++a>8){clearInterval(at); document.getElementById('dval').textContent=dice;}
+    if(++a>8){clearInterval(at);document.getElementById('dval').textContent=dice;}
   },80);
   await sleep(850);
 
-  // Считаем новую позицию
-  const oldPos=GS.players[myIdx].pos||0;
-  const newPos=(oldPos+dice)%TOTAL;
-
-  // ВАЖНО: позицию сразу НЕ двигаем — она обновится только если
-  // нет вопроса (cstart/sgold/sred) или если ответит правильно
-  // Хост обрабатывает логику, гость отправляет хосту
-
   if(myIdx===0){
-    hostProcessRoll(dice, newPos);
+    // Хост сам обрабатывает
+    processRoll(dice, newPos);
   } else {
-    // Гость сообщает хосту что он бросил
-    send({type:'roll_result', dice, newPos, player:1});
-    // Гость ждёт sync от хоста
+    // Гость отправляет хосту
+    send({type:'roll', dice, newPos});
   }
 }
 
-// Хост также принимает результат броска гостя
-function onMsg_old(msg){} // заглушка — уже в onMsg выше
-
-// Добавляем обработку roll_result в onMsg:
-const _origOnMsg=onMsg;
-// Заменяем — добавляем case roll_result
-function onMsg(msg){
-  if(msg.type==='roll_result' && myIdx===0){
-    // Хост обрабатывает бросок гостя
-    hostProcessRoll(msg.dice, msg.newPos, msg.player||1);
-    return;
-  }
-  _origOnMsg(msg);
-}
-
-// ════════════════════════════════════════════
-// ХОСТ — ВСЯ ЛОГИКА ЗДЕСЬ
-// ════════════════════════════════════════════
-function hostProcessRoll(dice, newPos, playerIdx){
-  // playerIdx — кто бросил (0=хост, 1=гость, по умолч. текущий ход)
-  const pi = (playerIdx!==undefined) ? playerIdx : GS.turn;
+// Только хост обрабатывает логику хода
+function processRoll(dice, newPos){
+  GS.dice=dice;
+  GS.players[GS.turn].pos=newPos;
   const cell=CELLS[newPos];
 
-  GS.dice=dice;
-  // Пока не двигаем — зависит от результата вопроса
-
   if(cell.cls==='cfin'){
-    // Финиш — двигаем сразу
-    GS.players[pi].pos=newPos;
-    GS.players[pi].score=(GS.players[pi].score||0)+50;
+    GS.players[GS.turn].score+=50;
     GS.phase='end';
-    hostSync();
-    showEnd(GS); return;
+    syncGuest();
+    showEnd(GS);
+    send({type:'end',gs:GS});
+    return;
   }
   if(cell.cls==='sred'){
-    // Ошибка — двигаем, теряем очки, ход переходит
-    GS.players[pi].pos=newPos;
-    GS.players[pi].score=Math.max(0,(GS.players[pi].score||0)-5);
-    hostSync();
-    toast('⚠️ ОШИБКА! -5 очков');
-    renderHUD(); renderPawns();
-    setTimeout(()=>hostNextTurn(),1500); return;
-  }
-  if(cell.cls==='sgold'||cell.cls==='cstart'||(cell.cls==='sred')){
-    // Бонус / Старт — двигаем, нет вопроса
+    GS.players[GS.turn].score=Math.max(0,(GS.players[GS.turn].score||0)-5);
+    toast('⚠️ ОШИБКА! -5'); nextTurn(); return;
   }
   if(cell.cls==='sgold'){
-    GS.players[pi].pos=newPos;
-    GS.players[pi].score=(GS.players[pi].score||0)+10;
-    hostSync();
-    toast('⭐ ФОРМУЛА УДАЧИ! +10 очков');
-    renderHUD(); renderPawns();
-    setTimeout(()=>hostNextTurn(),1500); return;
+    GS.players[GS.turn].score=(GS.players[GS.turn].score||0)+10;
+    toast('⭐ ФОРМУЛА УДАЧИ! +10'); nextTurn(); return;
   }
-  if(cell.cls==='cstart'){
-    GS.players[pi].pos=newPos;
-    hostSync();
-    toast('🚀 СТАРТ!');
-    renderHUD(); renderPawns();
-    setTimeout(()=>hostNextTurn(),1500); return;
-  }
+  if(cell.cls==='cstart'){toast('🚀 СТАРТ!'); nextTurn(); return;}
 
-  // Клетка с вопросом — позицию НЕ двигаем до ответа
-  // Сохраняем "pendingPos" в GS
-  const cat=cell.cat||'algebra';
-  const q=pickQ(cat);
-  q.pendingPos=newPos;  // куда встанет игрок если ответит правильно
-  q.pendingPlayer=pi;   // кто отвечает
-
-  GS.q=q;
+  // Вопрос
+  const cat=cell.cls==='geo'?'geometry':cell.cls==='lgc'?'logic':'algebra';
+  const pool=QS[cat];
+  const q=pool[Math.floor(Math.random()*pool.length)];
+  GS.q={text:q.q, answer:q.a, category:cell.label};
   GS.phase='question';
-  hostSync(); // шлём гостю
-
-  // Хосту показываем вопрос если его ход
-  if(GS.turn===0){
-    openQModal(q, true);
-  }
-  // Если ход гостя (pi===1) — хост ждёт ответа, гостю уже показано через sync
+  syncGuest();
+  renderAll();
+  // Показываем вопрос тому, чей ход
+  if(GS.turn===0) showQuestion(GS.q);
 }
 
-function hostApplyAnswer(correct){
-  // Вызывается когда гость прислал ответ
-  const q=GS.q;
-  if(!q)return;
-  const pi=q.pendingPlayer!==undefined ? q.pendingPlayer : GS.turn;
-
-  if(correct){
-    // Правильно — двигаем на новую клетку
-    GS.players[pi].pos=q.pendingPos;
-    GS.players[pi].score=(GS.players[pi].score||0)+15;
-  }
-  // Неправильно — остаётся на старом месте (pos не меняем)
-
-  GS.q=null;
-  hostNextTurn();
-}
-
-function hostNextTurn(){
+function nextTurn(){
   GS.turn=GS.turn===0?1:0;
   GS.phase='rolling';
   GS.q=null;
-  answered=false;
-  hostSync();
-  // Хост обновляет себя
-  renderHUD(); renderPawns(); renderDiceBtn();
-  closeQModal();
+  syncGuest();
+  renderAll();
+  document.getElementById('qmodal').classList.add('hidden');
+  answered=false; stopQT();
 }
 
-function hostSync(){
-  // Хост → Гость: полный стейт
-  send({type:'sync', gs:GS});
-}
-
-// ════════════════════════════════════════════
-// ВОПРОС МОДАЛ
-// ════════════════════════════════════════════
-function openQModal(q, canAnswer){
-  document.getElementById('qcat').textContent=(q.category||'задача').toUpperCase();
-  document.getElementById('qtxt').textContent=q.text||'';
-
-  // Таймер — только если отвечаю
-  const tmrEl=document.getElementById('qtmr');
-  if(canAnswer){
-    tmrEl.style.display='block';
-    startQT(30);
-  } else {
-    tmrEl.style.display='none';
-    stopQT();
-  }
-
-  // Варианты
-  const opts=q.opts||[];
-  opts.forEach((opt,i)=>{
-    const btn=document.getElementById('ch'+i);
-    btn.textContent=opt;
-    btn.className='choice';
-    if(canAnswer) btn.removeAttribute('disabled');
-    else btn.setAttribute('disabled','');
-  });
-
+// ── ВОПРОС ──
+function showQuestion(q){
+  document.getElementById('qcat').textContent=q.category||'ЗАДАЧА';
+  document.getElementById('qtxt').textContent=q.text;
+  document.getElementById('qinp').value='';
   document.getElementById('qres').className='q-res hidden';
-  document.getElementById('qwatch').classList.toggle('hidden', canAnswer);
-  answered=false;
+  document.getElementById('qwait').classList.add('hidden');
+  document.getElementById('qsub').removeAttribute('disabled');
+  document.getElementById('qmodal').classList.remove('hidden');
+  startQT(30);
+  document.getElementById('qinp').focus();
+}
+
+function showQWait(){
+  document.getElementById('qcat').textContent='ВОПРОС';
+  document.getElementById('qtxt').textContent=GS.q?.text||'...';
+  document.getElementById('qres').className='q-res hidden';
+  document.getElementById('qwait').classList.remove('hidden');
+  document.getElementById('qsub').setAttribute('disabled','');
   document.getElementById('qmodal').classList.remove('hidden');
 }
 
-function closeQModal(){
-  stopQT();
-  answered=false;
-  document.getElementById('qmodal').classList.add('hidden');
-}
-
-// ════════════════════════════════════════════
-// ОТВЕТ
-// ════════════════════════════════════════════
-function pick(idx){
-  if(answered||GS.turn!==myIdx||GS.phase!=='question') return;
-  answered=true; stopQT();
-
-  const isRight=(idx===GS.q.ci);
-
-  // Подсвечиваем
-  for(let i=0;i<4;i++){
-    const btn=document.getElementById('ch'+i);
-    btn.setAttribute('disabled','');
-    if(i===GS.q.ci) btn.classList.add('correct');
-    else if(i===idx&&!isRight) btn.classList.add('wrong');
-  }
-  const res=document.getElementById('qres');
-  res.className='q-res '+(isRight?'ok':'bad');
-  res.textContent=isRight?'✓ ВЕРНО! +15 очков':'✗ Неверно. Правильно: '+GS.q.answer;
-  res.classList.remove('hidden');
-
-  setTimeout(()=>{
-    if(myIdx===0){
-      // Хост сам обрабатывает
-      hostApplyAnswer(isRight);
-    } else {
-      // Гость отправляет результат хосту
-      send({type:'ans', correct:isRight});
-      // Гость ждёт sync с новым стейтом — не закрываем модал сами
-    }
-  }, 1800);
-}
-
-// ════════════════════════════════════════════
-// ТАЙМЕР
-// ════════════════════════════════════════════
 function startQT(s){
   stopQT(); qSec=s;
   document.getElementById('qtmr').textContent='⏱ '+qSec;
   qTimer=setInterval(()=>{
     qSec--;
     document.getElementById('qtmr').textContent='⏱ '+qSec;
-    if(qSec<=0){stopQT(); if(!answered) pick(-1);}
+    if(qSec<=0){stopQT();submitAns(true);}
   },1000);
 }
 function stopQT(){if(qTimer){clearInterval(qTimer);qTimer=null;}}
 
-// ════════════════════════════════════════════
-// ФИНИШ
-// ════════════════════════════════════════════
-function showEnd(gs){
-  stopQT();
-  closeQModal();
-  const p=gs.players;
-  const isDraw=p[0].score===p[1].score;
-  const winnerIdx=p[0].score>=p[1].score?0:1;
-  const loserIdx=winnerIdx===0?1:0;
-  const winner=p[winnerIdx];
-  const loser=p[loserIdx];
+async function submitAns(timeout=false){
+  if(answered) return;
+  answered=true; stopQT();
+  const inp=document.getElementById('qinp').value.trim().toLowerCase().replace(/\s/g,'');
+  const correct=(GS.q?.answer||'').toLowerCase().replace(/\s/g,'');
+  const isRight=!timeout && inp===correct;
 
-  if(isDraw){
-    // Ничья — оба молодцы
-    document.getElementById('winner-block').style.borderColor='var(--cyan)';
-    document.getElementById('winner-block').querySelector('.diploma-icon').textContent='🤝';
-    document.getElementById('winner-block').querySelector('.diploma-title').textContent='НИЧЬЯ!';
-    document.getElementById('winner-block').querySelector('.diploma-title').style.color='var(--cyan)';
-    document.getElementById('ewinner').textContent=p[0].name+' и '+p[1].name;
-    document.getElementById('winner-desc').textContent='Оба показали одинаковый результат — это редкость! Оба заслуживают аттестата зрелости.';
-    document.getElementById('loser-block').style.display='none';
+  const res=document.getElementById('qres');
+  res.className='q-res '+(isRight?'ok':'bad');
+  res.textContent=isRight?'✓ ВЕРНО! +15':'✗ Неверно. Правильно: '+GS.q?.answer;
+  res.classList.remove('hidden');
+
+  // Отправляем хосту
+  if(myIdx===0){
+    processAnswer(0, isRight);
   } else {
-    // Победитель
-    document.getElementById('ewinner').textContent='🎓 '+winner.name;
-    document.getElementById('winner-desc').textContent=
-      winner.name+' блестяще справился с испытанием и доказал, что готов к взрослой жизни. '+
-      'Набрано '+winner.score+' очков — аттестат зрелости заслужен!';
-    // Проигравший
-    document.getElementById('eloser').textContent='📚 '+loser.name;
-    document.getElementById('loser-desc').textContent=
-      loser.name+', к сожалению знаний пока недостаточно. '+
-      'Набрано всего '+loser.score+' очков — придётся остаться на второй год '+
-      'и как следует подтянуть школьную программу перед следующей попыткой.';
+    send({type:'answer', playerIdx:myIdx, correct:isRight});
+    // Показываем ожидание
+    setTimeout(()=>{
+      document.getElementById('qwait').classList.remove('hidden');
+    },1800);
   }
 
-  // Счёт
-  const scoresEl=document.getElementById('diploma-scores');
-  scoresEl.innerHTML=
-    '<div class="dscore"><div class="dn">'+p[0].name+'</div><div class="dv" style="color:var(--purple);">'+p[0].score+' pts</div></div>'+
-    '<div class="dscore"><div class="dn">'+p[1].name+'</div><div class="dv" style="color:var(--cyan);">'+p[1].score+' pts</div></div>';
+  await sleep(2000);
+}
 
+function processAnswer(playerIdx, correct){
+  if(correct) GS.players[playerIdx].score=(GS.players[playerIdx].score||0)+15;
+  setTimeout(()=>{
+    nextTurn();
+  },500);
+}
+
+// ── ФИНИШ ──
+function showEnd(gs){
+  stopQT();
+  document.getElementById('qmodal').classList.add('hidden');
+  const p=gs.players;
+  const w=p[0].score>p[1].score?p[0].name:p[1].score>p[0].score?p[1].name:'НИЧЬЯ';
+  document.getElementById('etitle').textContent=w==='НИЧЬЯ'?'🤝 НИЧЬЯ!':'🏆 '+w+' ПОБЕДИЛ!';
+  document.getElementById('ewinner').textContent=w;
+  document.getElementById('en0').textContent=p[0].name;
+  document.getElementById('en1').textContent=p[1].name;
+  document.getElementById('es0').textContent=p[0].score+' pts';
+  document.getElementById('es1').textContent=p[1].score+' pts';
   showS('end-screen');
 }
 
 function leaveRoom(){
-  stopQT();
   if(peer) peer.destroy();
-  peer=null; conn=null; GS=null; boardBuilt=false; answered=false;
+  peer=null; conn=null; GS=null; boardBuilt=false;
   showS('lobby');
 }
+
 function goMenu(){
   leaveRoom();
-  if(window.parent&&window.parent!==window) window.parent.postMessage('goMenu','*');
+  // Возврат во внешнее меню
+  if(window.parent&&window.parent!==window){
+    window.parent.postMessage('goMenu','*');
+  }
 }
 
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+document.getElementById('qinp').addEventListener('keydown',e=>{if(e.key==='Enter')submitAns();});
 showS('lobby');
 </script>
 </body>
