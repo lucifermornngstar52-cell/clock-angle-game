@@ -759,7 +759,7 @@ function g10Next(){
   document.getElementById('g10mkr').style.left=(50+ep*38)+'%';document.getElementById('g10mkr').style.top=(50+ep*28)+'%';
   document.getElementById('g10tgt').style.left='50%';document.getElementById('g10tgt').style.top='50%';
   const op=document.getElementById('g10opts');op.innerHTML='';
-  q.opts.forEach((o,i)=>{const b=document.createElement('div');b.className='opt-btn';b.textContent=o;b.onclick=()=>g10Ans(i);op.appendChild(b);});}
+  q.opts.forEach((o,i)=>{const b=document.createElement('div');b.className='opt-btn';b.textContent=o;b.onclick=()=>g10Ans(i);op.appendChild(b);});}});
 function g10Ans(idx){
   const q=G10Q[g10.round];document.querySelectorAll('#g10opts .opt-btn').forEach(b=>b.onclick=null);
   const btns=document.querySelectorAll('#g10opts .opt-btn');btns[q.ans].classList.add('correct');
