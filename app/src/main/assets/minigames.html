@@ -736,38 +736,67 @@ function g9Ans(idx){
   document.getElementById('g9S').textContent=g9.score;document.getElementById('g9G').textContent='\u2699'+g9.gears;
   g9.round++;reg(setTimeout(g9Next,2200));}
 
-// ═══ G10 НАВИГАТОР ═══
+// === G10 NAVIGATOR ===
 const G10Q=[
-  {q:'GPS-часы спутника убегают из-за общей и спец. ТО на сколько мкс/сутки?',opts:['7 мкс','25 мкс','38 мкс','100 мкс'],ans:2,exp:'ОТО +45, Спец.ТО −7 → итого +38 мкс/сут'},
-  {q:'Ошибка 1 мкс в GPS = ошибка на местности:',opts:['1 мм','30 см','300 м','3 км'],ans:2,exp:'Свет за 1 мкс ≈ 300 м → ошибка ≈ 300 м'},
-  {q:'Через 7 суток без коррекции накопится:',opts:['38 мкс','150 мкс','266 мкс','700 мкс'],ans:2,exp:'38 × 7 = 266 мкс → ошибка ~80 км!'},
-  {q:'Какой эффект ЗАМЕДЛЯЕТ часы спутника?',opts:['Сила тяжести','Скорость (Спец. ТО)','Космическое излучение','Солнечный ветер'],ans:1,exp:'Высокая скорость (14000 км/ч) → Спец. ТО → часы замедляются'],
-  {q:'Без коррекции GPS уйдёт на 10 км за:',opts:['Несколько часов','1 сутки','1 неделю','1 месяц'],ans:0,exp:'266 мкс/нед ≈ 38 мкс/сут → ~11 км/сут → часы дают км-ошибку за часы'},
+  {q:"GPS-часы спутника убегают на сколько мкс в сутки из-за ОТО+Спец.ТО?",opts:["7 мкс","25 мкс","38 мкс","100 мкс"],ans:2,exp:"ОТО +45, Спец.ТО -7 = итого +38 мкс/сут"},
+  {q:"Ошибка 1 мкс в GPS = ошибка на местности:",opts:["1 мм","30 см","300 м","3 км"],ans:2,exp:"Свет за 1 мкс = 300 м"},
+  {q:"Через 7 суток без коррекции накопится:",opts:["38 мкс","150 мкс","266 мкс","700 мкс"],ans:2,exp:"38 x 7 = 266 мкс = 80 км ошибки"},
+  {q:"Какой эффект ЗАМЕДЛЯЕТ часы спутника?",opts:["Сила тяжести","Скорость - Спец.ТО","Космическое излучение","Солнечный ветер"],ans:1,exp:"Скорость 14000 км/ч -> Спец.ТО -> часы замедляются на 7 мкс/сут"},
+  {q:"Без коррекции GPS уйдёт на 10 км за:",opts:["Несколько часов","1 сутки","1 неделю","1 месяц"],ans:0,exp:"38 мкс/сут = 11 км/сут -> за несколько часов набегают км"},
 ];
 let g10={};
 function g10Init(){
-  const map=document.getElementById('g10map');
-  map.querySelectorAll('.gg').forEach(e=>e.remove());
-  for(let i=1;i<4;i++){const h=document.createElement('div');h.className='gg';h.style.cssText='position:absolute;left:0;right:0;top:'+i*25+'%;height:1px;background:rgba(0,245,255,.06);';map.appendChild(h);const v=document.createElement('div');v.className='gg';v.style.cssText='position:absolute;top:0;bottom:0;left:'+i*25+'%;width:1px;background:rgba(0,245,255,.06);';map.appendChild(v);}
-  g10={round:0,score:0,gears:0};g10Next();showS('sG10');}
+  var map=document.getElementById("g10map");
+  map.querySelectorAll(".gg").forEach(function(e){e.remove();});
+  for(var i=1;i<4;i++){
+    var h=document.createElement("div");h.className="gg";
+    h.style.cssText="position:absolute;left:0;right:0;top:"+i*25+"%;height:1px;background:rgba(0,245,255,.06);";
+    map.appendChild(h);
+    var v=document.createElement("div");v.className="gg";
+    v.style.cssText="position:absolute;top:0;bottom:0;left:"+i*25+"%;width:1px;background:rgba(0,245,255,.06);";
+    map.appendChild(v);
+  }
+  g10={round:0,score:0,gears:0};g10Next();showS("sG10");
+}
 function g10Next(){
-  if(g10.round>=5){award(g10.gears,10);showResult(g10.gears,15,g10.gears>=12?'НАВИГАТОР СПАСЁН!':'СИГНАЛ ПОТЕРЯН','Правильно: '+g10.score+'/5',null);return;}
-  const q=G10Q[g10.round],drift=38*(g10.round+1);
-  document.getElementById('g10R').textContent=(g10.round+1)+'/5';document.getElementById('g10S').textContent=g10.score;document.getElementById('g10G').textContent='\u2699'+g10.gears;
-  document.getElementById('g10q').textContent=q.q;document.getElementById('g10err').textContent=drift+' мкс';document.getElementById('g10fb').textContent='';
-  const ep=Math.min(drift/200,.4);
-  document.getElementById('g10mkr').style.left=(50+ep*38)+'%';document.getElementById('g10mkr').style.top=(50+ep*28)+'%';
-  document.getElementById('g10tgt').style.left='50%';document.getElementById('g10tgt').style.top='50%';
-  const op=document.getElementById('g10opts');op.innerHTML='';
-  q.opts.forEach((o,i)=>{const b=document.createElement('div');b.className='opt-btn';b.textContent=o;b.onclick=()=>g10Ans(i);op.appendChild(b);});}
+  if(g10.round>=5){award(g10.gears,10);showResult(g10.gears,15,g10.gears>=12?"НАВИГАТОР СПАСЁН!":"СИГНАЛ ПОТЕРЯН","Правильно: "+g10.score+"/5",null);return;}
+  var q=G10Q[g10.round],drift=38*(g10.round+1);
+  document.getElementById("g10R").textContent=(g10.round+1)+"/5";
+  document.getElementById("g10S").textContent=g10.score;
+  document.getElementById("g10G").textContent="⚙"+g10.gears;
+  document.getElementById("g10q").textContent=q.q;
+  document.getElementById("g10err").textContent=drift+" мкс";
+  document.getElementById("g10fb").textContent="";
+  var ep=Math.min(drift/200,.4);
+  document.getElementById("g10mkr").style.left=(50+ep*38)+"%";
+  document.getElementById("g10mkr").style.top=(50+ep*28)+"%";
+  document.getElementById("g10tgt").style.left="50%";
+  document.getElementById("g10tgt").style.top="50%";
+  var op=document.getElementById("g10opts");op.innerHTML="";
+  q.opts.forEach(function(o,i){var b=document.createElement("div");b.className="opt-btn";b.textContent=o;b.onclick=function(){g10Ans(i);};op.appendChild(b);});
+}
 function g10Ans(idx){
-  const q=G10Q[g10.round];document.querySelectorAll('#g10opts .opt-btn').forEach(b=>b.onclick=null);
-  const btns=document.querySelectorAll('#g10opts .opt-btn');btns[q.ans].classList.add('correct');
-  const fb=document.getElementById('g10fb');
-  if(idx===q.ans){btns[idx].classList.add('correct');fb.textContent='\u{1F6F0} Откалиброван! +3\u2699 \u2014 '+q.exp;fb.style.color='var(--g)';document.getElementById('g10mkr').style.left='50%';document.getElementById('g10mkr').style.top='50%';g10.gears+=3;g10.score++;}
-  else{btns[idx].classList.add('wrong');fb.textContent='\u274C '+q.exp;fb.style.color='var(--r)';}
-  document.getElementById('g10S').textContent=g10.score;document.getElementById('g10G').textContent='\u2699'+g10.gears;
-  g10.round++;reg(setTimeout(g10Next,2200));}
+  var q=G10Q[g10.round];
+  document.querySelectorAll("#g10opts .opt-btn").forEach(function(b){b.onclick=null;});
+  var btns=document.querySelectorAll("#g10opts .opt-btn");
+  btns[q.ans].classList.add("correct");
+  var fb=document.getElementById("g10fb");
+  if(idx===q.ans){
+    btns[idx].classList.add("correct");
+    fb.textContent="🛰 Откалиброван! +3⚙ — "+q.exp;
+    fb.style.color="var(--g)";
+    document.getElementById("g10mkr").style.left="50%";
+    document.getElementById("g10mkr").style.top="50%";
+    g10.gears+=3;g10.score++;
+  } else {
+    btns[idx].classList.add("wrong");
+    fb.textContent="✗ "+q.exp;
+    fb.style.color="var(--r)";
+  }
+  document.getElementById("g10S").textContent=g10.score;
+  document.getElementById("g10G").textContent="⚙"+g10.gears;
+  g10.round++;reg(setTimeout(g10Next,2200));
+}
 
 // INIT
 buildMenu();showS('sMenu');
