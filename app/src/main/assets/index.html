@@ -1446,11 +1446,14 @@ function vlShowParadox(){
     return;
   }
   vlState.phase='paradox_done';
-  // После paradox_done кнопка вызывает vlShowStartCard через vlActionBtn
+  // После парадокса — сразу бросаем кубик (как после правильного ответа)
   document.getElementById('vl-action-btn').onclick=()=>{
     document.getElementById('vl-paradox-card').style.display='none';
     document.getElementById('vl-question-card').style.display='block';
-    vlShowStartCard();
+    // Показываем кубик и бросаем
+    document.getElementById('vl-dice-area').style.display='block';
+    document.getElementById('vl-action-btn').style.display='none';
+    vlRollDice();
     document.getElementById('vl-action-btn').onclick=vlActionBtn;
   };
 }
