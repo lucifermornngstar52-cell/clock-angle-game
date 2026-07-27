@@ -91,8 +91,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <defs><filter id="gl1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
       <circle cx="115" cy="115" r="110" fill="rgba(0,0,0,.85)" stroke="rgba(0,245,255,.3)" stroke-width="2"/>
       <g id="g1mk"></g><g id="g1nm"></g>
-      <line id="g1hr" x1="115" y1="125" x2="115" y2="52" stroke="#ff00aa" stroke-width="8" stroke-linecap="round" filter="url(#gl1)" transform="rotate(0 115 115)" style="cursor:grab"/>
-      <line id="g1mn" x1="115" y1="128" x2="115" y2="18" stroke="#00f5ff" stroke-width="5" stroke-linecap="round" filter="url(#gl1)" transform="rotate(0 115 115)" style="cursor:grab"/>
+      <line id="g1hr" x1="115" y1="125" x2="115" y2="52" stroke="#ff00aa" stroke-width="8" stroke-linecap="round" transform="rotate(0 115 115)" style="cursor:grab"/>
+      <line id="g1mn" x1="115" y1="128" x2="115" y2="18" stroke="#00f5ff" stroke-width="5" stroke-linecap="round" transform="rotate(0 115 115)" style="cursor:grab"/>
       <circle cx="115" cy="115" r="8" fill="#fff" filter="url(#gl1)"/>
       <circle cx="115" cy="115" r="4" fill="#0a0a2a"/>
       <rect x="76" y="142" width="78" height="24" rx="5" fill="rgba(0,0,0,.9)" stroke="rgba(0,245,255,.25)"/>
@@ -115,7 +115,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
     <div><div class="sc-label">РАУНД</div><div class="sc-val" id="g2R">1/5</div></div>
     <div><div class="sc-label">ТОЧНОСТЬ</div><div class="sc-val" id="g2Ac">-</div></div>
   </div>
-  <div style="font-size:.6rem;color:var(--dg);letter-spacing:2px;text-align:center;">НАЖМИ ПОСЛЕ <span id="g2Laps" style="color:var(--y);font-family:'Orbitron',monospace;font-size:1.1rem;">?</span> КРУГОВ</div>
+  <div style="font-size:.6rem;color:var(--dg);letter-spacing:2px;text-align:center;">ОСТАНОВИ РОВНО НА <span id="g2Laps" style="color:var(--y);font-family:'Orbitron',monospace;font-size:1.1rem;">?</span> КРУГОВ</div>
   <div style="position:relative;width:210px;height:210px;flex-shrink:0;">
     <svg id="g2svg" viewBox="0 0 210 210" width="210" height="210">
       <defs><filter id="gl2"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
@@ -151,8 +151,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <circle cx="100" cy="100" r="95" fill="rgba(0,0,0,.85)" stroke="rgba(0,245,255,.25)" stroke-width="2"/>
       <g id="g3mk"></g>
       <path id="g3arc" d="" fill="none" stroke="rgba(255,215,0,.45)" stroke-width="2.5"/>
-      <line id="g3hr" x1="100" y1="100" x2="100" y2="48" stroke="#ff00aa" stroke-width="4.5" stroke-linecap="round" filter="url(#gl3)" transform="rotate(0 100 100)"/>
-      <line id="g3mn" x1="100" y1="100" x2="100" y2="14" stroke="#00f5ff" stroke-width="3" stroke-linecap="round" filter="url(#gl3)" transform="rotate(0 100 100)"/>
+      <line id="g3hr" x1="100" y1="100" x2="100" y2="48" stroke="#ff00aa" stroke-width="4.5" stroke-linecap="round" transform="rotate(0 100 100)"/>
+      <line id="g3mn" x1="100" y1="100" x2="100" y2="14" stroke="#00f5ff" stroke-width="3" stroke-linecap="round" transform="rotate(0 100 100)"/>
       <circle cx="100" cy="100" r="4" fill="#fff"/>
     </svg>
   </div>
@@ -227,8 +227,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <circle cx="110" cy="110" r="105" fill="rgba(0,0,0,.85)" stroke="rgba(123,47,255,.4)" stroke-width="2"/>
       <g id="g6mk"></g>
       <path id="g6arc" d="" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="6"/>
-      <line id="g6hr" x1="110" y1="110" x2="110" y2="55" stroke="#ff00aa" stroke-width="6" stroke-linecap="round" filter="url(#gl6)" transform="rotate(0 110 110)"/>
-      <line id="g6mn" x1="110" y1="110" x2="110" y2="14" stroke="#00f5ff" stroke-width="4" stroke-linecap="round" filter="url(#gl6)" transform="rotate(0 110 110)"/>
+      <line id="g6hr" x1="110" y1="110" x2="110" y2="55" stroke="#ff00aa" stroke-width="6" stroke-linecap="round" transform="rotate(0 110 110)"/>
+      <line id="g6mn" x1="110" y1="110" x2="110" y2="14" stroke="#00f5ff" stroke-width="4" stroke-linecap="round" transform="rotate(0 110 110)"/>
       <circle cx="110" cy="110" r="6" fill="#fff" filter="url(#gl6)"/>
       <text id="g6at" x="110" y="172" text-anchor="middle" font-family="Orbitron,monospace" font-size="11" fill="rgba(255,255,255,.3)">delta=?</text>
     </svg>
@@ -276,7 +276,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <defs><filter id="gl8"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
       <circle cx="110" cy="110" r="100" fill="rgba(0,0,0,.7)" stroke="rgba(0,245,255,.25)" stroke-width="1"/>
       <g id="g8mk"></g>
-      <polygon id="g8tri" points="" fill="rgba(0,245,255,.08)" stroke="var(--c1)" stroke-width="2" filter="url(#gl8)"/>
+      <polygon id="g8tri" points="" fill="rgba(0,245,255,.08)" stroke="var(--c1)" stroke-width="2" />
       <g id="g8dots"></g>
       <g id="g8lbls"></g>
     </svg>
@@ -579,7 +579,9 @@ function g4Next(){
     const div=document.createElement('div');div.style.cssText='background:var(--panel);border:2px solid var(--border);border-radius:10px;padding:8px;cursor:pointer;text-align:center;';
     const sv=document.createElementNS('http://www.w3.org/2000/svg','svg');sv.setAttribute('viewBox','0 0 140 140');sv.setAttribute('width','100');sv.setAttribute('height','100');
     g4MiniClock(sv,o.d.hd,o.d.md);div.appendChild(sv);
-    const lb=document.createElement('div');lb.style.cssText='font-size:.52rem;color:var(--dg);margin-top:3px;';lb.textContent=String.fromCharCode(65+i);div.appendChild(lb);
+    const lb=document.createElement('div');var mh=Math.round(o.d.md/6)%60;var mhh=Math.round(o.d.hd/30)%12;
+    var tStr=fmt(mhh||12,mh);
+    lb.style.cssText='font-size:.5rem;color:var(--dg);margin-top:3px;line-height:1.5;';lb.innerHTML=String.fromCharCode(65+i)+'<br><span style="color:var(--c1);font-family:Orbitron,monospace;">'+tStr+'</span>';div.appendChild(lb);
     div.onclick=()=>g4Answer(i,opts,div,c);c.appendChild(div);});}
 function g4Answer(idx,opts,_,c){
   c.querySelectorAll('div>div:last-child').forEach((_,__)=>{});
@@ -595,11 +597,11 @@ function g4Answer(idx,opts,_,c){
 // === G5 RASKOL ===
 let g5={},g5drag=false;
 var G5LEVELS=[
-  {parts:2,target:39,desc:'2 parts of 39',hint:'39 and 39'},
-  {parts:2,target:39,desc:'2 parts of 39',hint:'39 and 39'},
-  {parts:3,target:26,desc:'3 lines = 4 parts of 26',hint:'4 parts by 26'},
-  {parts:2,target:39,desc:'2 parts of 39',hint:'39 and 39'},
-  {parts:3,target:26,desc:'3 lines = 4 parts',hint:'4 parts by 26'},
+  {parts:2,target:39,desc:'2 части по 39',hint:'39 и 39'},
+  {parts:2,target:39,desc:'2 части по 39',hint:'39 и 39'},
+  {parts:3,target:26,desc:'3 линии = 4 части по 26',hint:'4 части по 26'},
+  {parts:2,target:39,desc:'2 части по 39',hint:'39 и 39'},
+  {parts:3,target:26,desc:'3 линии = 4 части',hint:'4 части по 26'},
 ];
 function g5Init(){g5={lv:0,score:0,gears:0,ang:0,lines:[],target:39};g5Build();showS('sG5');}
 function g5Build(){
@@ -609,7 +611,7 @@ function g5Build(){
   document.getElementById('g5S').textContent=g5.score;
   document.getElementById('g5G').textContent='\u2699'+g5.gears;
   document.getElementById('g5fb').textContent='';
-  document.getElementById('g5Task').innerHTML='Draw <b style="color:var(--y)">'+lvl.parts+' line(s)</b> — make sums equal ('+lvl.hint+')';
+  document.getElementById('g5Task').innerHTML='Нарисуй <b style="color:var(--y)">'+lvl.parts+' линию(и)</b> — суммы должны быть равны ('+lvl.hint+')';
   g5Render();
 }
 function g5Render(){
@@ -633,7 +635,7 @@ function g5Render(){
     line.setAttribute('stroke-dasharray','8 4');line.setAttribute('stroke-linecap','round');svg.appendChild(line);});
   g5Sums();
   svg.ontouchstart=svg.onmousedown=function(e){
-    if(g5.lines.length>=g5.numLines){toast('Enough lines!');return;}
+    if(g5.lines.length>=g5.numLines){toast('Достаточно линий!');return;}
     e.preventDefault();var rc=svg.getBoundingClientRect();var tc=e.touches?e.touches[0]:e;
     var x=(tc.clientX-rc.left)-rc.width/2,y=(tc.clientY-rc.top)-rc.height/2;
     var a=((Math.atan2(y,x)*180/Math.PI)+90+360)%360;g5.lines.push(a);g5Render();
@@ -657,21 +659,21 @@ function g5Sums(){
 function g5Confirm(){
   var parts=g5GetParts();var allEq=parts.length>1&&parts.every(function(s){return s===g5.target;});
   var fb=document.getElementById('g5fb');
-  if(allEq){fb.textContent='OK! All parts = '+g5.target+' +3 gears';fb.style.color='var(--g)';g5.score++;g5.gears+=3;
+  if(allEq){fb.textContent='\u2705 ВЕРНО! Все части = '+g5.target+' +3\u2699';fb.style.color='var(--g)';g5.score++;g5.gears+=3;
     document.getElementById('g5S').textContent=g5.score;document.getElementById('g5G').textContent='\u2699'+g5.gears;
-    if(g5.lv>=4){award(g5.gears,5);setTimeout(function(){showResult(g5.gears,15,'ARCHITECT!','Done: '+g5.score+'/5',null);},1500);}
+    if(g5.lv>=4){award(g5.gears,5);setTimeout(function(){showResult(g5.gears,15,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u041f\u0440\u043e\u0439\u0434\u0435\u043d\u043e: '+g5.score+'/5',null);},1500);}
     else{g5.lv++;setTimeout(g5Build,1500);}}
-  else{fb.textContent='Parts: '+parts.join(', ')+' — need '+g5.target+' and '+g5.target;fb.style.color='var(--r)';}
+  else{fb.textContent='\u274C \u0427\u0430\u0441\u0442\u0438: '+parts.join(', ')+' \u2014 \u043d\u0443\u0436\u043d\u043e '+g5.target+' \u0438 '+g5.target;fb.style.color='var(--r)';}
 }
 
 // ═══ G6 СИНХРОНИЗАЦИЯ ═══
 let g6={},g6af=null;
 function g6Init(){drawMarks(document.getElementById('g6mk'),null,110,110,99,10);g6={round:0,score:0,gears:0,running:false};g6Next();showS('sG6');}
 function g6Next(){
-  if(g6.round>=5){award(g6.gears,6);showResult(g6.gears,15,g6.gears>=12?'SYNCED!':'TRY AGAIN!','Score: '+g6.score+'/5',null);return;}
+  if(g6.round>=5){award(g6.gears,6);showResult(g6.gears,15,g6.gears>=12?'\u0421\u0418\u041d\u0425\u0420\u041e!':'\u0422\u0420\u0415\u041d\u0418\u0420\u0423\u0419\u0421\u042f!','\u041e\u0447\u043a\u043e\u0432: '+g6.score+'/5',null);return;}
   g6.spd=0.5+g6.round*0.25;g6.hd=Math.random()*360;g6.md=g6.hd+60+Math.random()*120;g6.running=true;
   document.getElementById('g6R').textContent=(g6.round+1)+'/5';document.getElementById('g6S').textContent=g6.score;
-  document.getElementById('g6acc').textContent='Wait for match...';document.getElementById('g6acc').style.color='var(--dg)';
+  document.getElementById('g6acc').textContent='\u0416\u0434\u0438 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u044f...';document.getElementById('g6acc').style.color='var(--dg)';
   document.getElementById('g6fb').textContent='';document.getElementById('g6G').textContent='\u2699'+g6.gears;
   if(g6af)cancelAnimationFrame(g6af);
   var t0=performance.now();
@@ -697,12 +699,12 @@ function g6Stop(){
   if(!g6.running)return;g6.running=false;if(g6af)cancelAnimationFrame(g6af);
   var h=g6.ch||0,m=g6.cm||0;var df=Math.min(Math.abs((h-m+360)%360),Math.abs((m-h+360)%360));
   var ge=0,msg='';
-  if(df<5){ge=3;msg='PERFECT! d='+Math.round(df)+' +3 gears';g6.score++;}
-  else if(df<15){ge=2;msg='GOOD! d='+Math.round(df)+' +2 gears';g6.score++;}
-  else if(df<30){ge=1;msg='CLOSE! d='+Math.round(df)+' +1 gear';}
-  else{ge=0;msg='Miss. d='+Math.round(df);}
+  if(df<5){ge=3;msg='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0394='+Math.round(df)+'\u00B0 +3\u2699';g6.score++;}
+  else if(df<15){ge=2;msg='\u2B50 \u0425\u041e\u0420\u041e\u0428\u041e! \u0394='+Math.round(df)+'\u00B0 +2\u2699';g6.score++;}
+  else if(df<30){ge=1;msg='\u2705 \u0411\u041b\u0418\u0417\u041a\u041e! \u0394='+Math.round(df)+'\u00B0 +1\u2699';}
+  else{ge=0;msg='\u274C \u041f\u0440\u043e\u043c\u0430\u0445. \u0394='+Math.round(df)+'\u00B0';}
   g6.gears+=ge;document.getElementById('g6S').textContent=g6.score;document.getElementById('g6G').textContent='\u2699'+g6.gears;
-  document.getElementById('g6acc').textContent='d = '+Math.round(df)+'\u00B0';document.getElementById('g6acc').style.color=ge>=2?'var(--g)':ge?'var(--y)':'var(--r)';
+  document.getElementById('g6acc').textContent='\u0394 = '+Math.round(df)+'\u00B0';document.getElementById('g6acc').style.color=ge>=2?'var(--g)':ge?'var(--y)':'var(--r)';
   document.getElementById('g6fb').textContent=msg;document.getElementById('g6fb').style.color=ge>=2?'var(--g)':ge?'var(--y)':'var(--r)';
   g6.round++;reg(setTimeout(g6Next,2100));
 }
@@ -744,10 +746,10 @@ function g7Render(){
     st.setAttribute('font-family','Orbitron,monospace');st.setAttribute('font-size','10');
     st.setAttribute('fill',parts[pi]===26?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
     st.textContent=parts[pi];svg.appendChild(st);}}
-  svg.onclick=function(e){if(g7.lines.length>=5){toast('Max 5!');return;}
+  svg.onclick=function(e){if(g7.lines.length>=5){toast('\u041c\u0430\u043a\u0441 5 \u043b\u0438\u043d\u0438\u0439!');return;}
     var rc=svg.getBoundingClientRect();var x=e.clientX-rc.left-rc.width/2,y=e.clientY-rc.top-rc.height/2;
     var a=((Math.atan2(y,x)*180/Math.PI)+90+360)%360;g7.lines.push(a);document.getElementById('g7L').textContent=g7.lines.length+'/5';g7Render();g7UpdateParts();};
-  svg.ontouchend=function(e){if(g7.lines.length>=5){toast('Max 5!');return;}
+  svg.ontouchend=function(e){if(g7.lines.length>=5){toast('\u041c\u0430\u043a\u0441 5 \u043b\u0438\u043d\u0438\u0439!');return;}
     var rc=svg.getBoundingClientRect();var tc=e.changedTouches[0];
     var x=tc.clientX-rc.left-rc.width/2,y=tc.clientY-rc.top-rc.height/2;
     var a=((Math.atan2(y,x)*180/Math.PI)+90+360)%360;g7.lines.push(a);document.getElementById('g7L').textContent=g7.lines.length+'/5';g7Render();g7UpdateParts();};
@@ -760,10 +762,10 @@ function g7UpdateParts(){var parts=g7Parts();var c=document.getElementById('g7pa
   c.innerHTML=parts.map(function(s,i){var ok=s===26;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
 function g7Reset(){g7.lines=[];document.getElementById('g7L').textContent='0/5';document.getElementById('g7parts').innerHTML='';document.getElementById('g7fb').textContent='';g7Render();}
 function g7Check(){var parts=g7Parts();var fb=document.getElementById('g7fb');
-  if(g7.lines.length<5){fb.textContent='Need 5 lines!';fb.style.color='var(--y)';return;}
+  if(g7.lines.length<5){fb.textContent='\u041d\u0443\u0436\u043d\u043e 5 \u043b\u0438\u043d\u0438\u0439!';fb.style.color='var(--y)';return;}
   var ok=parts.every(function(s){return s===26;});
-  if(ok){fb.textContent='PERFECT! All = 26! +5 gears';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'ARCHITECT!','Equal split!',null);},1600);}
-  else{var w=parts.filter(function(s){return s!==26;}).length;fb.textContent=w+' parts wrong.';fb.style.color='var(--r)';}}
+  if(ok){fb.textContent='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0412\u0441\u0435 = 26! +5\u2699';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u0426\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d!',null);},1600);}
+  else{var w=parts.filter(function(s){return s!==26;}).length;fb.textContent='\u274C '+w+' \u0447\u0430\u0441\u0442\u0435\u0439 \u043d\u0435\u0432\u0435\u0440\u043d\u044b.';fb.style.color='var(--r)';}}
 // ═══ G8 ТРЕУГОЛЬНИК ═══
 const G8Q=[
   {pts:[12,4,8],q:'Как называется треугольник 12-4-8?',opts:['Прямоугольный','Равносторонний','Тупоугольный','Разносторонний'],ans:1,exp:'12-4-8 равноудалены на 120° — равносторонний'},
@@ -782,8 +784,11 @@ function g8Next(){
   const dots=document.getElementById('g8dots');dots.innerHTML='';
   const lbls=document.getElementById('g8lbls');lbls.innerHTML='';
   pts.forEach(p=>{
-    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r','6');c.setAttribute('fill','#ffd700');c.setAttribute('filter','url(#gl8)');dots.appendChild(c);
-    const t=document.createElementNS('http://www.w3.org/2000/svg','text');const ox=(p.x-110)/(Math.abs(p.x-110)||1)*14,oy=(p.y-110)/(Math.abs(p.y-110)||1)*14;t.setAttribute('x',p.x+ox);t.setAttribute('y',p.y+oy);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');t.setAttribute('font-family','Orbitron,monospace');t.setAttribute('font-size','10');t.setAttribute('fill','#ffd700');t.textContent=p.n;lbls.appendChild(t);});
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r','6');c.setAttribute('fill','#ffd700');c;dots.appendChild(c);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');var ox=(p.x-110)/(Math.abs(p.x-110)||1)*14,oy=(p.y-110)/(Math.abs(p.y-110)||1)*14;
+    var lx=p.x+ox,ly=p.y+oy;
+    lx=Math.max(12,Math.min(208,lx));ly=Math.max(16,Math.min(206,ly));
+    t.setAttribute('x',lx);t.setAttribute('y',ly);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');t.setAttribute('font-family','Orbitron,monospace');t.setAttribute('font-size','10');t.setAttribute('fill','#ffd700');t.textContent=p.n;lbls.appendChild(t);});
   document.getElementById('g8R').textContent=(g8.round+1)+'/5';document.getElementById('g8S').textContent=g8.score;document.getElementById('g8G').textContent='\u2699'+g8.gears;
   document.getElementById('g8formula').textContent='Точки: '+qd.pts.join(' \u2022 ');
   document.getElementById('g8q').textContent=qd.q;document.getElementById('g8fb').textContent='';
