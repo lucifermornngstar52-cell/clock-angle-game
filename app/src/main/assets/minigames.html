@@ -395,26 +395,45 @@ function award(n,gid){addG(n);setBest(gid,n);toast('\u2699 +'+n+' жетонов
 
 // MENU
 const GAMES=[
-  {id:1,icon:'\u23F0',name:'ДОВЕЗИ\nАВТОБУС',desc:'Перетащи стрелки на время прибытия'},
-  {id:2,icon:'\u{1F552}',name:'ПОЙМАЙ\nСЕКУНДУ',desc:'Нажми после N кругов стрелки'},
-  {id:3,icon:'\u{1F4D0}',name:'УГОЛ\nВРЕМЕНИ',desc:'Выстави угол между стрелками'},
-  {id:4,icon:'\u{1FA9E}',name:'МИР\nЗЕРКАЛ',desc:'Найди зеркальное отражение часов'},
-  {id:5,icon:'\u{1F9E9}',name:'РАСКОЛ\nВРЕМЕНИ',desc:'Раздели циферблат на равные суммы'},
-  {id:6,icon:'\u2699',name:'СИНХРО-\nНИЗАЦИЯ',desc:'Останови стрелки в момент совпадения'},
-  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с одинаковой суммой 26'},
-  {id:8,icon:'\u{1F53A}',name:'ПОСТРОЙ\nТРЕУГОЛЬНИК',desc:'Геометрия на циферблате'},
-  {id:9,icon:'\u{1F680}',name:'МАРСИАНСКИЙ\nКАЛЕНДАРЬ',desc:'Земное время в марсианское'},
-  {id:10,icon:'\u{1F6F0}',name:'СПАСИ\nНАВИГАТОР',desc:'Откалибруй GPS по Эйнштейну'},
+  {id:1,icon:'\u23F0',name:'ДОВЕЗИ\nАВТОБУС',desc:'Перетащи стрелки на время прибытия',grade:'5-6'},
+  {id:2,icon:'\u{1F552}',name:'ПОЙМАЙ\nСЕКУНДУ',desc:'Нажми после N кругов стрелки',grade:'5-6'},
+  {id:4,icon:'\u{1FA9E}',name:'МИР\nЗЕРКАЛ',desc:'Найди зеркальное отражение часов',grade:'5-6'},
+  {id:3,icon:'\u{1F4D0}',name:'УГОЛ\nВРЕМЕНИ',desc:'Выстави угол между стрелками',grade:'6-7'},
+  {id:6,icon:'\u2699',name:'СИНХРО-\nНИЗАЦИЯ',desc:'Останови стрелки в момент совпадения',grade:'6-7'},
+  {id:5,icon:'\u{1F9E9}',name:'РАСКОЛ\nВРЕМЕНИ',desc:'Раздели циферблат на равные суммы',grade:'7-8'},
+  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с одинаковой суммой 26',grade:'7-8'},
+  {id:8,icon:'\u{1F53A}',name:'ПОСТРОЙ\nТРЕУГОЛЬНИК',desc:'Геометрия на циферблате',grade:'8-9'},
+  {id:9,icon:'\u{1F680}',name:'МАРСИАНСКИЙ\nКАЛЕНДАРЬ',desc:'Земное время в марсианское',grade:'9-10'},
+  {id:10,icon:'\u{1F6F0}',name:'СПАСИ\nНАВИГАТОР',desc:'Откалибруй GPS по Эйнштейну',grade:'10-11'},
 ];
 
 function buildMenu(){
-  const grid=document.getElementById('gameGrid');grid.innerHTML='';
-  GAMES.forEach(g=>{
-    const div=document.createElement('div');div.className='mg-card';
-    const best=getBest(g.id);
-    div.innerHTML='<div class="mg-icon">'+g.icon+'</div><div class="mg-name">'+g.name.replace('\n','<br>')+'</div><div class="mg-desc">'+g.desc+'</div><div class="mg-best">'+(best>0?'\u2699'+best:'\u2699\u2014')+'</div>';
-    div.onclick=()=>startGame(g.id);grid.appendChild(div);});updG();}
-
+  var grid=document.getElementById('gameGrid');grid.innerHTML='';
+  var grades={
+    '5-6':'📖 5–6 КЛАСС',
+    '6-7':'📗 6–7 КЛАСС',
+    '7-8':'📘 7–8 КЛАСС',
+    '8-9':'📙 8–9 КЛАСС',
+    '9-10':'🗚 9–10 КЛАСС',
+    '10-11':'🗚 10–11 КЛАСС'
+  };
+  var gradeOrder=['5-6','6-7','7-8','8-9','9-10','10-11'];
+  gradeOrder.forEach(function(gr){
+    var games=GAMES.filter(function(g){return g.grade===gr;});
+    if(games.length===0)return;
+    var hdr=document.createElement('div');
+    hdr.style.cssText='grid-column:1/-1;text-align:center;font-size:.5rem;letter-spacing:3px;color:var(--c2);padding:14px 0 4px;border-bottom:1px solid rgba(0,245,255,.1);margin-bottom:6px;';
+    hdr.textContent=grades[gr];
+    grid.appendChild(hdr);
+    games.forEach(function(g){
+      var div=document.createElement('div');div.className='mg-card';
+      var best=getBest(g.id);
+      div.innerHTML='<div class="mg-icon">'+g.icon+'</div><div class="mg-name">'+g.name.replace('\\n','<br>')+'</div><div class="mg-desc">'+g.desc+'</div><div class="mg-best">'+(best?'🏆 '+best:'')+'</div>';
+      div.onclick=function(){startGame(g.id);};grid.appendChild(div);
+    });
+  });
+  updG();
+}
 function goHome(){if(document.referrer)history.back();else window.location.href='index.html';}
 function backToMenu(){stopAll();showS('sMenu');buildMenu();}
 function startGame(id){stopAll();switch(id){case 1:g1Init();break;case 2:g2Init();break;case 3:g3Init();break;case 4:g4Init();break;case 5:g5Init();break;case 6:g6Init();break;case 7:g7Init();break;case 8:g8Init();break;case 9:g9Init();break;case 10:g10Init();break;}}
