@@ -401,7 +401,7 @@ const GAMES=[
   {id:3,icon:'\u{1F4D0}',name:'УГОЛ\nВРЕМЕНИ',desc:'Выстави угол между стрелками',grade:'6-7'},
   {id:6,icon:'\u2699',name:'СИНХРО-\nНИЗАЦИЯ',desc:'Останови стрелки в момент совпадения',grade:'6-7'},
   {id:5,icon:'\u{1F9E9}',name:'РАСКОЛ\nВРЕМЕНИ',desc:'Раздели циферблат на равные суммы',grade:'7-8'},
-  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с одинаковой суммой 26',grade:'7-8'},
+  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с равной суммой 13',grade:'7-8'},
   {id:8,icon:'\u{1F53A}',name:'ПОСТРОЙ\nТРЕУГОЛЬНИК',desc:'Геометрия на циферблате',grade:'8-9'},
   {id:9,icon:'\u{1F680}',name:'МАРСИАНСКИЙ\nКАЛЕНДАРЬ',desc:'Земное время в марсианское',grade:'9-10'},
   {id:10,icon:'\u{1F6F0}',name:'СПАСИ\nНАВИГАТОР',desc:'Откалибруй GPS по Эйнштейну',grade:'10-11'},
@@ -508,15 +508,28 @@ function g1Confirm(){
 
 // ═══ G2 СЕКУНДА ═══
 let g2={},g2af=null;
-function g2Init(){
-  const tk=document.getElementById('g2tk');tk.innerHTML='';
-  for(let i=0;i<60;i++){const a=i*6*Math.PI/180-Math.PI/2,maj=i%5===0;const r1=88,r2=maj?75:82;
-    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-    l.setAttribute('x1',105+r1*Math.cos(a));l.setAttribute('y1',105+r1*Math.sin(a));
-    l.setAttribute('x2',105+r2*Math.cos(a));l.setAttribute('y2',105+r2*Math.sin(a));
-    l.setAttribute('stroke',maj?'rgba(0,255,136,.7)':'rgba(0,255,136,.2)');l.setAttribute('stroke-width',maj?'2':'1');
-    tk.appendChild(l);}
-  g2={round:0,totalG:0};g2Next();showS('sG2');}
+function g2Init(){g2={round:0,score:0,gears:0};g2Next();showS('sG2');}
+var G2TASKS=[
+  {n:15,task:'Школьная перемена = 15 мин. Сколько кругов секундная стрелка?'},
+  {n:75,task:'Обед 1ч 15м = 75 мин. Сколько кругов секундная стрелка?'},
+  {n:30,task:'Получасовая перемена = 30 мин. Столько кругов?'},
+  {n:60,task:'Урок = 60 мин. Сколько кругов секундная стрелка?'},
+  {n:45,task:'Тренировка = 45 мин. Столько кругов?'}
+];
+function g2Next(){
+  if(g2.round>=5){award(g2.gears,2);showResult(g2.gears,15,g2.gears>=10?'АС СЕКУНДОМЕР!':'ТРЕНИРУЙСЯ!','Очков: '+g2.score+'/5',null);return;}
+  var t=G2TASKS[g2.round];g2.target=t.n;g2.startT=performance.now();g2.spd=360/60000;
+  g2.rounds=0;g2.running=true;g2.lastSec=-1;
+  document.getElementById('g2R').textContent=(g2.round+1)+'/5';
+  document.getElementById('g2S').textContent=g2.score;
+  document.getElementById('g2G').textContent='⚙'+g2.gears;
+  document.getElementById('g2task').textContent=t.task;
+  document.getElementById('g2target').textContent='ЦЕЛЬ: РОВНО '+t.n+' кругов';
+  document.getElementById('g2fb').textContent='';
+  document.getElementById('g2btn').textContent='[⏸ СТОП]';
+  document.getElementById('g2btn').disabled=false;
+  g2Animate();
+}
 function g2Next(){
   if(g2.round>=5){award(g2.totalG,2);showResult(g2.totalG,15,'\u23F1 РЕФЛЕКСЫ!','Жетонов: '+g2.totalG+'/15',null);return;}
   g2.target=g2.round+1;g2.speed=2+g2.round*0.65;g2.running=false;
@@ -771,7 +784,7 @@ function g7Render(){
     st.setAttribute('x',cx+lr*Math.cos(maR));st.setAttribute('y',cy+lr*Math.sin(maR));
     st.setAttribute('text-anchor','middle');st.setAttribute('dominant-baseline','central');
     st.setAttribute('font-family','Orbitron,monospace');st.setAttribute('font-size','10');
-    st.setAttribute('fill',parts[pi]===26?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
+    st.setAttribute('fill',parts[pi]===13?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
     st.textContent=parts[pi];svg.appendChild(st);}}
   svg.onclick=function(e){if(g7.lines.length>=5){toast('\u041c\u0430\u043a\u0441 5 \u043b\u0438\u043d\u0438\u0439!');return;}
     var rc=svg.getBoundingClientRect();var x=e.clientX-rc.left-rc.width/2,y=e.clientY-rc.top-rc.height/2;
@@ -786,11 +799,11 @@ function g7Parts(){var angs=[0];g7.lines.forEach(function(a){angs.push(((a%360)+
     for(var n=1;n<=12;n++){var na=((n/12)*360)%360;var rel=(na-sa+360)%360,span=(ea-sa+360)%360;if(rel<span)sum+=n;}parts.push(sum);}return parts;}
 function g7UpdateParts(){var parts=g7Parts();var c=document.getElementById('g7parts');
   if(!parts.length){c.innerHTML='';return;}
-  c.innerHTML=parts.map(function(s,i){var ok=s===26;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
+  c.innerHTML=parts.map(function(s,i){var ok=s===13;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
 function g7Reset(){g7.lines=[];document.getElementById('g7L').textContent='0/5';document.getElementById('g7parts').innerHTML='';document.getElementById('g7fb').textContent='';g7Render();}
 function g7Check(){var parts=g7Parts();var fb=document.getElementById('g7fb');
   if(g7.lines.length<5){fb.textContent='\u041d\u0443\u0436\u043d\u043e 5 \u043b\u0438\u043d\u0438\u0439!';fb.style.color='var(--y)';return;}
-  var ok=parts.every(function(s){return s===26;});
+  var ok=parts.every(function(s){return s===13;});
   if(ok){fb.textContent='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0412\u0441\u0435 = 26! +5\u2699';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u0426\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d!',null);},1600);}
   else{var w=parts.filter(function(s){return s!==26;}).length;fb.textContent='\u274C '+w+' \u0447\u0430\u0441\u0442\u0435\u0439 \u043d\u0435\u0432\u0435\u0440\u043d\u044b.';fb.style.color='var(--r)';}}
 // ═══ G8 ТРЕУГОЛЬНИК ═══
@@ -871,6 +884,10 @@ const G10Q=[
   {q:"\u0420\u044f\u0434: 12:00, 13:05, 14:10, 15:15... \u041a\u0430\u043a\u043e\u0435 \u0432\u0440\u0435\u043c\u044f \u0431\u0443\u0434\u0435\u0442 \u043d\u0430 7-\u043c \u043c\u0435\u0441\u0442\u0435?",opts:["18:30","17:25","19:35","16:20"],ans:0,exp:"\u0428\u0430\u0433 = +1\u0447 5\u043c. 7-\u0435 = 12:00 + 6\u00d7(1\u0447 5\u043c) = 12:00 + 6\u0447 30\u043c = 18:30"},
   {q:"\u0427\u0430\u0441\u043e\u0432\u043e\u0439 \u043c\u0430\u0441\u0442\u0435\u0440 \u0441\u043e\u0431\u0438\u0440\u0430\u0435\u0442 \u0446\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0437\u0430 45 \u043c\u0438\u043d. \u0420\u0430\u0431\u043e\u0447\u0438\u0439 \u0434\u0435\u043d\u044c = 8 \u0447\u0430\u0441\u043e\u0432, \u043e\u0431\u0435\u0434 = 75 \u043c\u0438\u043d. \u0421\u043a\u043e\u043b\u044c\u043a\u043e \u0446\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442\u043e\u0432 \u043e\u043d \u0441\u043e\u0431\u0435\u0440\u0451\u0442?",opts:["9 \u0446\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442\u043e\u0432","8 \u0446\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442\u043e\u0432","10 \u0446\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442\u043e\u0432","7 \u0446\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442\u043e\u0432"],ans:0,exp:"480-75=405 \u043c\u0438\u043d. 405\u00f745=9 \u0446\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442\u043e\u0432"},
   {q:"\u0411\u0443\u0434\u0438\u043b\u044c\u043d\u0438\u043a \u0437\u0430\u0432\u0435\u043b\u0438 \u0432 20:00, \u0437\u0432\u043e\u043d\u043e\u043a \u043d\u0430 08:00. \u041e\u043d \u0441\u043f\u0435\u0448\u0438\u0442 \u043d\u0430 5 \u043c\u0438\u043d/\u0447. \u0412\u043e \u0441\u043a\u043e\u043b\u044c\u043a\u043e \u043f\u0440\u043e\u0437\u0432\u0435\u043d\u0438\u0442 \u043f\u043e \u0440\u0435\u0430\u043b\u044c\u043d\u043e\u043c\u0443 \u0432\u0440\u0435\u043c\u0435\u043d\u0438?",opts:["07:15","08:00","06:30","07:45"],ans:0,exp:"\u041f\u043e \u0431\u0443\u0434\u0438\u043b\u044c\u043d\u0438\u043a\u0443: 12 \u0447 = 720 \u043c\u0438\u043d. \u0420\u0435\u0430\u043b\u044c\u043d\u043e\u0435: 720\u00f7(65/60)=720\u00d760/65\u2248664.6\u043c\u0438\u043d\u224811\u0447 5\u043c. 20:00+11\u0447 5\u043c=07:05\u2026 \u0442\u043e\u0447\u043d\u0435\u0435 720/12=60\u043c\u0438\u043d \u0437\u0430 1\u0447, \u0440\u0435\u0430\u043b\u044c\u043d\u043e 60\u00f71.0833\u224865\u043c\u0438\u043d. 12\u00d765=780\u043c\u0438\u043d=13\u0447. 20:00+13\u0447=07:15"},
+  {q:'Два человека договорились о встрече в 15:00. У первого часы отстают на 5м, но он думает, что они спешат на 7м. У второго часы спешат на 7м, но он думает, что отстают на 5м. Кто придёт первым?',opts:['Второй (в 14:48)','Первый (в 15:12)','Одновременно','Оба опоздают'],ans:0,exp:'Первый: думает что спешат → приходит в 15:07 на своих, но они отстают → реально 15:12. Второй: думает что отстают → приходит в 14:55 на своих, но они спешат → реально 14:48. Ответ: второй первым (в 14:48)'},
+  {q:'В классе 25 человек. 15 ходят на домбру, 12 на вокал. 4 никуда не ходят. Сколько детей занимаются и домброй, и вокалом?',opts:['6 человек','4 человека','8 человек','5 человек'],ans:0,exp:'25-4=21 заняты. 15+12=27. 27-21=6 ходят на оба кружка'},
+  {q:'Две свечи одинаковой длины. Первая сгорает за 4 часа, вторая за 5. Через какое время одна станет в 2 раза длиннее?',opts:['3ч 20м','2ч 30м','4ч','3ч'],ans:0,exp:'1-t/5 = 2(1-t/4) → 1-t/5 = 2-t/2 → t/2-t/5=1 → 3t/10=1 → t=10/3 ≈3ч20м'},
+  {q:'Бакыт: 2 дня работает, 2 отдыхает. Али: 3 работает, 1 отдыхает. Сегодня понедельник — оба начали работу. Когда они оба отдыхают?',opts:['В четверг','В пятницу','В понедельник','В среду'],ans:0,exp:'Бакыт отдыхает: 3,4,7,8,11,12-й дни. Али: 4,8,12-й. Первое совпадение — 4-й день = четверг'},
 ];
 let g10={};
 function g10Init(){
@@ -1341,7 +1358,7 @@ const GAMES=[
   {id:3,icon:'\u{1F4D0}',name:'УГОЛ\nВРЕМЕНИ',desc:'Выстави угол между стрелками',grade:'6-7'},
   {id:6,icon:'\u2699',name:'СИНХРО-\nНИЗАЦИЯ',desc:'Останови стрелки в момент совпадения',grade:'6-7'},
   {id:5,icon:'\u{1F9E9}',name:'РАСКОЛ\nВРЕМЕНИ',desc:'Раздели циферблат на равные суммы',grade:'7-8'},
-  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с одинаковой суммой 26',grade:'7-8'},
+  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с равной суммой 13',grade:'7-8'},
   {id:8,icon:'\u{1F53A}',name:'ПОСТРОЙ\nТРЕУГОЛЬНИК',desc:'Геометрия на циферблате',grade:'8-9'},
   {id:9,icon:'\u{1F680}',name:'МАРСИАНСКИЙ\nКАЛЕНДАРЬ',desc:'Земное время в марсианское',grade:'9-10'},
   {id:10,icon:'\u{1F6F0}',name:'СПАСИ\nНАВИГАТОР',desc:'Откалибруй GPS по Эйнштейну',grade:'10-11'},
@@ -1703,7 +1720,7 @@ function g7Render(){
     st.setAttribute('x',cx+lr*Math.cos(maR));st.setAttribute('y',cy+lr*Math.sin(maR));
     st.setAttribute('text-anchor','middle');st.setAttribute('dominant-baseline','central');
     st.setAttribute('font-family','Orbitron,monospace');st.setAttribute('font-size','10');
-    st.setAttribute('fill',parts[pi]===26?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
+    st.setAttribute('fill',parts[pi]===13?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
     st.textContent=parts[pi];svg.appendChild(st);}}
   svg.onclick=function(e){if(g7.lines.length>=5){toast('\u041c\u0430\u043a\u0441 5 \u043b\u0438\u043d\u0438\u0439!');return;}
     var rc=svg.getBoundingClientRect();var x=e.clientX-rc.left-rc.width/2,y=e.clientY-rc.top-rc.height/2;
@@ -1718,11 +1735,11 @@ function g7Parts(){var angs=[0];g7.lines.forEach(function(a){angs.push(((a%360)+
     for(var n=1;n<=12;n++){var na=((n/12)*360)%360;var rel=(na-sa+360)%360,span=(ea-sa+360)%360;if(rel<span)sum+=n;}parts.push(sum);}return parts;}
 function g7UpdateParts(){var parts=g7Parts();var c=document.getElementById('g7parts');
   if(!parts.length){c.innerHTML='';return;}
-  c.innerHTML=parts.map(function(s,i){var ok=s===26;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
+  c.innerHTML=parts.map(function(s,i){var ok=s===13;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
 function g7Reset(){g7.lines=[];document.getElementById('g7L').textContent='0/5';document.getElementById('g7parts').innerHTML='';document.getElementById('g7fb').textContent='';g7Render();}
 function g7Check(){var parts=g7Parts();var fb=document.getElementById('g7fb');
   if(g7.lines.length<5){fb.textContent='\u041d\u0443\u0436\u043d\u043e 5 \u043b\u0438\u043d\u0438\u0439!';fb.style.color='var(--y)';return;}
-  var ok=parts.every(function(s){return s===26;});
+  var ok=parts.every(function(s){return s===13;});
   if(ok){fb.textContent='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0412\u0441\u0435 = 26! +5\u2699';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u0426\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d!',null);},1600);}
   else{var w=parts.filter(function(s){return s!==26;}).length;fb.textContent='\u274C '+w+' \u0447\u0430\u0441\u0442\u0435\u0439 \u043d\u0435\u0432\u0435\u0440\u043d\u044b.';fb.style.color='var(--r)';}}
 // ═══ G8 ТРЕУГОЛЬНИК ═══
@@ -2268,7 +2285,7 @@ const GAMES=[
   {id:3,icon:'\u{1F4D0}',name:'УГОЛ\nВРЕМЕНИ',desc:'Выстави угол между стрелками',grade:'6-7'},
   {id:6,icon:'\u2699',name:'СИНХРО-\nНИЗАЦИЯ',desc:'Останови стрелки в момент совпадения',grade:'6-7'},
   {id:5,icon:'\u{1F9E9}',name:'РАСКОЛ\nВРЕМЕНИ',desc:'Раздели циферблат на равные суммы',grade:'7-8'},
-  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с одинаковой суммой 26',grade:'7-8'},
+  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с равной суммой 13',grade:'7-8'},
   {id:8,icon:'\u{1F53A}',name:'ПОСТРОЙ\nТРЕУГОЛЬНИК',desc:'Геометрия на циферблате',grade:'8-9'},
   {id:9,icon:'\u{1F680}',name:'МАРСИАНСКИЙ\nКАЛЕНДАРЬ',desc:'Земное время в марсианское',grade:'9-10'},
   {id:10,icon:'\u{1F6F0}',name:'СПАСИ\nНАВИГАТОР',desc:'Откалибруй GPS по Эйнштейну',grade:'10-11'},
@@ -2638,7 +2655,7 @@ function g7Render(){
     st.setAttribute('x',cx+lr*Math.cos(maR));st.setAttribute('y',cy+lr*Math.sin(maR));
     st.setAttribute('text-anchor','middle');st.setAttribute('dominant-baseline','central');
     st.setAttribute('font-family','Orbitron,monospace');st.setAttribute('font-size','10');
-    st.setAttribute('fill',parts[pi]===26?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
+    st.setAttribute('fill',parts[pi]===13?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
     st.textContent=parts[pi];svg.appendChild(st);}}
   svg.onclick=function(e){if(g7.lines.length>=5){toast('\u041c\u0430\u043a\u0441 5 \u043b\u0438\u043d\u0438\u0439!');return;}
     var rc=svg.getBoundingClientRect();var x=e.clientX-rc.left-rc.width/2,y=e.clientY-rc.top-rc.height/2;
@@ -2653,11 +2670,11 @@ function g7Parts(){var angs=[0];g7.lines.forEach(function(a){angs.push(((a%360)+
     for(var n=1;n<=12;n++){var na=((n/12)*360)%360;var rel=(na-sa+360)%360,span=(ea-sa+360)%360;if(rel<span)sum+=n;}parts.push(sum);}return parts;}
 function g7UpdateParts(){var parts=g7Parts();var c=document.getElementById('g7parts');
   if(!parts.length){c.innerHTML='';return;}
-  c.innerHTML=parts.map(function(s,i){var ok=s===26;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
+  c.innerHTML=parts.map(function(s,i){var ok=s===13;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
 function g7Reset(){g7.lines=[];document.getElementById('g7L').textContent='0/5';document.getElementById('g7parts').innerHTML='';document.getElementById('g7fb').textContent='';g7Render();}
 function g7Check(){var parts=g7Parts();var fb=document.getElementById('g7fb');
   if(g7.lines.length<5){fb.textContent='\u041d\u0443\u0436\u043d\u043e 5 \u043b\u0438\u043d\u0438\u0439!';fb.style.color='var(--y)';return;}
-  var ok=parts.every(function(s){return s===26;});
+  var ok=parts.every(function(s){return s===13;});
   if(ok){fb.textContent='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0412\u0441\u0435 = 26! +5\u2699';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u0426\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d!',null);},1600);}
   else{var w=parts.filter(function(s){return s!==26;}).length;fb.textContent='\u274C '+w+' \u0447\u0430\u0441\u0442\u0435\u0439 \u043d\u0435\u0432\u0435\u0440\u043d\u044b.';fb.style.color='var(--r)';}}
 // ═══ G8 ТРЕУГОЛЬНИК ═══
@@ -3206,7 +3223,7 @@ const GAMES=[
   {id:3,icon:'\u{1F4D0}',name:'УГОЛ\nВРЕМЕНИ',desc:'Выстави угол между стрелками',grade:'6-7'},
   {id:6,icon:'\u2699',name:'СИНХРО-\nНИЗАЦИЯ',desc:'Останови стрелки в момент совпадения',grade:'6-7'},
   {id:5,icon:'\u{1F9E9}',name:'РАСКОЛ\nВРЕМЕНИ',desc:'Раздели циферблат на равные суммы',grade:'7-8'},
-  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с одинаковой суммой 26',grade:'7-8'},
+  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с равной суммой 13',grade:'7-8'},
   {id:8,icon:'\u{1F53A}',name:'ПОСТРОЙ\nТРЕУГОЛЬНИК',desc:'Геометрия на циферблате',grade:'8-9'},
   {id:9,icon:'\u{1F680}',name:'МАРСИАНСКИЙ\nКАЛЕНДАРЬ',desc:'Земное время в марсианское',grade:'9-10'},
   {id:10,icon:'\u{1F6F0}',name:'СПАСИ\nНАВИГАТОР',desc:'Откалибруй GPS по Эйнштейну',grade:'10-11'},
@@ -3568,7 +3585,7 @@ function g7Render(){
     st.setAttribute('x',cx+lr*Math.cos(maR));st.setAttribute('y',cy+lr*Math.sin(maR));
     st.setAttribute('text-anchor','middle');st.setAttribute('dominant-baseline','central');
     st.setAttribute('font-family','Orbitron,monospace');st.setAttribute('font-size','10');
-    st.setAttribute('fill',parts[pi]===26?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
+    st.setAttribute('fill',parts[pi]===13?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
     st.textContent=parts[pi];svg.appendChild(st);}}
   svg.onclick=function(e){if(g7.lines.length>=5){toast('\u041c\u0430\u043a\u0441 5 \u043b\u0438\u043d\u0438\u0439!');return;}
     var rc=svg.getBoundingClientRect();var x=e.clientX-rc.left-rc.width/2,y=e.clientY-rc.top-rc.height/2;
@@ -3583,11 +3600,11 @@ function g7Parts(){var angs=[0];g7.lines.forEach(function(a){angs.push(((a%360)+
     for(var n=1;n<=12;n++){var na=((n/12)*360)%360;var rel=(na-sa+360)%360,span=(ea-sa+360)%360;if(rel<span)sum+=n;}parts.push(sum);}return parts;}
 function g7UpdateParts(){var parts=g7Parts();var c=document.getElementById('g7parts');
   if(!parts.length){c.innerHTML='';return;}
-  c.innerHTML=parts.map(function(s,i){var ok=s===26;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
+  c.innerHTML=parts.map(function(s,i){var ok=s===13;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
 function g7Reset(){g7.lines=[];document.getElementById('g7L').textContent='0/5';document.getElementById('g7parts').innerHTML='';document.getElementById('g7fb').textContent='';g7Render();}
 function g7Check(){var parts=g7Parts();var fb=document.getElementById('g7fb');
   if(g7.lines.length<5){fb.textContent='\u041d\u0443\u0436\u043d\u043e 5 \u043b\u0438\u043d\u0438\u0439!';fb.style.color='var(--y)';return;}
-  var ok=parts.every(function(s){return s===26;});
+  var ok=parts.every(function(s){return s===13;});
   if(ok){fb.textContent='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0412\u0441\u0435 = 26! +5\u2699';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u0426\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d!',null);},1600);}
   else{var w=parts.filter(function(s){return s!==26;}).length;fb.textContent='\u274C '+w+' \u0447\u0430\u0441\u0442\u0435\u0439 \u043d\u0435\u0432\u0435\u0440\u043d\u044b.';fb.style.color='var(--r)';}}
 // ═══ G8 ТРЕУГОЛЬНИК ═══
