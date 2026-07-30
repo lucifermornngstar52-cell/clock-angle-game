@@ -230,28 +230,34 @@
   <div class="mtitle">NUMBRA</div>
   <div class="msub">// CLOCK ANGLE CRACKER //</div>
   <div class="menu-coins" id="menu-coins">💰 0 монет</div>
-  <button class="btn" onclick="showS('game-menu')">[ 🎮 ИГРЫ ]</button>
+  <button class="btn" onclick="showS('game-menu')">[ 🎮 ИГРАТЬ ]</button>
   <button class="btn" onclick="openAch()">[ 🏆 ДОСТИЖЕНИЯ ]</button>
   <button class="btn" onclick="openSound()">[ 🔊 НАСТРОЙКИ ЗВУКА ]</button>
 </div>
 
-<!-- ══ МЕНЮ ИГРЫ ══ -->
-<div class="screen hidden" id="game-menu">
+<!-- ══ МЕНЮ ИГРЫ — РАЗДЕЛЕНИЕ ПО КЛАССАМ ══ -->
+<div class="screen hidden" id="game-menu" style="overflow-y:auto;padding-bottom:20px;">
   <div class="gmenu-title">🎮 ВЫБОР ИГРЫ</div>
-  <div class="gmenu-sub">// ВЫБЕРИ РЕЖИМ //</div>
-  <button class="btn btn-gold" onclick="startWithIntro()">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]</button>
-  <div class="other-label">── ДРУГИЕ ИГРЫ ──</div>
-  <button class="btn btn-gold" onclick="showS('vl-menu')">[ 👑 ВЛАСТЕЛИНЫ ВРЕМЕНИ ]<br><span style="font-size:.55rem">ВИКТОРИНА · КАРТОЧКИ</span></button>
-  <button class="btn btn-gold" onclick="window.location.href='chronokeepers.html'" style="border-color:#7b2fff;color:#7b2fff;text-shadow:0 0 8px #7b2fff;">[ ⚡ ХРАНИТЕЛИ ВРЕМЕНИ 2.0 ]<br><span style="font-size:.55rem;opacity:.7;">КВАНТОВЫЙ СДВИГ · ОНЛАЙН</span></button>
-<button class="btn" style="border-color:#ff00aa;color:#ff00aa;" onclick="window.location.href='minigames.html'">[ ⚡ 10 МИНИ-ИГР ]<br><span style="font-size:.53rem;opacity:.8;">УГОЛ • ЗЕРКАЛа • МАРС • GPS • АВТОБУС</span></button>
-<button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:6px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
+  <div class="gmenu-sub">// ВЫБЕРИ ПО КЛАССУ //</div>
+
+  <div class="other-label" style="color:#00ff88;">── 0–5 КЛАСС ──</div>
+  <button class="btn btn-gold" onclick="showS('vl-menu')" style="border-color:#ffd700;color:#ffd700;">[ 👑 ВЛАСТЕЛИНЫ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">ВИКТОРИНА · СЕКТОРА СЛОЖНОСТИ</span></button>
+  <button class="btn btn-gold" onclick="window.location.href='chronokeepers.html'" style="border-color:#7b2fff;color:#7b2fffb3;">[ ⏳ ХРАНИТЕЛИ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">МУЛЬТИПЛЕЕР · КАРТЫ ВРЕМЕНИ</span></button>
+
+  <div class="other-label" style="color:#ff00aa;margin-top:14px;">── 5–9 КЛАСС ──</div>
+  <button class="btn" style="border-color:#ff00aa;color:#ff00aa;" onclick="window.location.href='minigames.html'">[ ⚡ 10 МИНИ-ИГР ]<br><span style="font-size:.5rem;opacity:.7;">СБОРНИК ГОЛОВОЛОМОК</span></button>
+
+  <div class="other-label" style="color:#00f5ff;margin-top:14px;">── 5–11 КЛАСС ──</div>
+  <button class="btn btn-gold" onclick="startWithIntro()" style="border-color:#00f5ff;color:#00f5ff;">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">УГЛЫ СТРЕЛОК · СЛОЖНЫЕ ЗАДАЧИ</span></button>
+
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:14px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
 </div>
 
 <!-- ══ ВЛАСТЕЛИНЫ ВРЕМЕНИ — МЕНЮ ══ -->
 <div class="screen hidden" id="vl-menu">
   <div style="font-size:2.2rem;margin-bottom:4px;">⏳</div>
   <div class="gmenu-title" style="font-size:.9rem;line-height:1.3;">ВЛАСТЕЛИНЫ<br>ВРЕМЕНИ</div>
-  <div class="gmenu-sub" style="margin-bottom:16px;">// 1–5 КЛАСС · ПУТЕШЕСТВИЕ ПО ЦИФЕРБЛАТУ //</div>
+  <div class="gmenu-sub" style="margin-bottom:16px;">// 0–5 КЛАСС · ПУТЕШЕСТВИЕ ПО ЦИФЕРБЛАТУ //</div>
   <button class="btn btn-gold" onclick="vlStart()">[ 🎮 ИГРАТЬ ]</button>
   <button class="btn btn-gold" onclick="showS('vl-rules')">[ 📜 ПРАВИЛА ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:8px;" onclick="showS('game-menu')">[ ← НАЗАД ]</button>
