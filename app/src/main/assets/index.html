@@ -819,6 +819,28 @@ document.addEventListener('visibilitychange',()=>{
 window.addEventListener('pagehide',()=>{if(AC)AC.suspend();});
 window.addEventListener('blur',()=>{if(AC)AC.suspend();});
 window.addEventListener('focus',()=>{if(AC&&AC.state==='suspended')AC.resume();});
+// Звуковые эффекты
+function sfx(t){
+  if(!AC)return;
+  if(t==='ok'){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(SG);
+    o.type='sine';o.frequency.setValueAtTime(523,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(784,AC.currentTime+0.1);
+    o.frequency.linearRampToValueAtTime(1047,AC.currentTime+0.2);
+    g.gain.setValueAtTime(.3,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+0.4);
+    o.start(AC.currentTime);o.stop(AC.currentTime+0.4);}
+  else if(t==='no'){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(SG);
+    o.type='sawtooth';o.frequency.setValueAtTime(200,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(80,AC.currentTime+0.3);
+    g.gain.setValueAtTime(.25,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+0.3);
+    o.start(AC.currentTime);o.stop(AC.currentTime+0.3);}
+  else if(t==='up'){const notes=[523,659,784,1047];notes.forEach((f,i)=>{
+    const oo=AC.createOscillator(),gg=AC.createGain();oo.connect(gg);gg.connect(SG);
+    oo.frequency.value=f;gg.gain.setValueAtTime(.25,AC.currentTime+i*0.12);
+    gg.gain.linearRampToValueAtTime(0,AC.currentTime+i*0.12+0.25);
+    oo.start(AC.currentTime+i*0.12);oo.stop(AC.currentTime+i*0.12+0.25);});}
+}
 function openSound(){document.getElementById('sound-popup').classList.remove('hidden');}
 function closeSound(){document.getElementById('sound-popup').classList.add('hidden');}
 
