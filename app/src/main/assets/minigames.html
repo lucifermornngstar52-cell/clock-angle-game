@@ -97,8 +97,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <circle cx="115" cy="115" r="4" fill="#0a0a2a"/>
       <rect x="76" y="142" width="78" height="24" rx="5" fill="rgba(0,0,0,.9)" stroke="rgba(0,245,255,.25)"/>
       <text id="g1dt" x="115" y="159" text-anchor="middle" font-family="Orbitron,monospace" font-size="14" fill="#00f5ff">00:00</text>
-      <circle id="g1hitH" cx="115" cy="115" r="70" fill="transparent" style="cursor:grab;pointer-events:all;"/>
-      <circle id="g1hitM" cx="115" cy="115" r="100" fill="transparent" style="cursor:grab;pointer-events:none;"/>
+      <circle id="g1hitM" cx="115" cy="115" r="108" fill="transparent" style="cursor:grab;pointer-events:all;"/>
+      <circle id="g1hitH" cx="115" cy="115" r="72" fill="transparent" style="cursor:grab;pointer-events:all;"/>
     </svg>
   </div>
   <div style="font-size:.6rem;color:var(--dg);text-align:center;">Перетащи стрелки &#183; Синяя=минуты &#183; Розовая=часы</div>
@@ -463,9 +463,17 @@ function g1Init(){
   mnEl.addEventListener('touchstart',function(e){sd(e,'m');},{passive:false});
   mnEl.addEventListener('mousedown',function(e){sd(e,'m');});
   function mv(e){if(!drag)return;e.preventDefault();var a=ang(e);
-    if(drag==='h'){g1.hrD=a;hrEl.setAttribute('transform','rotate('+a+' 115 115)');}
-    else{g1.mnD=a;mnEl.setAttribute('transform','rotate('+a+' 115 115)');}
-    var m=Math.round(g1.mnD/6)%60,h=Math.round(g1.hrD/30)%12;
+    if(drag==='h'){
+      g1.hrD=a;
+      hrEl.setAttribute('transform','rotate('+a+' 115 115)');
+    } else {
+      g1.mnD=a;
+      mnEl.setAttribute('transform','rotate('+a+' 115 115)');
+      g1.hrD=a/12;
+      hrEl.setAttribute('transform','rotate('+(a/12)+' 115 115)');
+    }
+    var m=Math.round(g1.mnD/6)%60;
+    var h=Math.round(g1.hrD/30)%12;
     document.getElementById('g1dt').textContent=fmt(h,m);}
   document.addEventListener('touchmove',mv,{passive:false});
   document.addEventListener('mousemove',mv);
