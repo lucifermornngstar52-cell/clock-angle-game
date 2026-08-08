@@ -1237,7 +1237,7 @@ const VL_PARADOX = [
 
 const VL_CELL_TYPE = (n) => {
   if([10,20,30,40].includes(n)) return 'paradox';
-  if(n===60) return 'finish';
+  if(n===49) return 'finish';
   if(n<=20) return 'green';
   if(n<=40) return 'yellow';
   return 'red';
@@ -1441,7 +1441,7 @@ function vlAfterRoll(val){
   vlDrawBoard();
   document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
   vlState.phase='after_roll';
-  if(vlState.pos>=50){
+  if(vlState.pos>=49){
     setTimeout(vlStartExam,600);
   }
 }
