@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Numbra</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+  :root{--g:#00ff41;--dg:#008f11;--bg:#0a0a0a;--panel:rgba(0,18,0,0.93);--border:rgba(0,255,65,0.25);}
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{width:100%;height:100%;background:var(--bg);color:var(--g);font-family:'Share Tech Mono',monospace;overflow:hidden;}
+  #mc{position:fixed;inset:0;z-index:0;opacity:.13;pointer-events:none;}
+  body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);}
+
+  .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+  .screen.hidden{display:none!important;}
+  #rc{position:fixed;top:10px;left:12px;z-index:100;font-family:'Orbitron',monospace;
+    font-size:.85rem;color:var(--g);text-shadow:0 0 8px var(--g);
+    background:rgba(0,0,0,.6);border:1px solid var(--border);padding:3px 10px;border-radius:6px;letter-spacing:2px;}
+
+  /* ══ ИНТРО ══ */
+  #intro-screen{gap:0;justify-content:center;padding:24px 20px;}
+  .intro-frame{background:rgba(0,12,0,.97);border:1px solid var(--g);border-radius:10px;
+    padding:22px 18px;max-width:380px;width:100%;box-shadow:0 0 30px rgba(0,255,65,.15);}
+  .intro-badge{font-size:.58rem;color:var(--dg);letter-spacing:3px;text-align:center;margin-bottom:12px;}
+  .intro-title{font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:900;color:var(--g);
+    text-shadow:0 0 12px var(--g);text-align:center;letter-spacing:2px;margin-bottom:14px;line-height:1.4;}
+  .intro-text{font-size:.76rem;color:rgba(0,255,65,.8);line-height:1.85;
+    border-left:2px solid var(--dg);padding-left:12px;margin-bottom:18px;}
+  .intro-text span{color:var(--g);font-weight:bold;}
+  .intro-cursor{display:inline-block;width:8px;height:13px;background:var(--g);
+    animation:blink .7s infinite;vertical-align:middle;margin-left:2px;}
+  @keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+  .intro-btn{font-family:'Orbitron',monospace;font-size:.83rem;background:rgba(0,255,65,.1);
+    border:1px solid var(--g);color:var(--g);padding:12px 0;cursor:pointer;
+    letter-spacing:2px;width:100%;text-align:center;border-radius:6px;
+    text-shadow:0 0 8px var(--g);transition:all .2s;}
+  .intro-btn:active{background:rgba(0,255,65,.25);}
+
+  /* ══ ГЛАВНОЕ МЕНЮ ══ */
+  #main-menu{gap:12px;}
+  .mtitle{font-family:'Orbitron',monospace;font-size:clamp(1.5rem,6vw,2.2rem);font-weight:900;
+    color:var(--g);text-shadow:0 0 20px var(--g),0 0 40px var(--g);text-align:center;
+    letter-spacing:5px;animation:flicker 5s infinite;margin-bottom:4px;}
+  .msub{font-size:.62rem;color:var(--dg);letter-spacing:3px;text-align:center;margin-bottom:6px;}
+  .menu-coins{font-family:'Orbitron',monospace;font-size:.93rem;color:var(--g);
+    text-shadow:0 0 8px var(--g);background:var(--panel);border:1px solid var(--border);
+    border-radius:8px;padding:5px 18px;letter-spacing:2px;}
+
+  .btn{font-family:'Share Tech Mono',monospace;font-size:.88rem;background:transparent;
+    border:1px solid var(--g);color:var(--g);padding:11px 0;cursor:pointer;
+    letter-spacing:2px;text-transform:uppercase;width:100%;max-width:300px;
+    text-align:center;transition:all .2s;border-radius:4px;}
+  .btn:active{background:rgba(0,255,65,.15);}
+  .btn.dis{opacity:.35;pointer-events:none;border-color:var(--dg);color:var(--dg);}
+  .btn-gold{border-color:#ffd700;color:#ffd700;text-shadow:0 0 8px #ffd700;}
+  .btn-gold:active{background:rgba(255,215,0,.12);}
+
+  /* ══ МЕНЮ ИГРЫ ══ */
+  #game-menu{gap:11px;}
+  .gmenu-title{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;
+    color:var(--g);text-shadow:0 0 12px var(--g);text-align:center;letter-spacing:3px;margin-bottom:4px;}
+  .gmenu-sub{font-size:.58rem;color:var(--dg);letter-spacing:2px;text-align:center;margin-bottom:4px;}
+  .other-label{font-size:.56rem;color:var(--dg);letter-spacing:2px;text-align:center;margin-top:4px;}
+
+  /* ══ ИГРОВОЙ ЭКРАН ══ */
+  /* Весь экран делим на фиксированные зоны через flex */
+  #game-screen{
+    display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-start;
+    padding:4px 8px 4px;
+    overflow:hidden; /* НЕ скроллим — всё должно помещаться */
+    gap:0;
+  }
+
+  .hud{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;width:100%;
+    margin-top:34px;flex-shrink:0;}
+  .hbox{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:3px 2px;text-align:center;}
+  .hbox .lb{font-size:.42rem;color:var(--dg);letter-spacing:.5px;}
+  .hbox .vl{font-size:.72rem;color:var(--g);text-shadow:0 0 5px var(--g);}
+
+  .qbox{background:var(--panel);border:1px solid var(--border);border-radius:6px;
+    padding:5px 10px;width:100%;text-align:center;margin-top:3px;flex-shrink:0;}
+  .qlb{font-size:.44rem;color:var(--dg);letter-spacing:1px;margin-bottom:1px;}
+  .qtx{font-size:.7rem;color:var(--g);line-height:1.35;white-space:pre-line;}
+  .q-hint{font-size:.58rem;color:rgba(255,200,0,.85);margin-top:2px;}
+
+  /* Часы — адаптивный размер */
+  .clock-wrap{flex-shrink:0;margin:3px 0;}
+  .clock-wrap svg{filter:drop-shadow(0 0 8px rgba(0,255,65,.4));}
+
+  /* Варианты */
+  .choices-grid{display:grid;gap:5px;width:100%;flex-shrink:0;}
+  .choices-grid.g4{grid-template-columns:1fr 1fr;margin-top:4px;}
+  .choices-grid.g8{grid-template-columns:1fr 1fr;margin-top:3px;}
+  .choice-btn{background:rgba(0,18,0,.9);border:1px solid var(--border);border-radius:5px;
+    color:var(--g);font-family:'Orbitron',monospace;
+    cursor:pointer;text-align:center;letter-spacing:1px;transition:all .12s;
+    padding:10px 4px;font-size:.86rem;}
+  .choices-grid.g8 .choice-btn{padding:7px 4px;font-size:.76rem;}
+  .choice-btn:active{transform:scale(.96);}
+  .choice-btn.selected{border-color:#0ff;background:rgba(0,255,255,.12);color:#0ff;box-shadow:0 0 8px rgba(0,255,255,.4);}
+  .choice-btn.correct{border-color:#00ff41!important;background:rgba(0,255,65,.22)!important;box-shadow:0 0 12px rgba(0,255,65,.6)!important;color:#fff!important;}
+  .choice-btn.wrong{border-color:#ff3131!important;background:rgba(255,49,49,.15)!important;box-shadow:0 0 10px rgba(255,49,49,.4)!important;color:#ff3131!important;}
+  .choice-btn.missed{border-color:rgba(255,200,0,.7)!important;background:rgba(255,200,0,.08)!important;color:rgba(255,200,0,.9)!important;}
+  .choice-btn.hint-hl{border-color:#ffd700!important;background:rgba(255,215,0,.18)!important;color:#ffd700!important;animation:glow .5s ease 3;}
+  @keyframes glow{0%,100%{box-shadow:0 0 6px rgba(255,215,0,.3);}50%{box-shadow:0 0 18px rgba(255,215,0,.8);}}
+
+  /* Кнопка подтверждения — СРАЗУ под вариантами, всегда видна */
+  #confirm-btn{
+    width:100%;margin-top:5px;flex-shrink:0;
+    font-family:'Orbitron',monospace;font-size:.8rem;
+    background:rgba(0,255,65,.12);border:2px solid var(--g);border-radius:6px;
+    color:var(--g);padding:10px 0;cursor:pointer;letter-spacing:2px;
+    text-shadow:0 0 6px var(--g);transition:all .2s;
+    display:none;
+  }
+  #confirm-btn.visible{display:block;}
+  #confirm-btn:active{background:rgba(0,255,65,.28);}
+
+  .fb{font-family:'Orbitron',monospace;font-size:.7rem;text-align:center;
+    min-height:14px;margin-top:2px;letter-spacing:1px;flex-shrink:0;}
+  .fb.ok{color:#00ff41;text-shadow:0 0 8px #00ff41;}
+  .fb.bad{color:#ff3131;text-shadow:0 0 8px #ff3131;}
+  .fb.hint{color:#ffd700;text-shadow:0 0 8px #ffd700;}
+
+  /* Классики — компактные, горизонтально */
+  .hops-wrap{width:100%;display:flex;align-items:center;gap:6px;margin-top:3px;flex-shrink:0;}
+  .hops-label{font-size:.44rem;color:var(--dg);letter-spacing:1px;white-space:nowrap;}
+  .hops-row-inline{display:flex;gap:3px;flex-wrap:nowrap;}
+  .hop{width:26px;height:26px;border:2px solid var(--border);border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Orbitron',monospace;font-size:.55rem;color:var(--dg);
+    background:rgba(0,10,0,.6);transition:all .3s;}
+  .hop.done{border-color:var(--g);background:rgba(0,255,65,.12);color:var(--g);box-shadow:0 0 5px rgba(0,255,65,.3);}
+  .hop.act{border-color:#0ff;background:rgba(0,255,255,.13);color:#0ff;box-shadow:0 0 8px rgba(0,255,255,.4);animation:pulse .9s infinite;}
+
+  .bot-row{display:flex;gap:5px;width:100%;margin-top:3px;flex-shrink:0;}
+  .hbtn{flex:1;background:transparent;border:1px solid rgba(255,200,0,.5);border-radius:5px;
+    color:rgba(255,200,0,.9);font-family:'Share Tech Mono',monospace;
+    font-size:.62rem;padding:7px 4px;cursor:pointer;}
+  .hbtn:active{background:rgba(255,200,0,.1);}
+  .hbtn:disabled{opacity:.4;pointer-events:none;}
+  .mbtn{flex:.5;background:transparent;border:1px solid var(--border);border-radius:5px;
+    color:var(--dg);font-family:'Share Tech Mono',monospace;font-size:.62rem;padding:7px 4px;cursor:pointer;}
+  .mbtn:active{background:rgba(0,255,65,.07);}
+
+  /* ══ РЕЗУЛЬТАТЫ / ГЕЙМОВЕР / ПОБЕДА ══ */
+  #result-screen,#gameover-screen,#win-screen{gap:13px;}
+  .rtitle{font-family:'Orbitron',monospace;font-size:clamp(1rem,4.5vw,1.7rem);
+    font-weight:900;text-align:center;letter-spacing:2px;text-shadow:0 0 16px var(--g);}
+  .rinfo{font-size:.78rem;color:var(--dg);text-align:center;line-height:1.9;}
+  .win-frame{background:rgba(0,12,0,.97);border:1px solid #ffd700;border-radius:10px;
+    padding:20px 16px;max-width:380px;width:100%;box-shadow:0 0 30px rgba(255,215,0,.2);}
+  .win-badge{font-size:.56rem;color:rgba(255,215,0,.6);letter-spacing:3px;text-align:center;margin-bottom:10px;}
+  .win-title{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:900;color:#ffd700;
+    text-shadow:0 0 16px #ffd700;text-align:center;letter-spacing:2px;margin-bottom:12px;
+    line-height:1.4;animation:flicker 2s infinite;}
+  .win-text{font-size:.73rem;color:rgba(0,255,65,.85);line-height:1.9;
+    border-left:2px solid rgba(255,215,0,.4);padding-left:10px;margin-bottom:14px;}
+  .win-text .yr{color:#ffd700;font-family:'Orbitron',monospace;font-size:.88rem;text-shadow:0 0 10px #ffd700;}
+  .win-stats{font-size:.7rem;color:var(--dg);text-align:center;margin-bottom:14px;line-height:1.7;}
+  .win-stats b{color:var(--g);}
+
+  /* ══ ПОПАПЫ ══ */
+  .popup-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.78);
+    display:flex;align-items:center;justify-content:center;padding:20px;}
+  .popup-overlay.hidden{display:none!important;}
+  .popup{background:rgba(0,15,0,.97);border:1px solid var(--g);border-radius:10px;
+    padding:20px 16px;width:100%;max-width:340px;max-height:80vh;
+    overflow-y:auto;display:flex;flex-direction:column;gap:11px;}
+  .popup-title{font-family:'Orbitron',monospace;font-size:.93rem;color:var(--g);
+    text-shadow:0 0 10px var(--g);text-align:center;letter-spacing:2px;}
+  .popup-close{align-self:flex-end;background:transparent;border:1px solid var(--border);
+    border-radius:5px;color:var(--dg);font-family:'Share Tech Mono',monospace;
+    font-size:.72rem;padding:5px 12px;cursor:pointer;}
+  .popup-close:active{background:rgba(0,255,65,.1);}
+  .vrow{display:flex;align-items:center;gap:10px;width:100%;}
+  .vrow label{font-size:.7rem;color:var(--dg);min-width:58px;}
+  input[type=range]{-webkit-appearance:none;flex:1;height:3px;background:var(--dg);border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+    background:var(--g);border-radius:50%;box-shadow:0 0 6px var(--g);cursor:pointer;}
+  .vv{font-size:.7rem;min-width:32px;text-align:right;}
+  .ach-item{display:flex;align-items:center;gap:10px;padding:8px 10px;
+    background:rgba(0,10,0,.7);border:1px solid var(--border);border-radius:6px;}
+  .ach-item.unlocked{border-color:var(--g);background:rgba(0,255,65,.08);}
+  .ach-icon{font-size:1.1rem;min-width:26px;text-align:center;}
+  .ach-info{flex:1;}
+  .ach-name{font-size:.7rem;color:var(--dg);}
+  .ach-item.unlocked .ach-name{color:var(--g);}
+  .ach-desc{font-size:.56rem;color:var(--dg);margin-top:1px;}
+  .ach-check{font-size:.93rem;min-width:20px;text-align:right;}
+  #ach-toast{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);z-index:300;
+    background:rgba(0,20,0,.96);border:1px solid var(--g);border-radius:8px;
+    padding:8px 18px;font-family:'Orbitron',monospace;font-size:.68rem;
+    color:var(--g);text-shadow:0 0 8px var(--g);text-align:center;
+    pointer-events:none;opacity:0;transition:opacity .4s;white-space:nowrap;}
+  #ach-toast.show{opacity:1;}
+
+  @keyframes flicker{0%,94%,100%{opacity:1;}95%{opacity:.5;}97%{opacity:.3;}99%{opacity:1;}}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+</style>
+</head>
+<body>
+<!-- Mathopoly удалён -->
+
+<canvas id="mc"></canvas>
+<div id="rc">00:00:00</div>
+<div id="ach-toast"></div>
+
+<!-- ══ ИНТРО ══ -->
+<div class="screen hidden" id="intro-screen">
+  <div class="intro-frame">
+    <div class="intro-badge">// СЕКРЕТНЫЙ ФАЙЛ — УРОВЕНЬ ДОСТУПА: МАКСИМАЛЬНЫЙ //</div>
+    <div class="intro-title">⏱ МАШИНА ВРЕМЕНИ<br>ОБНАРУЖЕНА</div>
+    <div class="intro-text">
+      Вы — <span>помощник учёного</span>. Пока профессор отлучился, вы обнаружили в его лаборатории странную машину с мерцающим циферблатом.<br><br>
+      Система заблокирована. Чтобы <span>получить доступ</span> — нужно решить серию задач на определение углов между стрелками часов.<br><br>
+      Четыре уровня, четыре эпохи. <span>История ждёт вас.</span><br><br>
+      Удачи, хакер.<span class="intro-cursor"></span>
+    </div>
+    <button class="intro-btn" onclick="closeIntroAndStart()">[ НАЧАТЬ ВЗЛОМ ]</button>
+  </div>
+</div>
+
+<!-- ══ ГЛАВНОЕ МЕНЮ ══ -->
+<div class="screen" id="main-menu">
+  <div class="mtitle">NUMBRA</div>
+  <div class="msub">// CLOCK ANGLE CRACKER //</div>
+  <div class="menu-coins" id="menu-coins">💰 0 монет</div>
+  <button class="btn" onclick="showS('game-menu')">[ 🎮 ИГРАТЬ ]</button>
+  <button class="btn" onclick="openAch()">[ 🏆 ДОСТИЖЕНИЯ ]</button>
+  <button class="btn" onclick="openSound()">[ 🔊 НАСТРОЙКИ ЗВУКА ]</button>
+</div>
+
+<!-- ══ МЕНЮ ИГРЫ — РАЗДЕЛЕНИЕ ПО КЛАССАМ ══ -->
+<div class="screen hidden" id="game-menu" style="overflow-y:auto;padding-bottom:20px;">
+  <div class="gmenu-title">🎮 ВЫБОР ИГРЫ</div>
+  <div class="gmenu-sub">// ВЫБЕРИ ПО КЛАССУ //</div>
+
+  <div class="other-label" style="color:#00ff88;">── 0–5 КЛАСС ──</div>
+  <button class="btn btn-gold" onclick="showS('vl-menu')" style="border-color:#ffd700;color:#ffd700;">[ 👑 ВЛАСТЕЛИНЫ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">ВИКТОРИНА · СЕКТОРА СЛОЖНОСТИ</span></button>
+  <button class="btn btn-gold" onclick="window.location.href='chronokeepers.html'" style="border-color:#7b2fff;color:#7b2fffb3;">[ ⏳ ХРАНИТЕЛИ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">МУЛЬТИПЛЕЕР · КАРТЫ ВРЕМЕНИ</span></button>
+
+  <div class="other-label" style="color:#ff00aa;margin-top:14px;">── 5–9 КЛАСС ──</div>
+  <button class="btn" style="border-color:#ff00aa;color:#ff00aa;" onclick="window.location.href='minigames.html'">[ ⚡ 10 МИНИ-ИГР ]<br><span style="font-size:.5rem;opacity:.7;">5-6 → 10-11 КЛАСС · ПО УВЕЛИЧЕНИЮ</span></button>
+
+  <div class="other-label" style="color:#00f5ff;margin-top:14px;">── 5–11 КЛАСС ──</div>
+  <button class="btn btn-gold" onclick="startWithIntro()" style="border-color:#00f5ff;color:#00f5ff;">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">УГЛЫ СТРЕЛОК · СЛОЖНЫЕ ЗАДАЧИ</span></button>
+
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:14px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<!-- ══ ВЛАСТЕЛИНЫ ВРЕМЕНИ — МЕНЮ ══ -->
+<div class="screen hidden" id="vl-menu">
+  <div style="font-size:2.2rem;margin-bottom:4px;">⏳</div>
+  <div class="gmenu-title" style="font-size:.9rem;line-height:1.3;">ВЛАСТЕЛИНЫ<br>ВРЕМЕНИ</div>
+  <div class="gmenu-sub" style="margin-bottom:16px;">// 0–5 КЛАСС · ПУТЕШЕСТВИЕ ПО ЦИФЕРБЛАТУ //</div>
+  <button class="btn btn-gold" onclick="vlStart()">[ 🎮 ИГРАТЬ ]</button>
+  <button class="btn btn-gold" onclick="showS('vl-rules')">[ 📜 ПРАВИЛА ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:8px;" onclick="showS('game-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<!-- ══ ВЛАСТЕЛИНЫ — ИГРА ══ -->
+<div class="screen hidden" id="vl-game" style="padding:0;overflow:hidden;">
+<style>
+#vl-hud{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0f20;border-bottom:1px solid #1a2a4a;flex-shrink:0;}
+.vl-hud-cell{text-align:center;}
+.vl-hud-lbl{font-size:.62rem;color:#779;letter-spacing:1px;font-family:'Orbitron',monospace;}
+.vl-hud-val{font-size:.95rem;font-weight:700;font-family:'Orbitron',monospace;}
+#vl-board-wrap{position:relative;width:100%;padding-top:100%;flex-shrink:0;}
+#vl-board-canvas{position:absolute;top:0;left:0;width:100%;height:100%;}
+#vl-card-area{flex:1;overflow-y:auto;padding:10px 12px 8px;}
+#vl-question-card{background:#0d1a2e;border-radius:12px;padding:14px 14px 12px;border:2px solid #1a2a4a;position:relative;transition:border-color .3s;}
+#vl-q-badge{display:inline-block;font-size:.6rem;padding:3px 9px;border-radius:20px;font-weight:700;margin-bottom:8px;}
+#vl-q-text{font-size:.88rem;color:#ddeeff;line-height:1.5;margin-bottom:12px;}
+#vl-answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.vl-opt{padding:10px 6px;background:rgba(255,255,255,.04);border:1px solid #1f3050;color:#aabbcc;border-radius:8px;font-size:.75rem;font-family:'Orbitron',monospace;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;}
+.vl-opt:active{transform:scale(.97);}
+.vl-opt.correct{background:rgba(0,255,136,.15);border-color:#00ff88;color:#00ff88;}
+.vl-opt.wrong{background:rgba(255,68,85,.15);border-color:#ff4455;color:#ff4455;}
+#vl-explanation{display:none;margin-top:10px;padding:10px 12px;background:rgba(0,0,0,.3);border-radius:8px;font-size:.75rem;color:#aabbcc;line-height:1.5;border-left:3px solid #ffd700;}
+#vl-dice-area{display:none;text-align:center;padding:10px 0 4px;}
+#vl-dice-num{font-size:2.5rem;display:inline-block;}
+#vl-action-btn{display:none;width:100%;padding:12px;background:rgba(255,215,0,.1);border:1px solid #ffd700;color:#ffd700;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;margin-top:8px;}
+/* ПАРАДОКС-карта */
+#vl-paradox-card{display:none;background:linear-gradient(135deg,#1a0a2e,#0a1a2e);border-radius:12px;padding:16px;border:2px solid #bb88ff;text-align:center;}
+#vl-paradox-text{font-size:.9rem;color:#ddeeff;margin:8px 0 14px;line-height:1.5;}
+/* Финальный экзамен */
+#vl-exam-area{display:none;padding:10px 12px;}
+#vl-exam-progress{font-size:.65rem;color:#556;text-align:center;margin-bottom:8px;font-family:'Orbitron',monospace;}
+/* Победа */
+#vl-win-screen{display:none;text-align:center;padding:30px 20px;}
+</style>
+
+  <!-- HUD -->
+  <div id="vl-hud">
+    <div class="vl-hud-cell">
+      <div class="vl-hud-lbl">ЖЕТОНЫ</div>
+      <div class="vl-hud-val" style="color:#ffd700;">⏳ <span id="vl-h-sand">0</span></div>
+    </div>
+    <div class="vl-hud-cell">
+      <div class="vl-hud-lbl">КЛЕТКА</div>
+      <div class="vl-hud-val" style="color:#00ff88;"><span id="vl-h-pos">0</span>/49</div>
+    </div>
+    <div class="vl-hud-cell">
+      <div class="vl-hud-lbl">ДО ФИНИША</div>
+      <div class="vl-hud-val" style="color:#88aaff;"><span id="vl-h-left">60</span> кл.</div>
+    </div>
+    <button onclick="showS('vl-menu')" style="background:none;border:1px solid #223;color:#445;padding:4px 8px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.55rem;cursor:pointer;">✕</button>
+  </div>
+
+  <!-- Игровое поле (canvas) -->
+  <div id="vl-board-wrap">
+    <canvas id="vl-board-canvas"></canvas>
+  </div>
+
+  <!-- Карточка вопроса / парадокса / кубик -->
+  <div id="vl-card-area">
+    <div id="vl-question-card">
+      <div id="vl-q-badge">⏳ ВОПРОС</div>
+      <div id="vl-q-text">Нажми «Начать ход» чтобы получить вопрос!</div>
+      <div id="vl-answers"></div>
+      <div id="vl-explanation"></div>
+      <div id="vl-dice-area">
+        <div style="font-size:.7rem;color:#ffd700;margin-bottom:4px;font-family:'Orbitron',monospace;">БРОСОК КУБИКА</div>
+        <div id="vl-dice-num">🎲</div>
+        <div id="vl-dice-result" style="font-size:.75rem;color:#aabbcc;margin-top:4px;"></div>
+      </div>
+    </div>
+    <div id="vl-paradox-card">
+      <div style="font-size:1.4rem;margin-bottom:4px;">⚡</div>
+      <div style="font-size:.65rem;color:#bb88ff;letter-spacing:2px;font-family:'Orbitron',monospace;">ВРЕМЕННОЙ ПАРАДОКС</div>
+      <div id="vl-paradox-text"></div>
+    </div>
+    <!-- Финальный экзамен -->
+    <div id="vl-exam-area">
+      <div id="vl-exam-progress">ФИНАЛЬНЫЙ ЭКЗАМЕН · ВОПРОС <span id="vl-exam-q">1</span>/5</div>
+      <div id="vl-exam-card" style="background:#0d1a2e;border-radius:12px;padding:14px;border:2px solid #ffd700;">
+        <div id="vl-exam-text" style="font-size:.88rem;color:#ddeeff;line-height:1.5;margin-bottom:12px;"></div>
+        <div id="vl-exam-answers" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+      </div>
+    </div>
+    <!-- Победный экран -->
+    <div id="vl-win-screen">
+      <div style="font-size:3rem;margin-bottom:8px;">🏆</div>
+      <div style="font-size:1rem;color:#ffd700;font-family:'Orbitron',monospace;letter-spacing:2px;">ПОБЕДИТЕЛЬ</div>
+      <div style="font-size:.75rem;color:#bb88ff;margin:4px 0 16px;font-family:'Orbitron',monospace;">⏳ ВЛАСТЕЛИН ВРЕМЕНИ</div>
+      <div id="vl-win-sand" style="font-size:.9rem;color:#aabbcc;margin-bottom:20px;"></div>
+      <button onclick="vlStart()" style="padding:12px 24px;background:rgba(255,215,0,.15);border:2px solid #ffd700;color:#ffd700;border-radius:10px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ 🔄 ИГРАТЬ СНОВА ]</button>
+      <button onclick="showS('vl-menu')" style="display:block;margin:10px auto 0;padding:10px 20px;background:none;border:1px solid #445;color:#667;border-radius:8px;font-family:'Orbitron',monospace;font-size:.65rem;cursor:pointer;">[ ← МЕНЮ ]</button>
+    </div>
+    <button id="vl-action-btn" onclick="vlActionBtn()">[ 🎲 НАЧАТЬ ХОД ]</button>
+  </div>
+</div>
+
+<!-- ══ ВЛАСТЕЛИНЫ — ПРАВИЛА ══ -->
+<div class="screen hidden" id="vl-rules" style="overflow-y:auto;padding:14px 16px 60px;">
+  <div class="gmenu-title" style="font-size:.85rem;padding:10px 0 6px;">📜 ПРАВИЛА</div>
+  <div style="color:#aabbcc;font-size:.78rem;line-height:1.8;font-family:inherit;">
+    <div style="color:#ffd700;font-size:.72rem;margin:8px 0 3px;">🎯 ЦЕЛЬ</div>
+    Первым дойти до 60-й клетки и пройти <b style="color:#ffd700">Финальный Экзамен</b>. Кто наберёт больше жетонов <b>⏳</b> — тот Властелин Времени!
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 КАК ИГРАТЬ</div>
+    1. Нажми <b>«Начать ход»</b> — получишь карточку с вопросом<br>
+    2. Выбери правильный ответ<br>
+    3. <b style="color:#00ff88">Верно</b> → получаешь жетоны + бросаешь кубик + двигаешься вперёд<br>
+    4. <b style="color:#ff4455">Неверно</b> → стоишь на месте, видишь объяснение
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🟢🟡🔴 КЛЕТКИ</div>
+    <b style="color:#00ff88">🟢 Зелёные (1–20)</b> — лёгкие вопросы, +1 ⏳<br>
+    <b style="color:#ffd700">🟡 Жёлтые (21–40)</b> — средние вопросы, +2 ⏳<br>
+    <b style="color:#ff4455">🔴 Красные (41–59)</b> — сложные вопросы, +3 ⏳<br>
+    <b style="color:#bb88ff">⚡ Парадокс (12,24,36,48)</b> — бонус или штраф<br>
+    <b style="color:#ffd700">👑 Клетка 60</b> — Финальный Экзамен из 5 вопросов!
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🏆 ФИНАЛ</div>
+    На клетке 60 — ответь на 5 вопросов подряд. За каждый верный +3 ⏳. Пройди экзамен — и ты Властелин Времени!
+  </div>
+  <button class="btn" style="margin-top:16px;border-color:var(--dg);color:var(--dg);" onclick="showS('vl-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<!-- ══ ХРАНИТЕЛИ ВРЕМЕНИ — МЕНЮ ══ -->
+<div class="screen hidden" id="hk-menu">
+  <div class="gmenu-title" style="font-size:.75rem;line-height:1.3;">⚗️ ХРАНИТЕЛИ ВРЕМЕНИ<br><span style="font-size:.55rem;color:#88aabb;letter-spacing:1px;">QUANTUM SHIFT</span></div>
+  <div class="gmenu-sub">// РЕАКТОР ВЗОРВАЛСЯ · СТАБИЛИЗИРУЙ ВРЕМЯ //</div>
+  <button class="btn btn-gold" onclick="showS('hk-game');hkGameReset()">[ 🎮 ИГРАТЬ ]</button>
+  <button class="btn btn-gold" onclick="showS('hk-cards')">[ 📋 МИССИИ ]</button>
+  <button class="btn btn-gold" onclick="showS('hk-rules')">[ 📜 ПРАВИЛА ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:8px;" onclick="showS('game-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<!-- ══ ХРАНИТЕЛИ — МИССИИ (карточки) ══ -->
+<div class="screen hidden" id="hk-cards" style="overflow-y:auto;padding-bottom:60px;">
+  <div class="gmenu-title" style="font-size:.8rem;padding:12px 0 4px;">📋 КАРТЫ МИССИЙ</div>
+
+  <div class="vl-sector green">⏱ СЕКУНДОМЕР — Простой уровень <span style="margin-left:auto;font-size:.6rem;opacity:.7">+1 💎</span></div>
+
+  <div class="vl-card green">
+    <div class="vl-pts green">+1 💎</div>
+    <div class="vl-q">⚡ <b>Временной прыжок.</b> Портал закроется через 3 ч 45 мин. Сейчас 22:30. Когда закроется портал?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer green"><span><b>02:15</b> — следующего дня</span></div>
+  </div>
+
+  <div class="vl-card green">
+    <div class="vl-pts green">+1 💎</div>
+    <div class="vl-q">🔧 <b>Сбой хронометра.</b> Часы спешат на 7 минут каждые 3 часа. Выставили 12:00. Что покажут в 21:00?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer green"><span>За 9 часов = 3 интервала × 7 мин = +21 мин → <b>21:21</b></span></div>
+  </div>
+
+  <div class="vl-card green">
+    <div class="vl-pts green">+1 💎</div>
+    <div class="vl-q">🌀 <b>Петля аномалии.</b> Время идёт вспять. Сейчас 14:00, через 2 ч 20 мин «вперёд» — какое время на обратных часах?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer green"><span>14:00 − 2:20 = <b>11:40</b></span></div>
+  </div>
+
+  <div class="vl-sector yellow">📅 КАЛЕНДАРЬ — Средний уровень <span style="margin-left:auto;font-size:.6rem;opacity:.7">+2 💎</span></div>
+
+  <div class="vl-card yellow">
+    <div class="vl-pts yellow">+2 💎</div>
+    <div class="vl-q">✈️ <b>Часовые пояса.</b> Вылет из Токио (GMT+9) в 14:00. Полёт 8 часов. Местное время в Лондоне (GMT+0)?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer yellow"><span>14:00 + 8ч = 22:00 (Токио) → 22:00 − 9ч = <b>13:00 Лондон</b></span></div>
+  </div>
+
+  <div class="vl-card yellow">
+    <div class="vl-pts yellow">+2 💎</div>
+    <div class="vl-q">📆 <b>Высокосный парадокс.</b> 28 февраля 2024 года + 3 дня. Какое число? (2024 — високосный?)</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer yellow"><span>2024 — високосный → <b>2 марта 2024</b></span></div>
+  </div>
+
+  <div class="vl-card yellow">
+    <div class="vl-pts yellow">+2 💎</div>
+    <div class="vl-q">🌍 <b>Синхронизация.</b> В Алма-Ате 20:00 (GMT+5). Какое время сейчас в Нью-Йорке (GMT−5)?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer yellow"><span>20:00 − 10ч = <b>10:00</b></span></div>
+  </div>
+
+  <div class="vl-sector red">🌌 ПАРАДОКС — Сложный уровень <span style="margin-left:auto;font-size:.6rem;opacity:.7">+3 💎</span></div>
+
+  <div class="vl-card red">
+    <div class="vl-pts red">+3 💎</div>
+    <div class="vl-q">⚙️ <b>Квантовые сутки.</b> В этой аномалии сутки длятся 30 часов. Сейчас «18:00». Сколько «обычных» минут прошло с полуночи?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer red"><span>18 × 60 = <b>1080 минут</b> (то же самое — часы те же, только суток в них 30)</span></div>
+  </div>
+
+  <div class="vl-card red">
+    <div class="vl-pts red">+3 💎</div>
+    <div class="vl-q">🔄 <b>Обратный реактор.</b> Реактор считает время назад: старт в 23:59, финиш через 4 ч 01 мин. Какое время на реакторе?</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer red"><span>23:59 − 4:01 = <b>19:58</b></span></div>
+  </div>
+
+  <div class="vl-card red">
+    <div class="vl-pts red">+3 💎</div>
+    <div class="vl-q">🧮 <b>Перегрузка хронометра.</b> Часы показывают 99:99. Переведи в нормальные сутки, часы и минуты.</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ ПОКАЗАТЬ ОТВЕТ ]</button>
+    <div class="vl-answer red"><span>99ч 99мин = 99ч + 1ч 39мин = 100ч 39мин = 4 суток 4ч 39мин → <b>04:39 на 5-е сутки</b></span></div>
+  </div>
+
+  <div class="vl-sector paradox">🃏 ХРОНО-МАГИЯ — Карты действий <span style="margin-left:auto;font-size:.6rem;opacity:.7">спецэффект</span></div>
+
+  <div class="vl-card paradox">
+    <div class="vl-pts paradox">🔁</div>
+    <div class="vl-q">⏪ <b>Временная петля.</b> Заставь соперника вычесть 45 минут из своего хронометра — и он решает задачу заново.</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ КАК ИГРАТЬ ]</button>
+    <div class="vl-answer paradox"><span>Сыграй эту карту в свой ход — выбери соперника, он откатывается на −45 мин и отвечает на новую задачу.</span></div>
+  </div>
+
+  <div class="vl-card paradox">
+    <div class="vl-pts paradox">😵</div>
+    <div class="vl-q">✈️ <b>Джетлаг.</b> Соперник решает следующую задачу не глядя на свои часы — только в уме.</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ КАК ИГРАТЬ ]</button>
+    <div class="vl-answer paradox"><span>Соперник переворачивает хронометр и решает задачу на память. Ошибся — теряет ход.</span></div>
+  </div>
+
+  <div class="vl-card paradox">
+    <div class="vl-pts paradox">🕰️</div>
+    <div class="vl-q">⏩ <b>Перевод стрелок.</b> Укради минуты у лидера — перепиши его прогресс на свой хронометр.</div>
+    <button class="vl-ans-btn" onclick="vlReveal(this)">[ КАК ИГРАТЬ ]</button>
+    <div class="vl-answer paradox"><span>Укради от 15 до 60 минут у игрока с наибольшим прогрессом. Его хронометр откатывается, твой — вперёд.</span></div>
+  </div>
+
+  <button class="btn" style="margin:14px 0 6px;border-color:var(--dg);color:var(--dg);" onclick="showS('hk-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<!-- ══ ХРАНИТЕЛИ — ИГРА ══ -->
+<div class="screen hidden" id="hk-game">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#0a0f20;border-bottom:1px solid #1a2a4a;">
+    <span style="font-size:.65rem;color:#556;font-family:'Orbitron',monospace;letter-spacing:1px;">КВАНТОВЫЙ СДВИГ</span>
+    <span style="font-size:.82rem;color:#00ff88;">💎 <b id="hk-crystals">0</b> кристалла</span>
+    <button onclick="showS('hk-menu')" style="background:none;border:1px solid #334;color:#556;padding:3px 9px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.6rem;cursor:pointer;">✕</button>
+  </div>
+  <div style="overflow-y:auto;padding:10px 12px 20px;">
+    <div id="hk-chrono-bar" style="display:flex;justify-content:space-between;padding:8px 12px;background:#0d1a2e;border-radius:8px;margin-bottom:10px;font-size:.72rem;">
+      <span style="color:#556;">🕰️ Хронометр:</span>
+      <span id="hk-chrono-display" style="color:#ffd700;font-weight:700;">—</span>
+    </div>
+    <div id="hk-card-display" style="background:#0d1a2e;border-radius:12px;padding:16px;margin-bottom:10px;border:2px solid #1a2a4a;position:relative;min-height:180px;">
+      <div id="hk-cd-sector" style="font-size:.65rem;letter-spacing:2px;margin-bottom:6px;color:#556;">—</div>
+      <div id="hk-cd-pts" style="position:absolute;top:12px;right:12px;font-size:.72rem;padding:3px 9px;border-radius:20px;display:none;font-weight:700;"></div>
+      <div id="hk-cd-q" style="font-size:.86rem;color:#ddeeff;line-height:1.5;margin:8px 0 14px;padding-right:44px;">Нажми «Следующая миссия» чтобы начать!</div>
+      <button id="hk-cd-reveal" onclick="hkGameReveal()" style="display:none;width:100%;padding:10px;background:rgba(255,255,255,.05);border:1px solid #2a3a5a;color:#88aabb;border-radius:7px;font-family:'Orbitron',monospace;font-size:.7rem;cursor:pointer;">[ 👁 ОТКРЫТЬ ОТВЕТ ]</button>
+      <div id="hk-cd-ans" style="display:none;padding:10px;background:rgba(0,0,0,.3);border-radius:7px;font-size:.78rem;color:#cce8ff;line-height:1.5;margin-top:8px;border-left:3px solid #00ff88;"></div>
+      <div id="hk-cd-btns" style="display:none;gap:8px;margin-top:10px;">
+        <button onclick="hkGameNext(false)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #ff4455;background:rgba(255,68,85,.1);color:#ff4455;width:48%">✗ НЕВЕРНО<br>+0 💎</button>
+        <button onclick="hkGameNext(true)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #00ff88;background:rgba(0,255,136,.1);color:#00ff88;width:48%" id="hk-right-btn">✓ ВЕРНО<br><span id="hk-pts-lbl">+1 💎</span></button>
+      </div>
+    </div>
+    <button id="hk-deal-btn" onclick="hkGameDeal()" style="width:100%;padding:13px;background:rgba(0,255,136,.08);border:1px solid #00ff88;color:#00ff88;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ ⚗️ СЛЕДУЮЩАЯ МИССИЯ ]</button>
+    <div id="hk-win-msg" style="display:none;text-align:center;padding:20px 12px;font-size:.9rem;color:#ffd700;">
+      🏆 ХРОНОМЕТР СИНХРОНИЗИРОВАН!<br>
+      <span style="font-size:.7rem;color:#aabbcc;">Ты собрал 5 Хроно-кристаллов и стабилизировал время.<br>Реактор перезапущен. Мир спасён. ⚗️</span><br>
+      <button onclick="hkGameReset()" style="margin-top:12px;padding:10px 20px;background:rgba(255,215,0,.1);border:1px solid #ffd700;color:#ffd700;border-radius:8px;font-family:'Orbitron',monospace;font-size:.68rem;cursor:pointer;">[ 🔄 ИГРАТЬ СНОВА ]</button>
+    </div>
+    <div style="text-align:center;padding:8px 0 0;font-size:.58rem;color:#334;">Собери 5 кристаллов 💎 → Хронометр синхронизирован!</div>
+  </div>
+</div>
+
+<!-- ══ ХРАНИТЕЛИ — ПРАВИЛА ══ -->
+<div class="screen hidden" id="hk-rules" style="overflow-y:auto;padding:14px 16px 60px;">
+  <div class="gmenu-title" style="font-size:.8rem;padding:10px 0 6px;">📜 ПРАВИЛА</div>
+  <div style="color:#aabbcc;font-size:.78rem;line-height:1.8;font-family:inherit;">
+    <div style="color:#00ff88;font-size:.72rem;margin:8px 0 3px;">⚗️ СЕТТИНГ</div>
+    Вы — учёные-хрононавты. Временной реактор взорвался. Мир застрял в петлях. Цель — починить Хронометры и стабилизировать время раньше соперников.
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎯 ЦЕЛЬ</div>
+    Первым собрать <b style="color:#ffd700">5 Хроно-кристаллов 💎</b> за правильные ответы — или синхронизировать Хронометр с Эталоном (<b>00:00</b>).
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 СТАРТ</div>
+    Каждый игрок начинает с <b>поломанными часами</b> — случайное время (04:15, 18:40...). Нужно привести их к 00:00, решая задачи.
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">⏱🗓🌌 УРОВНИ</div>
+    <b style="color:#00ff88">Секундомер</b> — часы и минуты в пределах суток, +1 💎<br>
+    <b style="color:#ffd700">Календарь</b> — дни, недели, часовые пояса, +2 💎<br>
+    <b style="color:#ff4455">Парадокс</b> — время вспять, нестандартные правила, +3 💎<br>
+    <b style="color:#bb88ff">🃏 Хроно-магия</b> — мешают соперникам или помогают себе
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🃏 КАРТЫ ХРОНО-МАГИИ</div>
+    <b>⏪ Временная петля</b> — соперник −45 мин и решает заново<br>
+    <b>😵 Джетлаг</b> — соперник решает задачу вслепую (без часов)<br>
+    <b>⏩ Перевод стрелок</b> — кражу минут у лидера себе
+
+    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🏆 ПОБЕДА</div>
+    Первым собрать 5 💎 — или синхронизировать хронометр с 00:00. Остальные могут доиграть до конца колоды для финального счёта.
+
+    <div style="margin-top:18px;padding:12px;background:rgba(0,255,136,.06);border-radius:8px;border:1px solid rgba(0,255,136,.2);text-align:center;font-size:.72rem;color:#88ddaa;line-height:1.7;">
+      <b style="color:#ffd700">— ЭПИЛОГ —</b><br>
+      Реактор перезапущен. Петли времени закрыты.<br>
+      Хрононавты возвращаются домой — каждый в своё время.<br>
+      <span style="opacity:.6;font-size:.65rem;">Главное — не забудьте перевести часы на зимнее время.</span>
+    </div>
+  </div>
+  <button class="btn" style="margin-top:14px;border-color:var(--dg);color:var(--dg);" onclick="showS('hk-menu')">[ ← НАЗАД ]</button>
+</div>
+
+
+<!-- ══ ИГРОВОЙ ЭКРАН ══ -->
+<div class="screen hidden" id="game-screen">
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hbox"><div class="lb">УРОВЕНЬ</div><div class="vl" id="h-lv">1</div></div>
+    <div class="hbox"><div class="lb">ВОПРОС</div><div class="vl" id="h-q">1/5</div></div>
+    <div class="hbox"><div class="lb">МОНЕТЫ</div><div class="vl" id="h-c">0🪙</div></div>
+    <div class="hbox"><div class="lb">ЖИЗНИ</div><div class="vl" id="h-l">❤️❤️❤️</div></div>
+  </div>
+  <!-- Вопрос -->
+  <div class="qbox">
+    <div class="qlb" id="qlb">УРОВЕНЬ 1</div>
+    <div class="qtx" id="qtx">Найди угол</div>
+    <div class="q-hint" id="q-hint" style="display:none"></div>
+  </div>
+  <!-- Часы -->
+  <div class="clock-wrap" id="clock-wrap">
+    <svg id="clk" viewBox="-90 -90 180 180">
+      <circle r="88" fill="rgba(0,10,0,.95)" stroke="#00ff41" stroke-width="2"/>
+      <circle r="83" fill="none" stroke="rgba(0,255,65,.1)" stroke-width="1"/>
+      <g id="ticks"></g><g id="nums"></g>
+      <path id="arc" fill="rgba(255,255,0,.07)" stroke="rgba(255,255,0,.5)" stroke-width="1.5" d=""/>
+      <line id="hh" x1="0" y1="0" x2="0" y2="-46" stroke="#ff6b35" stroke-width="6" stroke-linecap="round" filter="drop-shadow(0 0 6px #ff6b35)"/>
+      <line id="mh" x1="0" y1="0" x2="0" y2="-65" stroke="#00ff88" stroke-width="5" stroke-linecap="round" filter="drop-shadow(0 0 6px #00ff88)"/>
+      <line id="sh" x1="0" y1="5" x2="0" y2="-72" stroke="#00ddff" stroke-width="3" stroke-linecap="round" filter="drop-shadow(0 0 5px #00ddff)"/>
+      <circle r="4" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
+    </svg>
+  </div>
+  <!-- Варианты -->
+  <div id="choices-wrap"></div>
+  <!-- КНОПКА ПОДТВЕРЖДЕНИЯ — сразу под вариантами -->
+  <button id="confirm-btn" onclick="confirmMulti()">✓ ПОДТВЕРДИТЬ ВЫБОР</button>
+  <!-- Фидбэк -->
+  <div class="fb" id="fb"></div>
+  <!-- Классики — горизонтально в одну строку -->
+  <div class="hops-wrap">
+    <div class="hops-label">// КЛАССИКИ //</div>
+    <div class="hops-row-inline" id="hops"></div>
+  </div>
+  <!-- Нижние кнопки -->
+  <div class="bot-row">
+    <button class="hbtn" id="hint-btn" onclick="useHint()">💡 ПОДСКАЗКА (-15🪙)</button>
+    <button class="mbtn" onclick="openSound()">🔊</button>
+    <button class="mbtn" onclick="goMenu()">← МЕНЮ</button>
+  </div>
+</div>
+
+<!-- ══ КОНЕЦ УРОВНЯ ══ -->
+<div class="screen hidden" id="result-screen">
+  <div class="rtitle" id="rt"></div>
+  <div class="rinfo" id="ri"></div>
+  <button class="btn" id="next-btn" onclick="nextLevel()">[ СЛЕДУЮЩИЙ УРОВЕНЬ ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
+</div>
+
+<!-- ══ ГЕЙМОВЕР ══ -->
+<div class="screen hidden" id="gameover-screen">
+  <div class="rtitle" style="color:#ff3131;text-shadow:0 0 18px #ff3131;">ВЗЛОМ ПРОВАЛЕН</div>
+  <div class="rinfo" id="gi"></div>
+  <button class="btn" onclick="restartGame()">[ ПОПРОБОВАТЬ СНОВА ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
+</div>
+
+<!-- ══ ПОБЕДА ══ -->
+<div class="screen hidden" id="win-screen">
+  <div class="win-frame">
+    <div class="win-badge">// ВЗЛОМ ЗАВЕРШЁН — ДОСТУП ПОЛУЧЕН //</div>
+    <div class="win-title">🚀 МАШИНА ВРЕМЕНИ<br>ЗАПУЩЕНА!</div>
+    <div class="win-text" id="win-text"></div>
+    <div class="win-stats" id="win-stats"></div>
+    <button class="btn" style="width:100%;margin-bottom:8px;" onclick="restartGame()">[ НОВОЕ ПУТЕШЕСТВИЕ ]</button>
+    <button class="btn" style="width:100%;border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
+  </div>
+</div>
+
+<!-- ══ ЗВУК ══ -->
+<div class="popup-overlay hidden" id="sound-popup">
+  <div class="popup">
+    <div class="popup-title">🔊 НАСТРОЙКИ ЗВУКА</div>
+    <div class="vrow">
+      <label>МУЗЫКА</label>
+      <input type="range" id="vm" min="0" max="100" value="40" oninput="setMV(this.value)">
+      <span class="vv" id="vml">40%</span>
+    </div>
+    <div class="vrow">
+      <label>ЗВУКИ</label>
+      <input type="range" id="vs" min="0" max="100" value="70" oninput="setSV(this.value)">
+      <span class="vv" id="vsl">70%</span>
+    </div>
+    <button class="popup-close" onclick="closeSound()">ЗАКРЫТЬ</button>
+  </div>
+</div>
+
+<!-- ══ ДОСТИЖЕНИЯ ══ -->
+<div class="popup-overlay hidden" id="ach-popup">
+  <div class="popup">
+    <div class="popup-title">🏆 ДОСТИЖЕНИЯ</div>
+    <div id="ach-list"></div>
+    <button class="popup-close" onclick="closeAch()">ЗАКРЫТЬ</button>
+  </div>
+</div>
+
+<script>
+/* ══ МАТРИЦА ══ */
+(()=>{
+  const c=document.getElementById('mc'),x=c.getContext('2d');
+  const rz=()=>{c.width=innerWidth;c.height=innerHeight;};rz();addEventListener('resize',rz);
+  const ch='アイウエオ01αβ∑∏∞#@$%&(){}<>?\\|'.split('');let dr=[];
+  const cols=()=>Math.floor(c.width/13);
+  setInterval(()=>{
+    if(dr.length!==cols())dr=Array.from({length:cols()},()=>Math.random()*c.height/13|0);
+    x.fillStyle='rgba(10,10,10,.08)';x.fillRect(0,0,c.width,c.height);
+    x.fillStyle='#00ff41';x.font='11px Share Tech Mono';
+    dr.forEach((y,i)=>{x.fillText(ch[Math.random()*ch.length|0],i*13,y*13);
+      if(y*13>c.height&&Math.random()>.975)dr[i]=0;dr[i]++;});
+  },55);
+})();
+
+/* ══ РЕАЛЬНЫЕ ЧАСЫ ══ */
+setInterval(()=>{const n=new Date(),p=v=>String(v).padStart(2,'0');
+  document.getElementById('rc').textContent=p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());},1000);
+
+/* ══ АДАПТИВНЫЙ РАЗМЕР ЧАСОВ ══ */
+function fitClock(){
+  // Считаем оставшееся место под часы
+  const gh = window.innerHeight;
+  // Примерно под остальные элементы уходит ~370px (hud+qbox+choices+confirm+fb+hops+botrow)
+  const reserved = ST.lv === 3 ? 390 : 360;
+  const available = Math.max(110, gh - reserved);
+  const size = Math.min(available, 200); // макс 200px
+  const svg = document.getElementById('clk');
+  svg.setAttribute('width', size);
+  svg.setAttribute('height', size);
+}
+
+/* ══ СОХРАНЕНИЕ ══ */
+const SAVE={coins:0,ach:[],lvCount:[0,0,0,0],ckWins:0};
+function saveData(){
+  localStorage.setItem('cag_coins',SAVE.coins);
+  localStorage.setItem('cag_ach',JSON.stringify(SAVE.ach));
+  localStorage.setItem('cag_lv_cnt',JSON.stringify(SAVE.lvCount));
+  localStorage.setItem('cag_ck_wins',SAVE.ckWins);
+}
+function loadData(){
+  SAVE.coins=parseInt(localStorage.getItem('cag_coins')||'0');
+  try{SAVE.ach=JSON.parse(localStorage.getItem('cag_ach')||'[]');}catch(e){SAVE.ach=[];}
+  try{SAVE.lvCount=JSON.parse(localStorage.getItem('cag_lv_cnt')||'[0,0,0,0]');}catch(e){SAVE.lvCount=[0,0,0,0];}
+  SAVE.ckWins=parseInt(localStorage.getItem('cag_ck_wins')||'0');
+}
+loadData();
+// стартовый бонус 500 монет отключён
+
+/* ══ ИНТРО ══ */
+function checkIntro(){showS('main-menu');}
+function closeIntro(){showS('main-menu');updMenuCoins();}
+function startWithIntro(){
+  // Всегда показываем предысторию перед игрой
+  showS('intro-screen');
+}
+function closeIntroAndStart(){
+  // После предыстории — сразу в игру
+  startGame();
+}
+
+/* ══ ДОСТИЖЕНИЯ ══ */
+const ACHIEVEMENTS=[
+  {id:'lv1',   icon:'🕵️',name:'Помощник хакера',         desc:'Пройди 1 уровень',        cond:s=>s.lvCount[0]>=1},
+  {id:'lv2',   icon:'💻', name:'Начинающий хакер',         desc:'Пройди 2 уровень',        cond:s=>s.lvCount[1]>=1},
+  {id:'lv3',   icon:'🔐', name:'Хакер',                    desc:'Пройди 3 уровень',        cond:s=>s.lvCount[2]>=1},
+  {id:'lv4',   icon:'🧠', name:'Хакер профессионал',       desc:'Пройди 4 уровень',        cond:s=>s.lvCount[3]>=1},
+  {id:'lv1x10',icon:'⏰', name:'Путешественник во времени',desc:'Пройди 1 уровень 10 раз', cond:s=>s.lvCount[0]>=10},
+  {id:'lv2x10',icon:'🌀', name:'Спец по путешествиям',     desc:'Пройди 2 уровень 10 раз', cond:s=>s.lvCount[1]>=10},
+  {id:'lv3x10',icon:'🌌', name:'Мастер путешествий',       desc:'Пройди 3 уровень 10 раз', cond:s=>s.lvCount[2]>=10},
+  {id:'lv4x10',icon:'👑', name:'Повелитель времени',       desc:'Пройди 4 уровень 10 раз', cond:s=>s.lvCount[3]>=10},
+  // ── ХРАНИТЕЛИ ВРЕМЕНИ: КВАНТОВЫЙ СДВИГ ──
+  {id:'ck1', icon:'🎓', name:'Бакалавр времени',             desc:'Победи в «Хранителях Времени» 1 раз',   cond:s=>s.ckWins>=1},
+  {id:'ck2', icon:'🌀', name:'Специалист временной петли',   desc:'Победи в «Хранителях Времени» 2 раза',  cond:s=>s.ckWins>=2},
+  {id:'ck3', icon:'🌌', name:'Магистр временного хаоса',     desc:'Победи в «Хранителях Времени» 3 раза',  cond:s=>s.ckWins>=3},
+  {id:'ck4', icon:'⚛️', name:'Академик часовой переменной',  desc:'Победи в «Хранителях Времени» 4 раза',  cond:s=>s.ckWins>=4},
+  {id:'ck5', icon:'👑', name:'Профессор минутного постоянства', desc:'Победи в «Хранителях Времени» 5 раз', cond:s=>s.ckWins>=5},
+];
+function checkAchievements(){
+  ACHIEVEMENTS.forEach(a=>{
+    if(!SAVE.ach.includes(a.id)&&a.cond(SAVE)){SAVE.ach.push(a.id);saveData();showAchToast(a.icon+' '+a.name);}
+  });
+}
+let toastT=null;
+function showAchToast(msg){
+  const t=document.getElementById('ach-toast');t.textContent='🏆 '+msg;t.classList.add('show');
+  if(toastT)clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3500);
+}
+function openAch(){
+  const list=document.getElementById('ach-list');list.innerHTML='';
+  ACHIEVEMENTS.forEach(a=>{
+    const done=SAVE.ach.includes(a.id);
+    const div=document.createElement('div');div.className='ach-item'+(done?' unlocked':'');
+    div.innerHTML=`<div class="ach-icon">${a.icon}</div>
+      <div class="ach-info"><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>
+      <div class="ach-check">${done?'✅':'⬜'}</div>`;
+    list.appendChild(div);
+  });
+  document.getElementById('ach-popup').classList.remove('hidden');
+}
+function closeAch(){document.getElementById('ach-popup').classList.add('hidden');}
+
+/* ══ АУДИО — Классическая мелодия (Пахельбель Канон) ══ */
+let AC,MG,SG;let mv=.4,sv=.7;
+let bgMelody=null,bgBass=null;
+function initA(){
+  if(AC)return;
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  MG=AC.createGain();MG.gain.value=mv*.25;MG.connect(AC.destination);
+  SG=AC.createGain();SG.gain.value=sv;SG.connect(AC.destination);
+  // Канон Пахельбеля — мелодия (милисекунды = длительность)
+  const melody=[
+    [587.33,1200],[659.25,1200],[739.99,1200],[783.99,1200],
+    [880,1200],[739.99,1200],[783.99,1200],[659.25,1200],
+    [587.33,1200],[659.25,1200],[739.99,1200],[880,1200],
+    [987.77,1200],[880,1200],[783.99,1200],[739.99,1200],
+    [587.33,800],[523.25,400],[587.33,1200],[659.25,1200],
+    [739.99,1200],[659.25,1200],[587.33,1200],[523.25,1200],
+    [493.88,1200],[523.25,1200],[587.33,1200],[659.25,1200],
+    [587.33,1200],[523.25,1200],[493.88,1200],[440,1200]
+  ];
+  // Бас — аккордовая прогрессия D-A-Bm-F#m-G-D-G-A
+  const bass=[
+    [146.83,2400],[110,2400],[123.47,2400],[92.5,2400],
+    [98,2400],[146.83,2400],[98,2400],[110,2400],
+    [146.83,2400],[110,2400],[123.47,2400],[92.5,2400],
+    [98,2400],[146.83,2400],[98,2400],[110,2400]
+  ];
+  let mi=0,bi=0;
+  function playNote(freq,dur,type,vol,dest){
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(dest);o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(0,AC.currentTime);
+    g.gain.linearRampToValueAtTime(vol,AC.currentTime+0.08);
+    g.gain.linearRampToValueAtTime(vol*.7,AC.currentTime+dur*.5);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+dur/1000);
+    o.start(AC.currentTime);o.stop(AC.currentTime+dur/1000+.1);
+  }
+  bgMelody=setInterval(()=>{
+    if(!AC||AC.state==='suspended')return;
+    const n=melody[mi++%melody.length];
+    playNote(n[0],n[1],'sine',.3,MG);
+  },1200);
+  bgBass=setInterval(()=>{
+    if(!AC||AC.state==='suspended')return;
+    const b=bass[bi++%bass.length];
+    playNote(b[0],b[1],'sine',.2,MG);
+  },2400);
+}
+// Останавливаем музыку при сворачивании приложения
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&AC){AC.suspend();}
+  else if(!document.hidden&&AC){AC.resume();}
+});
+window.addEventListener('pagehide',()=>{if(AC)AC.suspend();});
+window.addEventListener('blur',()=>{if(AC)AC.suspend();});
+window.addEventListener('focus',()=>{if(AC&&AC.state==='suspended')AC.resume();});
+// Звуковые эффекты
+function sfx(t){
+  if(!AC)return;
+  if(t==='ok'){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(SG);
+    o.type='sine';o.frequency.setValueAtTime(523,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(784,AC.currentTime+0.1);
+    o.frequency.linearRampToValueAtTime(1047,AC.currentTime+0.2);
+    g.gain.setValueAtTime(.3,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+0.4);
+    o.start(AC.currentTime);o.stop(AC.currentTime+0.4);}
+  else if(t==='no'){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(SG);
+    o.type='sawtooth';o.frequency.setValueAtTime(200,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(80,AC.currentTime+0.3);
+    g.gain.setValueAtTime(.25,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+0.3);
+    o.start(AC.currentTime);o.stop(AC.currentTime+0.3);}
+  else if(t==='up'){const notes=[523,659,784,1047];notes.forEach((f,i)=>{
+    const oo=AC.createOscillator(),gg=AC.createGain();oo.connect(gg);gg.connect(SG);
+    oo.frequency.value=f;gg.gain.setValueAtTime(.25,AC.currentTime+i*0.12);
+    gg.gain.linearRampToValueAtTime(0,AC.currentTime+i*0.12+0.25);
+    oo.start(AC.currentTime+i*0.12);oo.stop(AC.currentTime+i*0.12+0.25);});}
+}
+function openSound(){document.getElementById('sound-popup').classList.remove('hidden');}
+function closeSound(){document.getElementById('sound-popup').classList.add('hidden');}
+
+/* ══ УРОВНИ ══ */
+const LVS=[
+  {title:'УРОВЕНЬ 1',desc:'МИНУТНАЯ ↔ СЕКУНДНАЯ',type:'ms', qc:5,cp:1},
+  {title:'УРОВЕНЬ 2',desc:'ЧАСОВАЯ ↔ СЕКУНДНАЯ', type:'hs', qc:5,cp:2},
+  {title:'УРОВЕНЬ 3',desc:'ЧАСОВАЯ ↔ МИНУТНАЯ',  type:'hm', qc:5,cp:4},
+  {title:'УРОВЕНЬ 4',desc:'ВСЕ УГЛЫ',             type:'all',qc:5,cp:6},
+];
+const HOP_AFTER=[1,3,5,8];
+const WIN_YEARS=[
+  {y:300, era:'до н.э.',place:'Древняя Греция',desc:'эпоха Александра Македонского'},
+  {y:44,  era:'до н.э.',place:'Древний Рим',   desc:'год гибели Юлия Цезаря'},
+  {y:776, era:'до н.э.',place:'Олимпия',       desc:'первые Олимпийские игры'},
+  {y:2560,era:'до н.э.',place:'Египет',        desc:'строительство пирамиды Хеопса'},
+  {y:509, era:'до н.э.',place:'Рим',           desc:'основание Римской республики'},
+  {y:490, era:'до н.э.',place:'Марафон',       desc:'битва при Марафоне'},
+  {y:1000,era:'до н.э.',place:'Китай',         desc:'расцвет династии Чжоу'},
+  {y:1274,era:'до н.э.',place:'Египет',        desc:'битва при Кадеше'},
+];
+
+/* ══ СОСТОЯНИЕ ══ */
+let ST={lv:0,qi:0,lives:3,hops:0,time:{h:0,m:0,s:0}};
+let locked=false, hintUsed=false;
+let single_correctIdx=0, single_opts=[];
+let multi_correctVals=[], multi_opts=[], multi_selected=new Set();
+
+/* ══ МАТЕМАТИКА ══ */
+function rndTime(){return{h:Math.floor(Math.random()*12),m:Math.floor(Math.random()*60),s:Math.floor(Math.random()*60)};}
+function calcAngles(t){
+  return{s:t.s*6, m:t.m*6+t.s*0.1, h:(t.h%12)*30+t.m*0.5+t.s/120};
+}
+function angleBetween(a,b){let d=Math.abs(a-b)%360;return d>180?360-d:d;}
+function r1(x){return Math.round(x*10)/10;}
+
+function getCorrectAngle(){
+  const a=calcAngles(ST.time),tp=LVS[ST.lv].type;
+  if(tp==='ms')return r1(angleBetween(a.m,a.s));
+  if(tp==='hs')return r1(angleBetween(a.h,a.s));
+  return r1(angleBetween(a.h,a.m));
+}
+function getCorrectAnglesL4(){
+  const a=calcAngles(ST.time);
+  const all=[r1(angleBetween(a.m,a.s)),r1(angleBetween(a.h,a.s)),r1(angleBetween(a.h,a.m))];
+  const unique=[...new Set(all)];
+  const count=Math.min(Math.floor(Math.random()*3)+1,unique.length);
+  return unique.sort(()=>Math.random()-.5).slice(0,count);
+}
+function makeOpts4(cv){
+  const set=new Set([cv]);let tries=0;
+  while(set.size<4&&tries<80){tries++;
+    let d=(Math.floor(Math.random()*9)+1)*5*(Math.random()>.5?1:-1);
+    let v=r1(((cv+d)%360+360)%360);if(v>180)v=r1(360-v);
+    if(v>=1&&v<=179&&!set.has(v))set.add(v);}
+  const fb=[15,30,45,60,75,90,105,120,135,150,165];let fi=0;
+  while(set.size<4){const v=fb[fi++%fb.length];if(!set.has(v))set.add(v);}
+  const arr=Array.from(set).slice(0,4);
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
+function makeOpts8(cvs){
+  const cSet=new Set(cvs),set=new Set(cvs);let tries=0;
+  while(set.size<8&&tries<150){tries++;
+    const base=cvs[Math.floor(Math.random()*cvs.length)];
+    let d=(Math.floor(Math.random()*10)+2)*5*(Math.random()>.5?1:-1);
+    let v=r1(((base+d)%360+360)%360);if(v>180)v=r1(360-v);
+    if(v>=1&&v<=179&&!cSet.has(v)&&!set.has(v))set.add(v);}
+  const fb=[8,16,24,32,40,48,56,64,72,88,96,104,112,128,136,144,152,160];let fi=0;
+  while(set.size<8){const v=fb[fi++%fb.length];if(!set.has(v))set.add(v);}
+  const arr=Array.from(set).slice(0,8);
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
+
+/* ══ ЦИФЕРБЛАТ ══ */
+function drawTicks(){
+  const tg=document.getElementById('ticks'),ng=document.getElementById('nums');
+  tg.innerHTML='';ng.innerHTML='';
+  for(let i=0;i<60;i++){
+    const rad=i*6*Math.PI/180,maj=i%5===0,r1v=maj?70:76,r2v=83;
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',Math.sin(rad)*r1v);line.setAttribute('y1',-Math.cos(rad)*r1v);
+    line.setAttribute('x2',Math.sin(rad)*r2v);line.setAttribute('y2',-Math.cos(rad)*r2v);
+    line.setAttribute('stroke',maj?'#00ff88':'rgba(0,255,136,.5)');line.setAttribute('stroke-width',maj?'2.5':'1.5');
+    tg.appendChild(line);
+    if(maj){const num=i/5||12,nr=61,t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',Math.sin(rad)*nr);t.setAttribute('y',-Math.cos(rad)*nr+3.5);
+      t.setAttribute('text-anchor','middle');t.setAttribute('fill','rgba(0,255,65,.55)');
+      t.setAttribute('font-size','7.5');t.setAttribute('font-family','Orbitron,monospace');
+      t.textContent=num;ng.appendChild(t);}
+  }
+}
+function setHand(id,deg,lenY,tailY=0){
+  const el=document.getElementById(id),r=deg*Math.PI/180;
+  el.setAttribute('x1',tailY?-Math.sin(r)*tailY:0);el.setAttribute('y1',tailY?Math.cos(r)*tailY:0);
+  el.setAttribute('x2',Math.sin(r)*lenY);el.setAttribute('y2',-Math.cos(r)*lenY);
+}
+function renderClock(){
+  const a=calcAngles(ST.time);
+  setHand('hh',a.h,44);setHand('mh',a.m,60);setHand('sh',a.s,68,5);
+  const tp=LVS[ST.lv].type,isL4=ST.lv===3;
+  document.getElementById('hh').setAttribute('opacity',(isL4||tp==='hs'||tp==='hm')?'1':'.15');
+  document.getElementById('mh').setAttribute('opacity',(isL4||tp==='ms'||tp==='hm')?'1':'.15');
+  document.getElementById('sh').setAttribute('opacity',(isL4||tp==='ms'||tp==='hs')?'1':'.15');
+  const arc=document.getElementById('arc');
+  if(!isL4){
+    const R=28;let a1,a2;
+    if(tp==='ms'){a1=a.m;a2=a.s;}else if(tp==='hs'){a1=a.h;a2=a.s;}else{a1=a.h;a2=a.m;}
+    const r1r=a1*Math.PI/180,r2r=a2*Math.PI/180;
+    const x1=Math.sin(r1r)*R,y1=-Math.cos(r1r)*R,x2=Math.sin(r2r)*R,y2=-Math.cos(r2r)*R;
+    const diff=((a2-a1)%360+360)%360,lg=diff>180?1:0;
+    arc.setAttribute('d',`M0 0 L${x1} ${y1} A${R} ${R} 0 ${lg} 1 ${x2} ${y2}Z`);
+  }else{arc.setAttribute('d','');}
+}
+
+/* ══ HUD ══ */
+function updHUD(){
+  const lv=LVS[ST.lv];
+  document.getElementById('h-lv').textContent=ST.lv+1;
+  document.getElementById('h-q').textContent=(ST.qi+1)+'/'+lv.qc;
+  document.getElementById('h-c').textContent=SAVE.coins+'🪙';
+  document.getElementById('h-l').textContent='❤️'.repeat(ST.lives)+'🖤'.repeat(3-ST.lives);
+  document.getElementById('qlb').textContent=lv.title+' — '+lv.desc;
+  const pad=n=>String(n).padStart(2,'0');
+  const ts=pad(ST.time.h)+':'+pad(ST.time.m)+':'+pad(ST.time.s);
+  const tp=lv.type;
+  let q='';
+  if(tp==='ms')q='Время '+ts+'\nУгол: МИНУТНАЯ ↔ СЕКУНДНАЯ';
+  else if(tp==='hs')q='Время '+ts+'\nУгол: ЧАСОВАЯ ↔ СЕКУНДНАЯ';
+  else if(tp==='hm')q='Время '+ts+'\nУгол: ЧАСОВАЯ ↔ МИНУТНАЯ';
+  else q='Время '+ts+'\nВыбери ВСЕ верные углы';
+  document.getElementById('qtx').textContent=q;
+  const qh=document.getElementById('q-hint');
+  if(ST.lv===3){qh.style.display='';qh.textContent='⚠ Правильных: '+multi_correctVals.length+' из 8';}
+  else{qh.style.display='none';}
+}
+
+/* ══ КЛАССИКИ — горизонтальная строка ══ */
+function buildHops(){
+  const w=document.getElementById('hops');w.innerHTML='';
+  [1,2,3,4,5,6,7,8].forEach(n=>{
+    const c=document.createElement('div');c.className='hop';c.textContent=n;
+    if(n<=ST.hops)c.classList.add('done');
+    else if(n===ST.hops+1)c.classList.add('act');
+    w.appendChild(c);
+  });
+}
+
+/* ══ РЕНДЕР ВАРИАНТОВ ══ */
+function renderChoices(){
+  hintUsed=false;multi_selected=new Set();
+  document.getElementById('hint-btn').disabled=false;
+  document.getElementById('fb').textContent='';
+  const wrap=document.getElementById('choices-wrap');
+  wrap.innerHTML='';
+  const confirmBtn=document.getElementById('confirm-btn');
+
+  if(ST.lv<3){
+    confirmBtn.classList.remove('visible');
+    const cv=getCorrectAngle();
+    single_opts=makeOpts4(cv);
+    single_correctIdx=single_opts.indexOf(cv);
+    const grid=document.createElement('div');
+    grid.className='choices-grid g4';
+    single_opts.forEach((val,i)=>{
+      const btn=document.createElement('button');
+      btn.className='choice-btn';btn.id='cb'+i;btn.textContent=val+'°';
+      btn.onclick=()=>pickSingle(i);grid.appendChild(btn);
+    });
+    wrap.appendChild(grid);
+  }else{
+    confirmBtn.classList.add('visible');
+    multi_correctVals=getCorrectAnglesL4();
+    multi_opts=makeOpts8(multi_correctVals);
+    const grid=document.createElement('div');
+    grid.className='choices-grid g8';
+    multi_opts.forEach((val,i)=>{
+      const btn=document.createElement('button');
+      btn.className='choice-btn';btn.id='cb'+i;btn.textContent=val+'°';
+      btn.onclick=()=>toggleMulti(i);grid.appendChild(btn);
+    });
+    wrap.appendChild(grid);
+  }
+  updHUD();
+  renderClock();
+  fitClock();
+}
+
+/* ══ УРОВНИ 1-3 ══ */
+function pickSingle(idx){
+  if(locked)return;initA();locked=true;
+  const ok=(idx===single_correctIdx);
+  document.getElementById('cb'+idx).classList.add(ok?'correct':'wrong');
+  if(!ok){
+    document.getElementById('cb'+single_correctIdx).classList.add('correct');
+    for(let i=0;i<4;i++)document.getElementById('cb'+i).disabled=true;
+    ST.lives--;
+    document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
+    sfx('no');showFb('✗ НЕВЕРНО!','bad');
+    if(ST.lives<=0)setTimeout(gameOver,1100);else setTimeout(advance,1200);
+  }else{
+    sfx('ok');SAVE.coins+=LVS[ST.lv].cp;saveData();
+    document.getElementById('h-c').textContent=SAVE.coins+'🪙';
+    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
+    setTimeout(advance,900);
+  }
+}
+
+/* ══ УРОВЕНЬ 4 ══ */
+function toggleMulti(idx){
+  if(locked)return;
+  const btn=document.getElementById('cb'+idx);
+  if(multi_selected.has(idx)){multi_selected.delete(idx);btn.classList.remove('selected');}
+  else{multi_selected.add(idx);btn.classList.add('selected');}
+}
+function confirmMulti(){
+  if(locked)return;
+  if(multi_selected.size===0){showFb('Выбери хотя бы один ответ!','hint');return;}
+  initA();locked=true;
+  const cSet=new Set(multi_correctVals);
+  const selVals=new Set([...multi_selected].map(i=>multi_opts[i]));
+  const perfect=[...cSet].every(v=>selVals.has(v))&&[...selVals].every(v=>cSet.has(v));
+  for(let i=0;i<8;i++){
+    const btn=document.getElementById('cb'+i);if(!btn)continue;
+    btn.disabled=true;btn.classList.remove('selected');
+    const val=multi_opts[i],isC=cSet.has(val),isSel=multi_selected.has(i);
+    if(isC&&isSel)btn.classList.add('correct');
+    else if(isC)btn.classList.add('missed');
+    else if(isSel)btn.classList.add('wrong');
+  }
+  if(perfect){
+    sfx('ok');SAVE.coins+=LVS[ST.lv].cp;saveData();
+    document.getElementById('h-c').textContent=SAVE.coins+'🪙';
+    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
+    setTimeout(advance,1000);
+  }else{
+    sfx('no');ST.lives--;
+    document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
+    const missed=[...cSet].filter(v=>!selVals.has(v)).length;
+    const extra=[...selVals].filter(v=>!cSet.has(v)).length;
+    let msg='✗ НЕВЕРНО!';
+    if(missed&&extra)msg='✗ Пропущенные и лишние!';
+    else if(missed)msg='✗ Не все правильные!';
+    else if(extra)msg='✗ Есть лишние!';
+    showFb(msg,'bad');
+    if(ST.lives<=0)setTimeout(gameOver,1200);else setTimeout(advance,1400);
+  }
+}
+
+/* ══ СЛЕДУЮЩИЙ ВОПРОС ══ */
+function advance(){
+  locked=false;document.getElementById('fb').textContent='';
+  ST.qi++;
+  if(ST.qi>=LVS[ST.lv].qc){levelDone();return;}
+  ST.time=rndTime();
+  const hs=ST.lv===0?0:HOP_AFTER[ST.lv-1],he=HOP_AFTER[ST.lv];
+  ST.hops=Math.min(he,hs+Math.floor(ST.qi/LVS[ST.lv].qc*(he-hs)));
+  buildHops();renderChoices();
+}
+function levelDone(){
+  sfx('up');ST.hops=HOP_AFTER[ST.lv];buildHops();
+  SAVE.lvCount[ST.lv]++;saveData();checkAchievements();
+  if(ST.lv>=3){
+    const d=WIN_YEARS[Math.floor(Math.random()*WIN_YEARS.length)];
+    document.getElementById('win-text').innerHTML=
+      `Система взломана. Координаты установлены.<br><br>
+       Вы перенеслись в <span class="yr">${d.y} год ${d.era}</span><br>
+       📍 ${d.place} — ${d.desc}.<br><br>
+       Оглядитесь. История открыта перед вами. 😏`;
+    document.getElementById('win-stats').innerHTML=`Монет: <b>${SAVE.coins}🪙</b> &nbsp;|&nbsp; Жизней: <b>${ST.lives}</b>`;
+    showS('win-screen');updMenuCoins();return;
+  }
+  showS('result-screen');
+  document.getElementById('rt').textContent=LVS[ST.lv].title+' ВЗЛОМАН!';
+  document.getElementById('ri').innerHTML='Монет: <b>'+SAVE.coins+'🪙</b> &nbsp;|&nbsp; Жизней: <b>'+ST.lives+'</b>';
+  updMenuCoins();
+}
+function nextLevel(){
+  ST.lv++;ST.qi=0;ST.time=rndTime();locked=false;
+  showS('game-screen');buildHops();renderChoices();
+  document.getElementById('fb').textContent='';
+}
+function gameOver(){
+  showS('gameover-screen');
+  document.getElementById('gi').innerHTML='Уровень: <b>'+(ST.lv+1)+'</b><br>Монет: <b>'+SAVE.coins+'🪙</b>';
+  updMenuCoins();
+}
+
+/* ══ СТАРТ / РЕСТАРТ ══ */
+function startGame(){
+  initA();locked=false;
+  ST={lv:0,qi:0,lives:3,hops:0,time:rndTime()};
+  showS('game-screen');drawTicks();buildHops();renderChoices();
+  document.getElementById('fb').textContent='';
+}
+function restartGame(){
+  initA();locked=false;
+  ST={lv:0,qi:0,lives:3,hops:0,time:rndTime()};
+  showS('game-screen');buildHops();renderChoices();
+  document.getElementById('fb').textContent='';
+}
+
+/* ══ ПОДСКАЗКА ══ */
+function useHint(){
+  initA();
+  if(hintUsed){showFb('Подсказка уже использована!','hint');return;}
+  if(SAVE.coins<15){showFb('Нужно 15🪙!','bad');return;}
+  if(locked)return;
+  SAVE.coins-=15;saveData();
+  document.getElementById('h-c').textContent=SAVE.coins+'🪙';
+  document.getElementById('hint-btn').disabled=true;hintUsed=true;
+  if(ST.lv<3){
+    document.getElementById('cb'+single_correctIdx).classList.add('hint-hl');
+    showFb('💡 Правильный ответ выделен!','hint');
+  }else{
+    const ci=multi_opts.reduce((acc,v,i)=>{if(multi_correctVals.includes(v))acc.push(i);return acc;},[]);
+    const ri=ci[Math.floor(Math.random()*ci.length)];
+    document.getElementById('cb'+ri).classList.add('hint-hl');
+    showFb('💡 Один из правильных выделен!','hint');
+  }
+}
+
+/* ══ УТИЛИТЫ ══ */
+function updMenuCoins(){document.getElementById('menu-coins').textContent='💰 '+SAVE.coins+' монет';}
+function showFb(msg,cls){const e=document.getElementById('fb');e.textContent=msg;e.className='fb '+cls;}
+function showS(id){
+  ['intro-screen','main-menu','game-menu','vl-menu','vl-game','vl-rules','game-screen','result-screen','gameover-screen','win-screen']
+    .forEach(s=>document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function goMenu(){updMenuCoins();showS('main-menu');}
+
+/* Mathopoly удалён */
+
+/* ══ INIT ══ */
+document.body.addEventListener('click',initA,{once:true});
+drawTicks();updMenuCoins();checkIntro();
+
+/* ══ ВЛАСТЕЛИНИ ВРЕМЕНИ ══ */
+/* ══ ВЛАСТЕЛИНЫ ВРЕМЕНИ — ПОЛНАЯ ИГРА ══ */
+const VL_Q = {
+  green: [
+    {q:'Уроки начинаются в 08:30. Урок длится 45 минут. Во сколько закончится первый урок?',
+      opts:['09:05','09:15','09:20','09:30'], ans:1, exp:'08:30 + 45 мин = 09:15'},
+    {q:'Электронные часы показывают 17:45. Сколько минут осталось до 18:00?',
+      opts:['10 мин','15 мин','20 мин','25 мин'], ans:1, exp:'18:00 − 17:45 = 15 минут'},
+    {q:'Мультфильм длится 1 час 25 минут. Его включили в 15:10. Когда закончится?',
+      opts:['16:25','16:35','16:40','16:45'], ans:1, exp:'15:10 + 1ч 25мин = 16:35'},
+    {q:'На часах ровно 15:00. Какой угол между стрелками?',
+      opts:['45°','90°','120°','180°'], ans:1, exp:'15:00 — минутная на 12, часовая на 3: угол 90°'},
+    {q:'Сколько минут в 2 часах?',
+      opts:['100','110','120','130'], ans:2, exp:'1 час = 60 мин, 2 часа = 120 мин'},
+    {q:'Урок начался в 9:00 и длился 45 минут. Перемена 10 минут. Когда начнётся следующий урок?',
+      opts:['9:45','9:55','10:00','10:05'], ans:1, exp:'9:00 + 45 мин + 10 мин = 9:55'},
+    {q:'От 7:00 до 9:30 прошло сколько времени?',
+      opts:['2 часа','2 часа 30 мин','3 часа','1 час 30 мин'], ans:1, exp:'9:30 − 7:00 = 2 ч 30 мин'},
+    {q:'Сколько секунд в 1 минуте?',
+      opts:['30','45','60','100'], ans:2, exp:'В 1 минуте 60 секунд'},
+    {q:'Саша пошёл спать в 21:30 и проснулся в 07:00. Сколько он спал?',
+      opts:['8 ч','9 ч 30 мин','10 ч','9 ч'], ans:1, exp:'21:30 → 07:00 = 9 часов 30 минут'},
+    {q:'Минутная стрелка прошла половину круга. Сколько минут прошло?',
+      opts:['15','20','25','30'], ans:3, exp:'Полный круг = 60 мин, половина = 30 мин'},
+    {q:'Сейчас 10:00. Через 1 час 15 минут будет...?',
+      opts:['11:00','11:10','11:15','11:20'], ans:2, exp:'10:00 + 1ч 15мин = 11:15'},
+    {q:'Поезд отправился в 14:30 и ехал 1 час 20 мин. Когда прибыл?',
+      opts:['15:40','15:50','16:00','15:30'], ans:1, exp:'14:30 + 1ч 20мин = 15:50'},
+    {q:'Сколько часов в сутках?',
+      opts:['12','20','24','48'], ans:2, exp:'В сутках 24 часа'},
+    {q:'Ваня вышел из дома в 8:15. Дорога до школы — 20 минут. Когда он пришёл?',
+      opts:['8:25','8:30','8:35','8:40'], ans:2, exp:'8:15 + 20 мин = 8:35'},
+    {q:'Какой угол показывает минутная стрелка в 6:00?',
+      opts:['90°','120°','180°','270°'], ans:2, exp:'В 6:00 минутная стрелка на 12 — это 180° от позиции 6'},
+  ],
+  yellow: [
+    {q:'Сейчас 22:15. Старт ракеты через 3 часа 50 минут. Какое время при старте?',
+      opts:['01:55 сегодня','02:05 завтра','02:15 завтра','01:45 завтра'], ans:1, exp:'22:15 + 3ч 50мин = 26:05 → 02:05 следующего дня'},
+    {q:'Замок открывается, когда сумма цифр времени = 10. Сейчас 21:00. Ближайшее время?',
+      opts:['21:05','21:07','21:10','21:15'], ans:1, exp:'21:07 → 2+1+0+7=10 ✓'},
+    {q:'Часы отстают на 4 минуты каждые сутки. Через сколько дней отставание = 1 час?',
+      opts:['10','12','15','20'], ans:2, exp:'60 мин ÷ 4 мин = 15 дней'},
+    {q:'Поезд Алматы→Астана выехал в 23:40, едет 14 часов. Когда прибудет?',
+      opts:['13:40','14:40','13:00','14:00'], ans:0, exp:'23:40 + 14ч = 37:40 → 13:40 следующего дня'},
+    {q:'Что длиннее: 90 минут или 1,5 часа?',
+      opts:['90 минут','1,5 часа','Одинаково','Нельзя сравнить'], ans:2, exp:'1,5 часа = 90 минут — одинаково'},
+    {q:'Ты уснул в 23:45 и проснулся в 06:15. Сколько ты спал?',
+      opts:['5 ч 30 мин','6 ч','6 ч 30 мин','7 ч'], ans:2, exp:'23:45 → 06:15 = 6 ч 30 мин'},
+    {q:'Часы показывают 9:30. Какой угол между стрелками?',
+      opts:['90°','105°','120°','135°'], ans:1, exp:'Часовая между 9 и 10: 9×30+15=285°, минутная=180°, разница=105°'},
+    {q:'За сколько минут минутная стрелка пройдёт от 12 до 4?',
+      opts:['15','20','25','20'], ans:1, exp:'От 12 до 4 — треть циферблата = 20 минут'},
+    {q:'Фильм шёл 2 часа 17 минут. Начался в 19:45. Когда закончился?',
+      opts:['21:55','22:00','22:02','22:05'], ans:2, exp:'19:45 + 2ч 17мин = 22:02'},
+    {q:'Если сейчас 14:58, то сколько секунд до 15:00?',
+      opts:['60','90','120','180'], ans:2, exp:'2 минуты = 120 секунд'},
+    {q:'Коля работал с 13:20 до 17:05. Сколько он работал?',
+      opts:['3 ч 35 мин','3 ч 45 мин','4 ч','4 ч 15 мин'], ans:1, exp:'17:05 − 13:20 = 3 ч 45 мин'},
+    {q:'В Алматы 15:00 (UTC+5). Какое время в Лондоне (UTC+0)?',
+      opts:['10:00','15:00','20:00','5:00'], ans:0, exp:'15:00 − 5 часов = 10:00'},
+  ],
+  red: [
+    {q:'Какое число будет через 100 часов после полуночи 1 января?',
+      opts:['4 января 04:00','5 января 04:00','4 января 12:00','5 января 00:00'], ans:1, exp:'100ч = 4 суток 4 часа → 5 января 04:00'},
+    {q:'Триатлонист пробежал за 10 000 секунд. Переведи в часы, минуты, секунды.',
+      opts:['2ч 44мин 40с','2ч 46мин 40с','2ч 50мин 00с','3ч 00мин 00с'], ans:1, exp:'10000÷60=166мин 40с, 166÷60=2ч 46мин → 2ч 46мин 40с'},
+    {q:'Полтрети часа — сколько это минут?',
+      opts:['5 мин','10 мин','15 мин','20 мин'], ans:1, exp:'Треть часа = 20 мин, половина = 10 мин'},
+    {q:'Что дольше: треть века или 350 месяцев?',
+      opts:['350 месяцев','Треть века','Одинаково','Нельзя сравнить'], ans:1, exp:'Треть века = 33г 4мес = 400 мес > 350 мес'},
+    {q:'Часы идут в 2 раза быстрее. За 1 реальный час они покажут:',
+      opts:['30 мин','1 час','2 часа','45 мин'], ans:2, exp:'Скорость ×2 → за 1 реальный час пройдёт 2 часа на циферблате'},
+    {q:'Зеркальные часы: реальное время 19:20 → зеркальное около чего?',
+      opts:['около 4:35','около 7:40','около 12:40','около 1:20'], ans:0, exp:'Минутная (20мин→4) стала часовой, часовая (~7.3ч) стала минутной ~44мин → ≈04:37'},
+    {q:'Ракета летит 1,5 суток. Сколько это часов?',
+      opts:['24','30','36','48'], ans:2, exp:'1,5 × 24 = 36 часов'},
+    {q:'Если 1 марта понедельник, какой день 31 марта?',
+      opts:['Понедельник','Среда','Четверг','Пятница'], ans:2, exp:'31 дней в марте, 31−1=30 дней, 30÷7=4 нед+2 → понедельник+2=среда. Нет — 1 мар=пн, 8=пн, 29=пн, 30=вт, 31=ср'},
+    {q:'Стрелки часов совпадают в 12:00. Когда они снова совпадут?',
+      opts:['1:00','1:05','1:05:27','1:06'], ans:2, exp:'Стрелки совпадают через 720/11≈65,45 мин → примерно 1:05:27'},
+    {q:'10 000 минут — это сколько полных дней?',
+      opts:['5','6','7','8'], ans:2, exp:'10000÷1440 = 6,9... → 6 полных дней (ответ 6, но ближе 7 суток). 10000÷60=166ч, 166÷24=6,9 → 6 полных суток'},
+    {q:'Спортсмен пробежал 42 км за 3 часа 30 минут. Сколько км/ч его средняя скорость?',
+      opts:['10','12','13','15'], ans:1, exp:'42 ÷ 3,5 = 12 км/ч'},
+    {q:'Вася родился 29 февраля 2000 года. Сколько раз отметит настоящий день рождения до 2026?',
+      opts:['5','6','7','8'], ans:1, exp:'Высокосные: 2000,2004,2008,2012,2016,2020,2024 → 6 раз (2000 не считаем если отсчёт с рождения) → 6'},
+  ]
+};
+
+const VL_PARADOX = [
+  {text:'⚡ ЗЕРКАЛЬНОЕ ВРЕМЯ: Часы показывают 19:20, но в зеркале стрелки отразились. Скажи примерное "зеркальное" время — получишь +2⏳',
+   reward:2, hint:'Около 04:37'},
+  {text:'⚡ ВЕК ЖИВИ: Что дольше — треть века или 350 месяцев? Ответь правильно — получишь +3⏳',
+   reward:3, hint:'Треть века = 400 мес > 350 мес'},
+  {text:'⚡ ПАРАДОКС СТРЕЛОК: Часы отстают на 4 мин в сутки. Через сколько дней отстанут на час? +2⏳',
+   reward:2, hint:'60÷4 = 15 дней'},
+  {text:'⚡ КВАНТОВЫЙ ПРЫЖОК: Тебе возвращают 2⏳ просто так! Временной парадокс сработал в твою пользу.',
+   reward:2, hint:'Удача!'},
+  {text:'⚡ ЧЁРНАЯ ДЫРА: Ты теряешь 1⏳. Время свернулось в точку... Следующий ход — дополнительный бросок!',
+   reward:-1, hint:'', extraRoll:true},
+  {text:'⚡ ВРЕМЕННАЯ ПЕТЛЯ: Пропусти следующий ход — ты застрял в петле. Зато получи +1⏳ компенсацию.',
+   reward:1, hint:'', skip:true},
+];
+
+const VL_CELL_TYPE = (n) => {
+  if([10,20,30,40].includes(n)) return 'paradox';
+  if(n===49) return 'finish';
+  if(n<=20) return 'green';
+  if(n<=40) return 'yellow';
+  return 'red';
+};
+const VL_CELL_PTS = {green:1,yellow:2,red:3};
+
+let vlState = {
+  pos:0, sand:0, phase:'start',
+  skipNext:false, extraRoll:false,
+  examQ:0, examCorrect:0,
+  currentQ:null, currentP:null,
+  diceVal:0,
+  usedQuestions: {green:[
+    {q:'Школьный автобус выехал от школы в 14:15. Дорога до дома занимает 35 минут. Во сколько ученик окажется дома?',opts:['В 14:50','В 14:40','В 14:55','В 15:00'],ans:0,exp:'15+35=50. Ответ: В 14:50.'},
+    {q:'Путешественник вышел из дома в 14:45, а был в пути ровно 3 часа и 30 минут. Во сколько он прибыл на место?',opts:['В 18:15','В 17:15','В 18:45','В 18:00'],ans:0,exp:'45+30=75м=1ч15м. 14+3+1=18. Ответ: В 18:15.'},
+    {q:'Сеанс в кинотеатре начался в 19:30, а сам фильм длился 110 минут. Во сколько фильм закончился?',opts:['В 21:20','В 20:20','В 21:00','В 21:40'],ans:0,exp:'110м=1ч50м. 19:30+1ч50м=21:20. Ответ: В 21:20.'},
+    {q:'Ученик проснулся в 07:15. Умывание 10 мин, завтрак 15 мин, дорога 25 мин. Во сколько в школу?',opts:['В 08:05','В 08:00','В 08:15','В 07:55'],ans:0,exp:'10+15+25=50м. 07:15+50м=08:05. Ответ: В 08:05.'},
+    {q:'Поезд опоздал на 2ч 20м. По расписанию 22:45. Во сколько прибыл?',opts:['В 01:05','В 00:05','В 01:15','В 01:45'],ans:0,exp:'45+20=65м=1ч0°5м. 22+2+1=25ч=01:05. Ответ: В 01:05.'},
+    {q:'Ребёнок уснул в 21:30 и проснулся в 07:00. Сколько времени он спал?',opts:['9ч 30м','8ч 30м','10ч 0м','9ч 0м'],ans:0,exp:'До полночи 2ч30м + 7ч = 9ч 30м. Ответ: 9ч 30м.'},
+    {q:'Сколько полных кругов сделает секундная стрелка за 15 минут?',opts:['15','60','30','90'],ans:0,exp:'1 круг = 1 минута. 15 мин = 15 кругов. Ответ: 15.'},
+    {q:'Обеденный перерыв = 1ч 15м. Сколько кругов секундная стрелка?',opts:['75','60','90','115'],ans:0,exp:'1ч15м=75мин. 75 кругов. Ответ: 75.'},
+    {q:'Часы спешат на 7 минут. Сейчас на них 09:03. Какое сейчас реальное время?',opts:['08:56','09:10','08:50','09:00'],ans:0,exp:'09:03 - 7м = 08:56. Ответ: 08:56.'},
+    {q:'Одно куриное яйцо варится 8 минут. В кастрюлю положили 3 яйца одновременно. Сколько минут они будут вариться?',opts:['8 минут','24 минуты','16 минут','4 минуты'],ans:0,exp:'Они варятся одновременно. Ответ: 8 минут.'},
+  ],
+  yellow:[
+    {q:'Какой на самом деле угол в градусах образуют часовая и минутная стрелки ровно в 15:30?',opts:['75°','90°','60°','105°'],ans:0,exp:'Часовая: 90+15=105°. Минутная: 180°. Δ=75°. Ответ: 75°.'},
+    {q:'Найдите угол между часовой и минутной стрелками в 16:10.',opts:['65°','60°','75°','90°'],ans:0,exp:'Ч: 4×30+10×0.5=125°. М: 10×6=60°. Δ=65°. Ответ: 65°.'},
+    {q:'Найдите градусную меру угла между стрелками в 20:20.',opts:['130°','120°','140°','100°'],ans:0,exp:'Ч: 8×30+20×0.5=250°. М: 20×6=120°. Δ=130°. Ответ: 130°.'},
+    {q:'В какое точное время (ровно в целые часы) стрелки образуют развёрнутый угол 180°?',opts:['18:00 или 06:00','12:00','15:00','09:00'],ans:0,exp:'Часовая на 6, минутная на 12. Ответ: 18:00 или 06:00.'},
+    {q:'Назовите два времени, когда стрелки образуют прямой угол 90°?',opts:['03:00 и 09:00','06:00 и 12:00','15:00 и 21:00','03:00 и 06:00'],ans:0,exp:'Часовая на 3 или 9, минутная на 12. Ответ: 03:00 и 09:00.'},
+    {q:'На электронных часах 09:20. Какое время увидит человек в зеркале?',opts:['02:40','03:40','09:40','02:20'],ans:0,exp:'Формула: 11:60 - 09:20 = 02:40. Ответ: 02:40.'},
+  ],
+  red:[
+    {q:'В какой точный момент между 4 и 5 часами часовая и минутная стрелки совпадут?',opts:['4:21:49','4:20:00','4:24:00','4:15:00'],ans:0,exp:'M=30×4÷5.5=120÷5.5≈21м49с. Ответ: 4:21:49.'},
+    {q:'В какой точный момент стрелки совпадут между 6 и 7 часами?',opts:['6:32:43','6:30:00','6:35:00','6:27:16'],ans:0,exp:'M=30×6÷5.5≈32м43с. Ответ: 6:32:43.'},
+    {q:'Между 2 и 3 часами стрелки образуют 180°. В сколько?',opts:['2:43:38','2:40:00','2:45:00','2:30:00'],ans:0,exp:'t=240÷5.5≈43м38с. Ответ: 2:43:38.'},
+    {q:'Минутная стрелка движется обратно, часовая вперёд. Сейчас 12:00. Через сколько встретятся?',opts:['55м 23с','60м','30м','50м 45с'],ans:0,exp:'Скорость сближения=6.5°/м. 360÷6.5≈55м23с. Ответ: 55м 23с.'},
+    {q:'Сколько раз за один час секундная стрелка обгоняет минутную?',opts:['59 раз','60 раз','58 раз','120 раз'],ans:0,exp:'60-1=59 обгонов. Ответ: 59 раз.'},
+    {q:'Как разделить циферблат на 6 частей с одинаковой суммой? Какая эта сумма?',opts:['13','12','14','11'],ans:0,exp:'78÷6=13. Ответ: 13.'},
+  ]
+}
+
+};
+
+function vlRnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function vlShuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function vlStart(){
+  vlState={pos:0,sand:0,phase:'start',skipNext:false,extraRoll:false,examQ:0,examCorrect:0,usedQuestions:{green:[],yellow:[],red:[]},currentQ:null,currentP:null,diceVal:0};
+  showS('vl-game');
+  document.getElementById('vl-question-card').style.display='block';
+  document.getElementById('vl-paradox-card').style.display='none';
+  document.getElementById('vl-exam-area').style.display='none';
+  document.getElementById('vl-win-screen').style.display='none';
+  document.getElementById('vl-card-area').style.display='flex';
+  document.getElementById('vl-card-area').style.flexDirection='column';
+  vlUpdateHUD();
+  vlDrawBoard();
+  vlShowStartCard();
+  // Resize canvas
+  setTimeout(vlDrawBoard,50);
+}
+
+function vlShowStartCard(){
+  document.getElementById('vl-dice-area').style.display='none';
+  document.getElementById('vl-explanation').style.display='none';
+  document.getElementById('vl-answers').innerHTML='';
+  const pos = vlState.pos;
+  const nextType = VL_CELL_TYPE(pos + 1);
+  const typeInfo = {
+    green:  {badge:'🟢 ЗЕЛЁНЫЙ СЕКТОР — лёгкий (+1⏳)', color:'#00ff88', bg:'rgba(0,255,136,.12)',
+             hint:'Следующая клетка: простые задачи на время'},
+    yellow: {badge:'🟡 ЖЁЛТЫЙ СЕКТОР — средний (+2⏳)', color:'#ffd700', bg:'rgba(255,215,0,.12)',
+             hint:'Следующая клетка: задачи посложнее'},
+    red:    {badge:'🔴 КРАСНЫЙ СЕКТОР — сложный (+3⏳)', color:'#ff4455', bg:'rgba(255,68,85,.12)',
+             hint:'Следующая клетка: трудные задачи!'},
+    paradox:{badge:'⚡ ПАРАДОКС — особая клетка', color:'#bb88ff', bg:'rgba(187,136,255,.12)',
+             hint:'Следующая клетка: карта Временного Парадокса!'},
+    finish: {badge:'🏁 ФИНИШ — итоговый экзамен!', color:'#ffffff', bg:'rgba(255,255,255,.1)',
+             hint:'Ты у финиша! Тебя ждёт экзамен.'},
+  };
+  const info = typeInfo[nextType] || typeInfo.green;
+  document.getElementById('vl-q-badge').textContent = info.badge;
+  document.getElementById('vl-q-badge').style.background = info.bg;
+  document.getElementById('vl-q-badge').style.color = info.color;
+  document.getElementById('vl-q-text').textContent =
+    pos === 0
+      ? 'Ты на старте! Ответь на вопрос — кубик двинет тебя вперёд. ' + info.hint
+      : 'Клетка ' + pos + '/49. ' + info.hint + ' Готов?';
+  document.getElementById('vl-question-card').style.borderColor = info.color;
+  document.getElementById('vl-action-btn').style.display='block';
+  document.getElementById('vl-action-btn').textContent='[ 🎲 НАЧАТЬ ХОД ]';
+  vlState.phase='start';
+}
+
+function vlUpdateHUD(){
+  document.getElementById('vl-h-sand').textContent=vlState.sand;
+  document.getElementById('vl-h-pos').textContent=vlState.pos;
+  document.getElementById('vl-h-left').textContent=Math.max(0,50-vlState.pos);
+}
+
+function vlActionBtn(){
+  if(vlState.phase==='start') vlAskQuestion();
+  else if(vlState.phase==='roll') vlRollDice();
+  else if(vlState.phase==='after_roll') vlShowStartCard();
+  else if(vlState.phase==='paradox_done') vlShowStartCard();
+}
+
+function vlAskQuestion(){
+  if(vlState.skipNext){
+    vlState.skipNext=false;
+    document.getElementById('vl-q-text').textContent='⏸ Твой ход пропущен. Следующий раз — вперёд!';
+    document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
+    vlState.phase='after_roll';
+    return;
+  }
+  const type=VL_CELL_TYPE(vlState.pos+1);
+  let pool;
+  if(type==='paradox'){vlShowParadox();return;}
+  if(type==='finish'){vlStartExam();return;}
+  pool=type==='green'?VL_Q.green:type==='yellow'?VL_Q.yellow:VL_Q.red;
+  // Уникальные вопросы — не повторять в одной игре
+  const used = vlState.usedQuestions[type] || [];
+  let available = pool.filter((_,i) => !used.includes(i));
+  if(available.length === 0){ vlState.usedQuestions[type]=[]; available=pool; } // сброс если все использованы
+  const qIdx = pool.indexOf(available[Math.floor(Math.random()*available.length)]);
+  vlState.usedQuestions[type].push(qIdx);
+  vlState.currentQ = pool[qIdx];
+  vlRenderQuestion(vlState.currentQ,type,false);
+  vlState.phase='question';
+}
+
+function vlRenderQuestion(q,type,isExam){
+  const colors={green:'#00ff88',yellow:'#ffd700',red:'#ff4455',exam:'#bb88ff'};
+  const labels={green:'🟢 ЛЁГКОЕ +1⏳',yellow:'🟡 СРЕДНЕЕ +2⏳',red:'🔴 СЛОЖНОЕ +3⏳',exam:'👑 ЭКЗАМЕН +3⏳'};
+  const c=colors[type]||'#aaa';
+  const badge=document.getElementById('vl-q-badge');
+  badge.textContent=labels[type]||'⏳';
+  badge.style.background=c+'22';badge.style.color=c;
+  document.getElementById('vl-question-card').style.borderColor=c;
+  document.getElementById('vl-q-text').textContent=q.q;
+  document.getElementById('vl-explanation').style.display='none';
+  document.getElementById('vl-dice-area').style.display='none';
+  const ans=document.getElementById('vl-answers');
+  ans.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='vl-opt';b.textContent=opt;
+    b.onclick=()=>isExam?vlExamAnswer(i):vlCheckAnswer(i,type);
+    ans.appendChild(b);
+  });
+  document.getElementById('vl-action-btn').style.display='none';
+}
+
+function vlCheckAnswer(idx,type){
+  const q=vlState.currentQ;
+  const btns=document.querySelectorAll('#vl-answers .vl-opt');
+  btns.forEach(b=>b.disabled=true);
+  if(idx===q.ans){
+    btns[idx].classList.add('correct');
+    const pts=VL_CELL_PTS[type]||1;
+    vlState.sand+=pts;
+    vlUpdateHUD();
+    document.getElementById('vl-explanation').innerHTML='✅ Верно! <span style="color:#ffd700">+'+pts+'⏳</span>';
+    document.getElementById('vl-explanation').style.display='block';
+    document.getElementById('vl-explanation').style.borderColor='#00ff88';
+    setTimeout(()=>{
+      document.getElementById('vl-dice-area').style.display='block';
+      document.getElementById('vl-action-btn').style.display='block';
+      document.getElementById('vl-action-btn').textContent='[ 🎲 БРОСИТЬ КУБИК ]';
+      vlState.phase='roll';
+    },700);
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+    document.getElementById('vl-explanation').innerHTML='❌ Неверно. <b style="color:#ffd700">'+q.exp+'</b>';
+    document.getElementById('vl-explanation').style.display='block';
+    document.getElementById('vl-explanation').style.borderColor='#ff4455';
+    document.getElementById('vl-action-btn').style.display='block';
+    document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
+    vlState.phase='after_roll';
+  }
+}
+
+function vlRollDice(){
+  const dice=document.getElementById('vl-dice-num');
+  const faces=['⚀','⚁','⚂','⚃','⚄','⚅'];
+  let count=0;
+  const val=1+Math.floor(Math.random()*6);
+  vlState.diceVal=val;
+  const timer=setInterval(()=>{
+    dice.textContent=faces[Math.floor(Math.random()*6)];
+    if(++count>=12){clearInterval(timer);dice.textContent=faces[val-1];vlAfterRoll(val);}
+  },80);
+}
+
+function vlAfterRoll(val){
+  document.getElementById('vl-dice-result').textContent='Выпало '+val+'! Двигаешься на '+val+' клеток вперёд.';
+  vlState.pos=Math.min(50,vlState.pos+val);
+  vlUpdateHUD();
+  vlDrawBoard();
+  document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
+  vlState.phase='after_roll';
+  if(vlState.pos>=49){
+    setTimeout(vlStartExam,600);
+  }
+}
+
+function vlShowParadox(){
+  const p=VL_PARADOX[Math.floor(Math.random()*VL_PARADOX.length)];
+  vlState.currentP=p;
+  // Применяем эффект карты автоматически
+  if(p.reward !== 0){
+    vlState.sand = Math.max(0, vlState.sand + p.reward);
+    vlUpdateHUD();
+  }
+  if(p.skip) vlState.skipNext = true;
+  if(p.extraRoll) vlState.extraRoll = true;
+  document.getElementById('vl-question-card').style.display='none';
+  document.getElementById('vl-paradox-card').style.display='block';
+  document.getElementById('vl-paradox-text').textContent=p.text + (p.hint ? ' [' + p.hint + ']' : '');
+  document.getElementById('vl-action-btn').style.display='block';
+  document.getElementById('vl-action-btn').textContent='[ ✓ ПОНЯЛ ]';
+  vlState.phase='paradox';
+  // Применяем эффект
+  const ef=p.effect;
+  if(ef==='coins_2'){vlState.sand+=2;vlUpdateHUD();}
+  else if(ef==='forward_3'){vlState.pos=Math.min(50,vlState.pos+3);vlUpdateHUD();vlDrawBoard();}
+  else if(ef==='back_2'){vlState.pos=Math.max(0,vlState.pos-2);vlUpdateHUD();vlDrawBoard();}
+  else if(ef==='skip'){vlState.skipNext=true;}
+  else if(ef==='extra_roll'||ef==='bonus_q'){
+    // Даём доп вопрос
+    const q=vlRnd(VL_Q.yellow);
+    vlState.currentQ=q;
+    setTimeout(()=>{
+      document.getElementById('vl-paradox-card').style.display='none';
+      document.getElementById('vl-question-card').style.display='block';
+      vlRenderQuestion(q,'yellow',false);
+      vlState.phase='question';
+    },1200);
+    return;
+  }
+  vlState.phase='paradox_done';
+  // После парадокса — сразу бросаем кубик (как после правильного ответа)
+  document.getElementById('vl-action-btn').onclick=()=>{
+    document.getElementById('vl-paradox-card').style.display='none';
+    document.getElementById('vl-question-card').style.display='block';
+    // Показываем кубик и бросаем
+    document.getElementById('vl-dice-area').style.display='block';
+    document.getElementById('vl-action-btn').style.display='none';
+    vlRollDice();
+    document.getElementById('vl-action-btn').onclick=vlActionBtn;
+  };
+}
+
+/* ФИНАЛЬНЫЙ ЭКЗАМЕН */
+function vlStartExam(){
+  vlState.pos=50;vlUpdateHUD();vlDrawBoard();
+  vlState.phase='exam';
+  vlState.examQ=0;vlState.examCorrect=0;
+  vlState.examPool=vlShuffle(VL_Q.exam).slice(0,5);
+  document.getElementById('vl-question-card').style.display='none';
+  document.getElementById('vl-paradox-card').style.display='none';
+  document.getElementById('vl-exam-area').style.display='block';
+  document.getElementById('vl-action-btn').style.display='none';
+  vlNextExamQ();
+}
+
+function vlNextExamQ(){
+  if(vlState.examQ>=5){vlShowWin();return;}
+  const q=vlState.examPool[vlState.examQ];
+  document.getElementById('vl-exam-q').textContent=vlState.examQ+1;
+  document.getElementById('vl-exam-progress').style.color='#ffd700';
+  document.getElementById('vl-exam-text').textContent=q.q;
+  const ans=document.getElementById('vl-exam-answers');
+  ans.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='vl-opt';b.textContent=opt;
+    b.onclick=()=>vlExamAnswer(i);
+    ans.appendChild(b);
+  });
+}
+
+function vlExamAnswer(idx){
+  const q=vlState.examPool[vlState.examQ];
+  const btns=document.querySelectorAll('#vl-exam-answers .vl-opt');
+  btns.forEach(b=>b.disabled=true);
+  if(idx===q.ans){
+    btns[idx].classList.add('correct');
+    vlState.sand+=3;vlUpdateHUD();
+    vlState.examCorrect++;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.ans].classList.add('correct');
+  }
+  vlState.examQ++;
+  setTimeout(vlNextExamQ,900);
+}
+
+function vlShowWin(){
+  document.getElementById('vl-exam-area').style.display='none';
+  document.getElementById('vl-win-screen').style.display='block';
+  document.getElementById('vl-win-sand').innerHTML=
+    '⏳ Жетонов собрано: <b style="color:#ffd700">'+vlState.sand+'</b><br>'+
+    '✅ Правильных ответов в экзамене: <b style="color:#00ff88">'+vlState.examCorrect+'/5</b>';
+}
+
+/* ИГРОВОЕ ПОЛЕ */
+function vlDrawBoard(){
+  const canvas=document.getElementById('vl-board-canvas');
+  if(!canvas)return;
+  const wrap=document.getElementById('vl-board-wrap');
+  const size=wrap.offsetWidth;
+  canvas.width=size;canvas.height=size;
+  const ctx=canvas.getContext('2d');
+  const cx=size/2,cy=size/2,R=size*0.44,r=size*0.08;
+
+  // Фон
+  ctx.fillStyle='#07071a';ctx.fillRect(0,0,size,size);
+
+  // Центральный циферблат
+  const grd=ctx.createRadialGradient(cx,cy,r*0.5,cx,cy,r*1.8);
+  grd.addColorStop(0,'#1a1400');grd.addColorStop(1,'#0a0a1a');
+  ctx.beginPath();ctx.arc(cx,cy,r*1.9,0,Math.PI*2);
+  ctx.fillStyle=grd;ctx.fill();
+  ctx.strokeStyle='#ffd700';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#ffd700';ctx.font='bold '+(size*.028)+'px Orbitron,monospace';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('ФИНАЛ',cx,cy-size*.018);
+  ctx.fillText('ЭКЗАМЕН',cx,cy+size*.018);
+
+  // 49 клеток
+  for(let i=1;i<=49;i++){
+    const angle=(i/49)*Math.PI*2-Math.PI/2;
+    const nx=cx+R*Math.cos(angle),ny=cy+R*Math.sin(angle);
+    const cr=size*0.045;
+    const type=VL_CELL_TYPE(i);
+    // Тень/свечение для активной
+    if(i===vlState.pos){
+      ctx.beginPath();ctx.arc(nx,ny,cr*1.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,215,0,0.18)';ctx.fill();
+    }
+    // Цвет клетки
+    let bg,border;
+    if(type==='paradox'){bg='rgba(120,60,200,.25)';border='#bb88ff';}
+    else if(type==='finish'){bg='rgba(255,215,0,.3)';border='#ffd700';}
+    else if(type==='green'){bg='rgba(0,180,80,.2)';border='#00cc66';}
+    else if(type==='yellow'){bg='rgba(220,170,0,.22)';border='#ccaa00';}
+    else{bg='rgba(200,40,50,.22)';border='#cc3344';}
+    ctx.beginPath();ctx.arc(nx,ny,cr,0,Math.PI*2);
+    ctx.fillStyle=bg;ctx.fill();
+    ctx.strokeStyle=i===vlState.pos?'#ffd700':border;
+    ctx.lineWidth=i===vlState.pos?3:1.5;ctx.stroke();
+    // Текст в клетке
+    ctx.fillStyle=i===vlState.pos?'#ffd700':'#99aacc';
+    ctx.font=(i===vlState.pos?'bold ':'')+(size*.022)+'px Orbitron,monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    if(type==='paradox')ctx.fillText('⚡',nx,ny);
+    else if(type==='finish')ctx.fillText('👑',nx,ny);
+    else ctx.fillText(i,nx,ny);
+  }
+}
+
+window.addEventListener('resize',()=>{if(document.getElementById('vl-game') && !document.getElementById('vl-game').classList.contains('hidden'))vlDrawBoard();});
+
+/* ══ ХРАНИТЕЛИ ВРЕМЕНИ — ИГРА ══ */
+const HK_CARDS = [
+  {cat:'green', pts:1, sector:'⏱ СЕКУНДОМЕР', q:'⚡ Временной прыжок. Портал закроется через 3 ч 45 мин. Сейчас 22:30. Когда?', a:'02:15 — следующего дня'},
+  {cat:'green', pts:1, sector:'⏱ СЕКУНДОМЕР', q:'🔧 Сбой хронометра. Часы спешат на 7 мин каждые 3 ч. Выставили 12:00. Что покажут в 21:00?', a:'21:21 (3 интервала × 7 мин = +21 мин)'},
+  {cat:'green', pts:1, sector:'⏱ СЕКУНДОМЕР', q:'🌀 Время вспять. Сейчас 14:00, откат на 2 ч 20 мин. Какое время?', a:'11:40'},
+  {cat:'yellow', pts:2, sector:'📅 КАЛЕНДАРЬ', q:'✈️ Вылет Токио (GMT+9) в 14:00, полёт 8 ч. Местное время в Лондоне (GMT+0)?', a:'13:00 (14+8=22 Токио → 22−9=13 Лондон)'},
+  {cat:'yellow', pts:2, sector:'📅 КАЛЕНДАРЬ', q:'📆 28 февраля 2024 + 3 дня. Какое число? (2024 — високосный?)', a:'2 марта 2024 (2024 — високосный)'},
+  {cat:'yellow', pts:2, sector:'📅 КАЛЕНДАРЬ', q:'🌍 В Алма-Ате 20:00 (GMT+5). Какое время в Нью-Йорке (GMT−5)?', a:'10:00 (20:00 − 10ч)'},
+  {cat:'red', pts:3, sector:'🌌 ПАРАДОКС', q:'⚙️ Квантовые сутки (30 ч). Сейчас «18:00». Сколько обычных минут с полуночи?', a:'1080 минут (18×60)'},
+  {cat:'red', pts:3, sector:'🌌 ПАРАДОКС', q:'🔄 Реактор считает назад: старт 23:59, финиш через 4 ч 01 мин. Время на реакторе?', a:'19:58'},
+  {cat:'red', pts:3, sector:'🌌 ПАРАДОКС', q:'🧮 Хронометр показывает 99:99. Переведи в сутки + часы + минуты.', a:'4 суток 4 ч 39 мин → 04:39 на 5-е сутки'},
+  {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'⏪ Временная петля! Назови любой час на часах — соперник откатывается на −45 мин.', a:'Спецкарта: выбери соперника, он решает новую задачу с −45 мин'},
+  {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'😵 Джетлаг! Следующий соперник решает задачу без часов — только в уме.', a:'Спецкарта: переверни хронометр соперника. Ошибся — теряет ход'},
+  {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'⏩ Перевод стрелок! Укради от 15 до 60 минут у лидера.', a:'Спецкарта: бери минуты у того кто ближе к победе'},
+];
+const HK_COLOR = {green:'#00ff88',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
+let hkCrystals = 0, hkDeck = [], hkCurrent = null;
+const HK_WIN = 5;
+
+const HK_CHRONOS = ['04:15','07:30','18:40','22:55','11:20','03:45','16:10','09:05'];
+
+function hkGameReset(){
+  hkCrystals = 0; hkDeck = []; hkCurrent = null;
+  document.getElementById('hk-crystals').textContent = '0';
+  const chrono = HK_CHRONOS[Math.floor(Math.random()*HK_CHRONOS.length)];
+  document.getElementById('hk-chrono-display').textContent = chrono + ' → 00:00';
+  document.getElementById('hk-cd-q').textContent = 'Нажми «Следующая миссия» чтобы начать!';
+  document.getElementById('hk-cd-sector').textContent = '—';
+  document.getElementById('hk-cd-sector').style.color = '#556';
+  document.getElementById('hk-cd-pts').style.display = 'none';
+  document.getElementById('hk-cd-reveal').style.display = 'none';
+  document.getElementById('hk-cd-ans').style.display = 'none';
+  document.getElementById('hk-cd-btns').style.display = 'none';
+  document.getElementById('hk-deal-btn').style.display = 'block';
+  document.getElementById('hk-win-msg').style.display = 'none';
+  document.getElementById('hk-card-display').style.borderColor = '#1a2a4a';
+}
+
+function hkGameDeal(){
+  if(hkDeck.length === 0) hkDeck = HK_CARDS.slice().sort(()=>Math.random()-.5);
+  hkCurrent = hkDeck.pop();
+  const c = HK_COLOR[hkCurrent.cat]||'#aaa';
+  document.getElementById('hk-card-display').style.borderColor = c;
+  document.getElementById('hk-cd-sector').innerHTML = '<span style="color:'+c+'">'+hkCurrent.sector+'</span>';
+  const pts = document.getElementById('hk-cd-pts');
+  pts.style.display = 'block';
+  pts.textContent = hkCurrent.pts > 0 ? '+'+hkCurrent.pts+' 💎' : '🃏';
+  pts.style.background = c+'33'; pts.style.color = c;
+  document.getElementById('hk-cd-q').textContent = hkCurrent.q;
+  document.getElementById('hk-pts-lbl').textContent = '+'+hkCurrent.pts+' 💎';
+  document.getElementById('hk-cd-ans').style.display = 'none';
+  document.getElementById('hk-cd-ans').style.borderColor = c;
+  document.getElementById('hk-cd-reveal').style.display = hkCurrent.pts > 0 ? 'block' : 'none';
+  document.getElementById('hk-cd-btns').style.display = 'none';
+  document.getElementById('hk-deal-btn').style.display = 'none';
+  // Спецкарты сразу показывают ответ
+  if(hkCurrent.pts === 0){
+    document.getElementById('hk-cd-ans').textContent = hkCurrent.a;
+    document.getElementById('hk-cd-ans').style.display = 'block';
+    document.getElementById('hk-deal-btn').style.display = 'block';
+  }
+}
+
+function hkGameReveal(){
+  if(!hkCurrent) return;
+  document.getElementById('hk-cd-ans').textContent = '✓ '+hkCurrent.a;
+  document.getElementById('hk-cd-ans').style.display = 'block';
+  document.getElementById('hk-cd-reveal').style.display = 'none';
+  document.getElementById('hk-cd-btns').style.display = 'flex';
+}
+
+function hkGameNext(correct){
+  if(!hkCurrent) return;
+  if(correct && hkCurrent.pts > 0){
+    hkCrystals += hkCurrent.pts;
+    document.getElementById('hk-crystals').textContent = hkCrystals;
+  }
+  document.getElementById('hk-cd-btns').style.display = 'none';
+  hkCurrent = null;
+  if(hkCrystals >= HK_WIN){
+    document.getElementById('hk-deal-btn').style.display = 'none';
+    document.getElementById('hk-win-msg').style.display = 'block';
+  } else {
+    document.getElementById('hk-deal-btn').style.display = 'block';
+  }
+}
+
+</script>
+<!-- vlastelini-overlay удалён: теперь используются screen-ы -->
+
+</body>
+</html>
