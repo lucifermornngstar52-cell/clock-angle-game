@@ -1601,9 +1601,12 @@ function vlDrawBoard(){
   if(!canvas)return;
   const wrap=document.getElementById('vl-board-wrap');
   const size=wrap.offsetWidth;
-  canvas.width=size;canvas.height=size;
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=size*dpr;canvas.height=size*dpr;
+  canvas.style.width=size+'px';canvas.style.height=size+'px';
   const ctx=canvas.getContext('2d');
-  const cx=size/2,cy=size/2,R=size*0.44,r=size*0.08;
+  ctx.scale(dpr,dpr);
+  const cx=size/2,cy=size/2,R=size*0.45,r=size*0.08;
 
   // Фон
   ctx.fillStyle='#07071a';ctx.fillRect(0,0,size,size);
@@ -1623,12 +1626,12 @@ function vlDrawBoard(){
   for(let i=1;i<=49;i++){
     const angle=(i/49)*Math.PI*2-Math.PI/2;
     const nx=cx+R*Math.cos(angle),ny=cy+R*Math.sin(angle);
-    const cr=size*0.045;
+    const cr=size*0.026;
     const type=VL_CELL_TYPE(i);
     // Тень/свечение для активной
     if(i===vlState.pos){
-      ctx.beginPath();ctx.arc(nx,ny,cr*1.5,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,215,0,0.18)';ctx.fill();
+      ctx.beginPath();ctx.arc(nx,ny,cr*1.8,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,215,0,0.15)';ctx.fill();
     }
     // Цвет клетки
     let bg,border;
@@ -1640,10 +1643,10 @@ function vlDrawBoard(){
     ctx.beginPath();ctx.arc(nx,ny,cr,0,Math.PI*2);
     ctx.fillStyle=bg;ctx.fill();
     ctx.strokeStyle=i===vlState.pos?'#ffd700':border;
-    ctx.lineWidth=i===vlState.pos?3:1.5;ctx.stroke();
+    ctx.lineWidth=i===vlState.pos?2.5:1.5;ctx.stroke();
     // Текст в клетке
     ctx.fillStyle=i===vlState.pos?'#ffd700':'#99aacc';
-    ctx.font=(i===vlState.pos?'bold ':'')+(size*.022)+'px Orbitron,monospace';
+    ctx.font=(i===vlState.pos?'bold ':'')+(size*.018)+'px Orbitron,monospace';
     ctx.textAlign='center';ctx.textBaseline='middle';
     if(type==='paradox')ctx.fillText('⚡',nx,ny);
     else if(type==='finish')ctx.fillText('👑',nx,ny);
