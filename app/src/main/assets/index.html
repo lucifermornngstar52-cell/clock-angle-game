@@ -1570,11 +1570,11 @@ function vlDrawBoard(){
   ctx.fillText('ФИНАЛ',cx,cy-size*.018);
   ctx.fillText('ЭКЗАМЕН',cx,cy+size*.018);
 
-  // 60 клеток
-  for(let i=1;i<=60;i++){
-    const angle=(i/60)*Math.PI*2-Math.PI/2;
+  // 49 клеток
+  for(let i=1;i<=49;i++){
+    const angle=(i/49)*Math.PI*2-Math.PI/2;
     const nx=cx+R*Math.cos(angle),ny=cy+R*Math.sin(angle);
-    const cr=size*0.038;
+    const cr=size*0.045;
     const type=VL_CELL_TYPE(i);
     // Тень/свечение для активной
     if(i===vlState.pos){
@@ -1591,7 +1591,7 @@ function vlDrawBoard(){
     ctx.beginPath();ctx.arc(nx,ny,cr,0,Math.PI*2);
     ctx.fillStyle=bg;ctx.fill();
     ctx.strokeStyle=i===vlState.pos?'#ffd700':border;
-    ctx.lineWidth=i===vlState.pos?2:1;ctx.stroke();
+    ctx.lineWidth=i===vlState.pos?3:1.5;ctx.stroke();
     // Текст в клетке
     ctx.fillStyle=i===vlState.pos?'#ffd700':'#99aacc';
     ctx.font=(i===vlState.pos?'bold ':'')+(size*.022)+'px Orbitron,monospace';
