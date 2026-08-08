@@ -303,7 +303,7 @@
     </div>
     <div class="vl-hud-cell">
       <div class="vl-hud-lbl">КЛЕТКА</div>
-      <div class="vl-hud-val" style="color:#00ff88;"><span id="vl-h-pos">0</span>/60</div>
+      <div class="vl-hud-val" style="color:#00ff88;"><span id="vl-h-pos">0</span>/49</div>
     </div>
     <div class="vl-hud-cell">
       <div class="vl-hud-lbl">ДО ФИНИША</div>
@@ -1465,7 +1465,7 @@ function vlShowParadox(){
   // Применяем эффект
   const ef=p.effect;
   if(ef==='coins_2'){vlState.sand+=2;vlUpdateHUD();}
-  else if(ef==='forward_3'){vlState.pos=Math.min(60,vlState.pos+3);vlUpdateHUD();vlDrawBoard();}
+  else if(ef==='forward_3'){vlState.pos=Math.min(50,vlState.pos+3);vlUpdateHUD();vlDrawBoard();}
   else if(ef==='back_2'){vlState.pos=Math.max(0,vlState.pos-2);vlUpdateHUD();vlDrawBoard();}
   else if(ef==='skip'){vlState.skipNext=true;}
   else if(ef==='extra_roll'||ef==='bonus_q'){
