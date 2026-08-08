@@ -511,7 +511,7 @@ function g2Init(){
   g2={round:0,totalG:0};g2Next();showS('sG2');}
 function g2Next(){
   if(g2.round>=5){award(g2.totalG,2);showResult(g2.totalG,15,'\u23F1 РЕФЛЕКСЫ!','Жетонов: '+g2.totalG+'/15',null);return;}
-  g2.target=g2.round+1;g2.speed=2+g2.round*0.65;g2.running=false;
+  var G2TASKS=[15,75,30,60,45];g2.target=G2TASKS[g2.round]||5;g2.speed=2+g2.round*0.65;g2.running=false;
   document.getElementById('g2R').textContent=(g2.round+1)+'/5';
   document.getElementById('g2Ac').textContent='-';document.getElementById('g2Laps').textContent=g2.target;
   document.getElementById('g2dp').textContent='0 кр.';document.getElementById('g2fb').textContent='';
@@ -543,7 +543,7 @@ function g2Tap(){
   g2.round++;reg(setTimeout(g2Next,2100));}
 
 // ═══ G3 УГОЛ ═══
-const G3T=[{h:3,m:0,a:90},{h:6,m:0,a:180},{h:12,m:0,a:0},{h:9,m:0,a:270},{h:3,m:30,a:105},{h:6,m:30,a:15},{h:1,m:0,a:30},{h:4,m:0,a:120},{h:2,m:0,a:60},{h:10,m:30,a:135}];
+const G3T=[{h:15,m:30,a:75},{h:16,m:10,a:65},{h:12,m:15,a:90},{h:8,m:0,a:120},{h:6,m:0,a:180},{h:3,m:0,a:90},{h:20,m:20,a:130},{h:18,m:0,a:180},{h:14,m:50,a:25},{h:12,m:30,a:165}];
 let g3={};
 function g3Init(){drawMarks(document.getElementById('g3mk'),null,100,100,93,10);g3={round:0,score:0,gears:0};g3Next();showS('sG3');}
 function g3Next(){
@@ -572,7 +572,7 @@ function g3Confirm(){
   g3.round++;reg(setTimeout(g3Next,1900));}
 
 // ═══ G4 ЗЕРКАЛА ═══
-const G4T=[{h:3,m:0},{h:9,m:15},{h:7,m:45},{h:1,m:30},{h:10,m:10},{h:4,m:20},{h:2,m:55},{h:11,m:5},{h:8,m:40},{h:6,m:25}];
+const G4T=[{h:9,m:20},{h:11,m:15},{h:17,m:55},{h:6,m:45},{h:10,m:10},{h:12,m:35},{h:3,m:0},{h:7,m:30},{h:8,m:40},{h:6,m:25}];
 let g4={};
 function g4Mirror(h,m){const md=(m/60)*360,hd=((h%12)/12)*360+(m/60)*30;return{md:(360-md)%360,hd:(360-hd)%360};}
 function g4MiniClock(svg,hd,md){
