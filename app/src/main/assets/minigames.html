@@ -913,6 +913,72 @@ function g10Ans(idx){
 
 // INIT
 buildMenu();showS('sMenu');
+
+/* ══ АУДИО — Классическая мелодия (Пахельбель Канон) ══ */
+let AC,MG,SG;let mv=.4,sv=.7;
+let bgMelody=null,bgBass=null;
+function initA(){
+  if(AC)return;
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  MG=AC.createGain();MG.gain.value=mv*.25;MG.connect(AC.destination);
+  SG=AC.createGain();SG.gain.value=sv;SG.connect(AC.destination);
+  const melody=[
+    [587.33,1200],[659.25,1200],[739.99,1200],[783.99,1200],
+    [880,1200],[739.99,1200],[783.99,1200],[659.25,1200],
+    [587.33,1200],[659.25,1200],[739.99,1200],[880,1200],
+    [987.77,1200],[880,1200],[783.99,1200],[739.99,1200],
+    [587.33,800],[523.25,400],[587.33,1200],[659.25,1200],
+    [739.99,1200],[659.25,1200],[587.33,1200],[523.25,1200],
+    [493.88,1200],[523.25,1200],[587.33,1200],[659.25,1200],
+    [587.33,1200],[523.25,1200],[493.88,1200],[440,1200]
+  ];
+  const bass=[
+    [146.83,2400],[110,2400],[123.47,2400],[92.5,2400],
+    [98,2400],[146.83,2400],[98,2400],[110,2400],
+    [146.83,2400],[110,2400],[123.47,2400],[92.5,2400],
+    [98,2400],[146.83,2400],[98,2400],[110,2400]
+  ];
+  let mi=0,bi=0;
+  function playNote(freq,dur,type,vol,dest){
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(dest);o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(0,AC.currentTime);
+    g.gain.linearRampToValueAtTime(vol,AC.currentTime+0.08);
+    g.gain.linearRampToValueAtTime(vol*.7,AC.currentTime+dur*.5);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+dur/1000);
+    o.start(AC.currentTime);o.stop(AC.currentTime+dur/1000+.1);
+  }
+  bgMelody=setInterval(()=>{if(!AC||AC.state==='suspended')return;
+    const n=melody[mi++%melody.length];playNote(n[0],n[1],'sine',.3,MG);},1200);
+  bgBass=setInterval(()=>{if(!AC||AC.state==='suspended')return;
+    const b=bass[bi++%bass.length];playNote(b[0],b[1],'sine',.2,MG);},2400);
+}
+function sfx(t){
+  if(!AC)return;
+  if(t==='ok'){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(SG);
+    o.type='sine';o.frequency.setValueAtTime(523,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(784,AC.currentTime+0.1);
+    o.frequency.linearRampToValueAtTime(1047,AC.currentTime+0.2);
+    g.gain.setValueAtTime(.3,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+0.4);
+    o.start(AC.currentTime);o.stop(AC.currentTime+0.4);}
+  else if(t==='no'){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(SG);
+    o.type='sawtooth';o.frequency.setValueAtTime(200,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(80,AC.currentTime+0.3);
+    g.gain.setValueAtTime(.25,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+0.3);
+    o.start(AC.currentTime);o.stop(AC.currentTime+0.3);}
+  else if(t==='up'){const notes=[523,659,784,1047];notes.forEach((f,i)=>{
+    const oo=AC.createOscillator(),gg=AC.createGain();oo.connect(gg);gg.connect(SG);
+    oo.frequency.value=f;gg.gain.setValueAtTime(.25,AC.currentTime+i*0.12);
+    gg.gain.linearRampToValueAtTime(0,AC.currentTime+i*0.12+0.25);
+    oo.start(AC.currentTime+i*0.12);oo.stop(AC.currentTime+i*0.12+0.25);});}
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&AC)AC.suspend();else if(!document.hidden&&AC)AC.resume();});
+window.addEventListener('pagehide',()=>{if(AC)AC.suspend();});
+window.addEventListener('blur',()=>{if(AC)AC.suspend();});
+window.addEventListener('focus',()=>{if(AC&&AC.state==='suspended')AC.resume();});
+
 </script>
 </body>
 </html>
