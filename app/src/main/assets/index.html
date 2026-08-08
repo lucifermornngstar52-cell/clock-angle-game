@@ -582,7 +582,7 @@
       <g id="ticks"></g><g id="nums"></g>
       <path id="arc" fill="rgba(255,255,0,.07)" stroke="rgba(255,255,0,.5)" stroke-width="1.5" d=""/>
       <line id="hh" x1="0" y1="0" x2="0" y2="-44" stroke="#ff6b35" stroke-width="5" stroke-linecap="round"/>
-      <line id="mh" x1="0" y1="0" x2="0" y2="-60" stroke="#00ff41" stroke-width="3" stroke-linecap="round"/>
+      <line id="mh" x1="0" y1="0" x2="0" y2="-65" stroke="#00ff88" stroke-width="5" stroke-linecap="round" filter="drop-shadow(0 0 6px #00ff88)"/>
       <line id="sh" x1="0" y1="5" x2="0" y2="-68" stroke="#00cfff" stroke-width="1.5" stroke-linecap="round"/>
       <circle r="4" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
     </svg>
@@ -876,7 +876,7 @@ function drawTicks(){
     const line=document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute('x1',Math.sin(rad)*r1v);line.setAttribute('y1',-Math.cos(rad)*r1v);
     line.setAttribute('x2',Math.sin(rad)*r2v);line.setAttribute('y2',-Math.cos(rad)*r2v);
-    line.setAttribute('stroke',maj?'#00ff41':'rgba(0,255,65,.3)');line.setAttribute('stroke-width',maj?'2':'1');
+    line.setAttribute('stroke',maj?'#00ff88':'rgba(0,255,136,.5)');line.setAttribute('stroke-width',maj?'2.5':'1.5');
     tg.appendChild(line);
     if(maj){const num=i/5||12,nr=61,t=document.createElementNS('http://www.w3.org/2000/svg','text');
       t.setAttribute('x',Math.sin(rad)*nr);t.setAttribute('y',-Math.cos(rad)*nr+3.5);
