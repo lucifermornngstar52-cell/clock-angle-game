@@ -268,8 +268,8 @@
 <style>
 #vl-hud{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0f20;border-bottom:1px solid #1a2a4a;flex-shrink:0;}
 .vl-hud-cell{text-align:center;}
-.vl-hud-lbl{font-size:.52rem;color:#445;letter-spacing:1px;font-family:'Orbitron',monospace;}
-.vl-hud-val{font-size:.85rem;font-weight:700;font-family:'Orbitron',monospace;}
+.vl-hud-lbl{font-size:.62rem;color:#779;letter-spacing:1px;font-family:'Orbitron',monospace;}
+.vl-hud-val{font-size:.95rem;font-weight:700;font-family:'Orbitron',monospace;}
 #vl-board-wrap{position:relative;width:100%;padding-top:100%;flex-shrink:0;}
 #vl-board-canvas{position:absolute;top:0;left:0;width:100%;height:100%;}
 #vl-card-area{flex:1;overflow-y:auto;padding:10px 12px 8px;}
@@ -1236,7 +1236,7 @@ const VL_PARADOX = [
 ];
 
 const VL_CELL_TYPE = (n) => {
-  if([12,24,36,48].includes(n)) return 'paradox';
+  if([10,20,30,40].includes(n)) return 'paradox';
   if(n===60) return 'finish';
   if(n<=20) return 'green';
   if(n<=40) return 'yellow';
@@ -1326,7 +1326,7 @@ function vlShowStartCard(){
   document.getElementById('vl-q-text').textContent =
     pos === 0
       ? 'Ты на старте! Ответь на вопрос — кубик двинет тебя вперёд. ' + info.hint
-      : 'Клетка ' + pos + '/60. ' + info.hint + ' Готов?';
+      : 'Клетка ' + pos + '/49. ' + info.hint + ' Готов?';
   document.getElementById('vl-question-card').style.borderColor = info.color;
   document.getElementById('vl-action-btn').style.display='block';
   document.getElementById('vl-action-btn').textContent='[ 🎲 НАЧАТЬ ХОД ]';
@@ -1336,7 +1336,7 @@ function vlShowStartCard(){
 function vlUpdateHUD(){
   document.getElementById('vl-h-sand').textContent=vlState.sand;
   document.getElementById('vl-h-pos').textContent=vlState.pos;
-  document.getElementById('vl-h-left').textContent=Math.max(0,60-vlState.pos);
+  document.getElementById('vl-h-left').textContent=Math.max(0,50-vlState.pos);
 }
 
 function vlActionBtn(){
@@ -1436,12 +1436,12 @@ function vlRollDice(){
 
 function vlAfterRoll(val){
   document.getElementById('vl-dice-result').textContent='Выпало '+val+'! Двигаешься на '+val+' клеток вперёд.';
-  vlState.pos=Math.min(60,vlState.pos+val);
+  vlState.pos=Math.min(50,vlState.pos+val);
   vlUpdateHUD();
   vlDrawBoard();
   document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
   vlState.phase='after_roll';
-  if(vlState.pos>=60){
+  if(vlState.pos>=50){
     setTimeout(vlStartExam,600);
   }
 }
@@ -1495,7 +1495,7 @@ function vlShowParadox(){
 
 /* ФИНАЛЬНЫЙ ЭКЗАМЕН */
 function vlStartExam(){
-  vlState.pos=60;vlUpdateHUD();vlDrawBoard();
+  vlState.pos=50;vlUpdateHUD();vlDrawBoard();
   vlState.phase='exam';
   vlState.examQ=0;vlState.examCorrect=0;
   vlState.examPool=vlShuffle(VL_Q.exam).slice(0,5);
