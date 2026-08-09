@@ -503,8 +503,8 @@ function g1Next(){
   document.getElementById('g1mn').setAttribute('transform','rotate(0 115 115)');
   document.getElementById('g1dt').textContent='00:00';}
 function g1Confirm(){
-  const m=Math.round(g1.mnD/6)%60,h=Math.round(g1.hrD/30)%12;
-  const th=g1.tgt.h%12,tm=g1.tgt.m;
+  const m=((Math.round(g1.mnD/6)%60)+60)%60,h=((Math.round(g1.hrD/30)%24)+24)%24;
+  const th=((g1.tgt.h%24)+24)%24,tm=g1.tgt.m;
   const dh=Math.abs(h-th),dm=Math.abs(m-tm);
   const fb=document.getElementById('g1fb');
   let ge=0;
