@@ -480,8 +480,8 @@ function g1Init(){
     }
     var m=Math.round(g1.mnD/6)%60;
     if(m<0)m+=60;
-    var h=Math.round(g1.hrD/30)%12;
-    if(h<0)h+=12;
+    var h=Math.round(g1.hrD/30)%24;
+    if(h<0)h+=24;
     document.getElementById('g1dt').textContent=fmt(h,m);}
   document.addEventListener('touchmove',mv,{passive:false});
   document.addEventListener('mousemove',mv);
