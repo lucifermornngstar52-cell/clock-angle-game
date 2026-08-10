@@ -52,6 +52,20 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
 </head>
 <body>
 <div id="toast"></div>
+<div class="screen" id="sAuth" style="justify-content:center;align-items:center;min-height:100vh;padding:20px;">
+  <div style="text-align:center;margin-bottom:30px;">
+    <div style="font-size:3rem;">⏰</div>
+    <div style="font-size:1.2rem;color:#fff;font-weight:bold;margin-top:10px;">Хранители Времени</div>
+    <div style="font-size:.6rem;color:var(--dg);margin-top:5px;">Войди чтобы сохранять прогресс</div>
+  </div>
+  <div style="width:100%;max-width:320px;">
+    <input id="authEmail" type="email" placeholder="Email" style="width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:#fff;font-size:.8rem;margin-bottom:10px;outline:none;">
+    <input id="authName" type="text" placeholder="Имя (необязательно)" style="width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:#fff;font-size:.8rem;margin-bottom:10px;outline:none;">
+    <div id="authErr" style="color:var(--y);font-size:.6rem;min-height:20px;margin-bottom:8px;"></div>
+    <button onclick="doAuth()" style="width:100%;background:linear-gradient(135deg,var(--c1),#0099aa);color:#001;border:none;border-radius:10px;padding:14px;font-size:.8rem;font-weight:bold;cursor:pointer;margin-bottom:8px;">ВОЙТИ</button>
+    <button onclick="skipAuth()" style="width:100%;background:var(--panel);color:var(--dg);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.7rem;cursor:pointer;">Играть без входа</button>
+  </div>
+</div>
 <div class="screen" id="sMenu">
   <div class="pg-header">
     <button class="pg-back" onclick="goHome()">&#8592; МЕНЮ</button>
@@ -376,7 +390,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
   <div class="fb" id="g10fb"></div>
 </div>
 <script>
-const SCREENS=['sMenu','sResult','sTournament','sShop','sG1','sG2','sG3','sG4','sG5','sG6','sG7','sG8','sG9','sG10'];
+const SCREENS=['sAuth','sMenu','sResult','sTournament','sShop','sG1','sG2','sG3','sG4','sG5','sG6','sG7','sG8','sG9','sG10'];
 function showS(id){SCREENS.forEach(s=>{const e=document.getElementById(s);if(e)e.classList.add('hidden');});const t=document.getElementById(id);if(t)t.classList.remove('hidden');}
 
 // SAVE
@@ -1272,7 +1286,7 @@ function logout() {
 
 
 // ═══ AUTH LOGIC ═══
-async function doAuth(){
+async async function doAuth(){
   var em=document.getElementById('authEmail').value.trim();
   var nm=document.getElementById('authName').value.trim();
   var err=document.getElementById('authErr');
@@ -1349,11 +1363,13 @@ async function syncVictory(){
 
 // STARTUP
 document.addEventListener('DOMContentLoaded',function(){
+  buildMenu();
   if(isAuthorized()){
     document.getElementById('sAuth').classList.add('hidden');
     showS('sMenu');
-    buildMenu();
     loadStats();
+  } else {
+    showS('sAuth');
   }
 });
 
