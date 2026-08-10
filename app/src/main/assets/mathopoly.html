@@ -47,7 +47,7 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 /* ПОЛЕ */
 .board-wrap{position:fixed;top:50px;left:0;right:0;bottom:78px;overflow:auto;display:flex;align-items:center;justify-content:center;}
 .board{position:relative;background:rgba(4,4,22,.97);border:2px solid rgba(123,47,255,.35);border-radius:8px;}
-.cell{position:absolute;border:1px solid rgba(255,255,255,.12);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+.cell{position:absolute;border:1.5px solid rgba(255,255,255,.18);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;font-size:.42rem;text-align:center;line-height:1.1;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.4);}
 .c-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:2px;}
 .c-lbl{font-size:.34rem;text-align:center;line-height:1.15;color:#fff;font-weight:bold;}
 .c-ico{font-size:.85rem;margin-bottom:1px;}
@@ -152,6 +152,20 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 <div id="toast" class="hidden"></div>
 
 <!-- ЛОББИ -->
+<div class="screen" id="sAuth" style="justify-content:center;align-items:center;min-height:100vh;padding:20px;">
+  <div style="text-align:center;margin-bottom:30px;">
+    <div style="font-size:3rem;">⏰</div>
+    <div style="font-size:1.2rem;color:#fff;font-weight:bold;margin-top:10px;">Властелины Времени</div>
+    <div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-top:5px;">Войди чтобы сохранять прогресс</div>
+  </div>
+  <div style="width:100%;max-width:320px;">
+    <input id="authEmail" type="email" placeholder="Email" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.5);border:1px solid rgba(123,47,255,.4);border-radius:6px;padding:14px 16px;color:#fff;font-size:.8rem;margin-bottom:10px;outline:none;">
+    <input id="authName" type="text" placeholder="Имя (необязательно)" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.5);border:1px solid rgba(123,47,255,.4);border-radius:6px;padding:14px 16px;color:#fff;font-size:.8rem;margin-bottom:10px;outline:none;">
+    <div id="authErr" style="color:var(--gold);font-size:.6rem;min-height:20px;margin-bottom:8px;"></div>
+    <button onclick="doAuth()" style="width:100%;background:rgba(255,215,0,.15);border:2px solid var(--gold);color:var(--gold);border-radius:6px;padding:14px;font-size:.8rem;font-weight:bold;cursor:pointer;margin-bottom:8px;letter-spacing:2px;">ВОЙТИ</button>
+    <button onclick="skipAuth()" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.4);border-radius:6px;padding:12px;font-size:.7rem;cursor:pointer;">Играть без входа</button>
+  </div>
+</div>
 <div class="screen" id="lobby">
   <div class="lobby-title">MATHOPOLY</div>
   <div class="lobby-sub">// МАТЕМАТИКА 9 КЛАСС · KZ //</div>
@@ -259,6 +273,9 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
 </div>
 
 <script>
+const SUPABASE_URL='https://usulgiwtqdxmgonqhpck.supabase.co';
+const SUPABASE_KEY='sb_publishable_8aX2O2k0IvEclWYkbGZxwA.cKdsTzwzVevKsNhzcSbfhNcKcw6rEgTq';
+
 // ═══════════════════════════════════════════════
 // ВОПРОСЫ — Математика 9 класс КЗ
 // ═══════════════════════════════════════════════
@@ -312,33 +329,55 @@ const QS = {
 // КЛЕТКИ ПОЛЯ
 // ═══════════════════════════════════════════════
 const CELLS = [
-  {id:0, label:'СТАРТ',             icon:'🚀', cls:'cstart'},
-  {id:1, label:'ЛИНЕЙНЫЕ УРВ.',     icon:'?',  cls:'alg'},
-  {id:2, label:'КВАДРАТНЫЕ УРВ.',   icon:'?',  cls:'alg'},
-  {id:3, label:'ФУНКЦИИ',           icon:'?',  cls:'alg'},
-  {id:4, label:'СИСТЕМЫ УРВ.',      icon:'?',  cls:'alg'},
-  {id:5, label:'КОНТРОЛЬНАЯ',       icon:'📋', cls:'sorg'},
-  {id:6, label:'ПРОГРЕССИИ',        icon:'?',  cls:'alg'},
-  {id:7, label:'НЕРАВЕНСТВА',       icon:'?',  cls:'alg'},
-  {id:8, label:'ФОРМУЛА УДАЧИ',     icon:'⭐', cls:'sgold'},
-  {id:9, label:'ТРЕУГОЛЬНИКИ',      icon:'?',  cls:'geo'},
-  {id:10,label:'ОКРУЖНОСТЬ',        icon:'?',  cls:'geo'},
-  {id:11,label:'ПЛОЩАДИ',           icon:'?',  cls:'geo'},
-  {id:12,label:'ОШИБКА!',           icon:'⚠️', cls:'sred'},
-  {id:13,label:'ТЕОРЕМА ПИФАГОРА',  icon:'?',  cls:'geo'},
-  {id:14,label:'ФИНИШ 🏁',          icon:'🏆', cls:'cfin'},
-  {id:15,label:'МОД. ВЫРАЖЕНИЯ',    icon:'?',  cls:'lgc'},
-  {id:16,label:'ТЕКСТ. ЗАДАЧИ',     icon:'?',  cls:'lgc'},
-  {id:17,label:'ПЕРЕСДАЧА',         icon:'🔄', cls:'sorg'},
-  {id:18,label:'КОМБИНАТОРИКА',     icon:'?',  cls:'lgc'},
-  {id:19,label:'ВЕРОЯТНОСТЬ',       icon:'?',  cls:'lgc'},
-  {id:20,label:'ВЕКТОРЫ',           icon:'?',  cls:'geo'},
-  {id:21,label:'ПОДОБИЕ',           icon:'?',  cls:'geo'},
-  {id:22,label:'УЧИТЕЛЬ МАТЕМ.',    icon:'👩‍🏫',cls:'sgold'},
-  {id:23,label:'ГРАФИК',            icon:'?',  cls:'alg'},
-  {id:24,label:'КОНТРОЛЬНАЯ',       icon:'📋', cls:'sorg'},
-  {id:25,label:'СЛУЧ. ЭКЗАМЕН',     icon:'❓', cls:'sorg'},
-  {id:26,label:'ФОРМУЛА УДАЧИ',     icon:'⭐', cls:'sgold'},
+  {id:0, label:'СТАРТ',          icon:'🚀', cls:'cstart'},
+  {id:1, label:'СЕКУНДЫ',        icon:'⏱',  cls:'alg'},
+  {id:2, label:'МИНУТЫ',         icon:'🕐', cls:'alg'},
+  {id:3, label:'ЧАСЫ',           icon:'🕑', cls:'alg'},
+  {id:4, label:'СУТКИ',          icon:'📅', cls:'alg'},
+  {id:5, label:'НЕДЕЛЯ',         icon:'📆', cls:'alg'},
+  {id:6, label:'ПАРАДОКС',       icon:'🌀', cls:'sred'},
+  {id:7, label:'МЕСЯЦ',          icon:'🌒', cls:'alg'},
+  {id:8, label:'ГОД',            icon:'🎆', cls:'alg'},
+  {id:9, label:'ВЕК',            icon:'🏛', cls:'alg'},
+  {id:10,label:'ПАРАДОКС',       icon:'🌀', cls:'sred'},
+  {id:11,label:'УГОЛ ЧАСОВ',     icon:'📐', cls:'geo'},
+  {id:12,label:'СТРЕЛКИ',        icon:'⏰', cls:'geo'},
+  {id:13,label:'24 ЧАСА',        icon:'🌍', cls:'alg'},
+  {id:14,label:'ВРЕМ. ЗОНЫ',     icon:'🗺', cls:'alg'},
+  {id:15,label:'КАЛЕНДАРЬ',      icon:'📅', cls:'alg'},
+  {id:16,label:'ГРИГ. КАЛ.',     icon:'📜', cls:'alg'},
+  {id:17,label:'ВИСОКОС',        icon:'✨', cls:'alg'},
+  {id:18,label:'ПАРАДОКС',       icon:'🌀', cls:'sred'},
+  {id:19,label:'ЧАСОВОЙ ПОЯС',   icon:'🌐', cls:'geo'},
+  {id:20,label:'ДО П.Н.Э.',      icon:'🏺', cls:'alg'},
+  {id:21,label:'ЭПОХА',          icon:'⏳', cls:'alg'},
+  {id:22,label:'ЭРА',             icon:'🌅', cls:'alg'},
+  {id:23,label:'ФОРМУЛА',        icon:'⭐', cls:'sgold'},
+  {id:24,label:'ЧАС. МЕХАНИЗМ',  icon:'⚙',  cls:'geo'},
+  {id:25,label:'МАЯТНИК',        icon:'🔄', cls:'geo'},
+  {id:26,label:'ХРОНОМЕТР',      icon:'⌚', cls:'geo'},
+  {id:27,label:'АТОМ. ЧАСЫ',     icon:'⚛',  cls:'geo'},
+  {id:28,label:'ПАРАДОКС',       icon:'🌀', cls:'sred'},
+  {id:29,label:'СТО',            icon:'🔬', cls:'lgc'},
+  {id:30,label:'ОТО',            icon:'🌌', cls:'lgc'},
+  {id:31,label:'GPS ВРЕМЯ',      icon:'🛰', cls:'lgc'},
+  {id:32,label:'СВЕРХ. ЧАСЫ',    icon:'✦',  cls:'lgc'},
+  {id:33,label:'ВРЕМ. ПЕТЛЯ',    icon:'♾',  cls:'lgc'},
+  {id:34,label:'ФОРМУЛА',        icon:'⭐', cls:'sgold'},
+  {id:35,label:'ПАРАДОКС',       icon:'🌀', cls:'sred'},
+  {id:36,label:'ИЗМЕР. ВРЕМ.',   icon:'📊', cls:'geo'},
+  {id:37,label:'СЕКУНДОМЕР',    icon:'⏱',  cls:'geo'},
+  {id:38,label:'ТАЙМЕР',         icon:'⏲',  cls:'geo'},
+  {id:39,label:'БУДИЛЬНИК',      icon:'⏰', cls:'geo'},
+  {id:40,label:'ПЕСОЧ. ЧАСЫ',    icon:'⌛', cls:'geo'},
+  {id:41,label:'ВОД. ЧАСЫ',      icon:'💧', cls:'geo'},
+  {id:42,label:'СОЛН. ЧАСЫ',     icon:'☀',  cls:'geo'},
+  {id:43,label:'ЗВЁЗД. ВРЕМЯ',   icon:'⭐', cls:'lgc'},
+  {id:44,label:'ЛУН. КАЛ.',      icon:'🌙', cls:'alg'},
+  {id:45,label:'ВРЕМ. МАШИНА',   icon:'🚂', cls:'lgc'},
+  {id:46,label:'ПАРАДОКС',       icon:'🌀', cls:'sred'},
+  {id:47,label:'ФИНАЛ',          icon:'🏆', cls:'sgold'},
+  {id:48,label:'ФИНИШ',          icon:'🏁', cls:'cfin'},
 ];
 const TOTAL = CELLS.length;
 
@@ -563,31 +602,32 @@ function renderDiceBtn(){
 }
 
 // ── ПОЛЕ ──
-const CW=56, CH=62;
+const CW=48, CH=52;
 function cellPos(id){
-  if(id<=8) return {col:id,row:0};
-  if(id<=14) return {col:8,row:id-8};
-  if(id<=21) return {col:8-(id-14),row:6};
-  return {col:0,row:6-(id-21)};
+  var row=Math.floor(id/7);
+  var col;
+  if(row%2===0) col=id%7;
+  else col=6-(id%7);
+  return {col:col,row:row};
 }
 function buildBoard(){
   const board=document.getElementById('board');
   board.innerHTML='';
-  board.style.width=(9*CW+CW*2)+'px';
-  board.style.height=(6*CH+CH*2)+'px';
+  board.style.width=(7*CW+8)+'px';
+  board.style.height=(7*CH+8)+'px';
   CELLS.forEach(c=>{
     const pos=cellPos(c.id);
     const el=document.createElement('div');
     el.className='cell '+c.cls;
     el.id='cell-'+c.id;
-    el.style.cssText=`left:${pos.col*CW+CW/2}px;top:${pos.row*CH+CH/2}px;width:${CW}px;height:${CH}px;`;
+    el.style.cssText=`left:${pos.col*CW+4}px;top:${pos.row*CH+4}px;width:${CW-2}px;height:${CH-2}px;`;
     el.innerHTML=`<span class="c-num">${c.id}</span><div class="c-inner"><div class="c-ico">${c.icon}</div><div class="c-lbl">${c.label}</div></div>`;
     board.appendChild(el);
   });
   // Центр
   const ctr=document.createElement('div');
   ctr.className='board-center';
-  ctr.style.cssText=`left:${CW*1.5}px;top:${CH*1.5}px;width:${CW*6}px;height:${CH*5}px;`;
+  ctr.style.cssText='display:none;';
   ctr.innerHTML=`<div class="bc-title" style="font-size:clamp(1.1rem,3.5vw,1.5rem);">MATHOPOLY</div>
     <div class="bc-sub" style="font-size:.55rem;">9 КЛАСС · КАЗАХСТАН</div>
     <div class="bc-fml">x²+bx+c=0 · a²+b²=c²<br>y=kx+b · C(n,k) · P(A)<br>S=πr² · ∑aₙ · |x|=a</div>`;
@@ -832,3 +872,34 @@ showS('lobby');
 </script>
 </body>
 </html>
+<script>
+async function doAuth(){
+  var em=document.getElementById('authEmail').value.trim();
+  var nm=document.getElementById('authName').value.trim();
+  var err=document.getElementById('authErr');
+  if(!em||!em.includes('@')){err.textContent='Введите email';return;}
+  err.textContent='Вход...';
+  try{
+    var res=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_email:em,p_name:nm||null})
+    });
+    var r=await res.json();
+    if(r.ok){
+      localStorage.setItem('game_email',em);
+      localStorage.setItem('game_user',JSON.stringify(r.user||{}));
+      err.textContent='';
+      var s=document.getElementById('sAuth');
+      if(s)s.classList.add('hidden');
+      showS('lobby');
+    }else{
+      err.textContent='Ошибка: '+(r.error||'попробуйте снова');
+    }
+  }catch(e){
+    err.textContent='Ошибка: '+e.message;
+  }
+}
+function isAuthorized(){return !!localStorage.getItem("game_email");}
+function skipAuth(){var s=document.getElementById("sAuth");if(s)s.classList.add("hidden");showS("lobby");}
+</script>
