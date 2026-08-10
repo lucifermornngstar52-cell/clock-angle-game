@@ -1002,7 +1002,7 @@ const SUPABASE_URL = 'https://usulgiwtqdxmgonqhpck.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_8aX2OBxUMsOKWTiGum8dcA_z8-peLRM'; // ← вставь anon public key
 
 // ─── РЕГИСТРАЦИЯ / ВХОД ───
-async async function supabaseAuth(email, fullName) {
+async function supabaseAuth(email, fullName) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/auth_user`, {
       method: 'POST',
@@ -1289,7 +1289,7 @@ function logout() {
 
 
 // ═══ AUTH LOGIC ═══
-async async function doAuth(){
+async function doAuth(){
   var em=document.getElementById('authEmail').value.trim();
   var nm=document.getElementById('authName').value.trim();
   var err=document.getElementById('authErr');
