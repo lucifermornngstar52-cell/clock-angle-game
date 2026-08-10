@@ -74,7 +74,11 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
   </div>
   <div style="font-size:.48rem;color:var(--dg);letter-spacing:3px;">// 10 ИСПЫТАНИЙ ВРЕМЕНИ //</div>
   <div class="menu-grid" id="gameGrid"></div>
-
+  <div style="width:100%;max-width:420px;margin:12px auto 8px;display:flex;gap:8px;">
+    <button class="btn btn-g" onclick="showTournament()" style="flex:1;font-size:.7rem;padding:12px;">ТУРНИР</button>
+    <button class="btn btn-g" onclick="showShop()" style="flex:1;font-size:.7rem;padding:12px;">МАГАЗИН</button>
+  </div>
+  <button class="btn btn-gray" onclick="showLeaderboard()" style="width:100%;max-width:420px;margin:0 auto 16px;display:block;font-size:.7rem;padding:12px;">ТАБЛИЦА ЛИДЕРОВ</button>
 </div>
 
 
@@ -468,34 +472,18 @@ const GAMES=[
 ];
 
 function buildMenu(){
-  // Add tournament and shop buttons
-  if(!document.getElementById('tournamentBtn')){
-    var wrap=document.createElement('div');
-    wrap.id='tournamentBtn';
-    wrap.style.cssText='width:100%;max-width:380px;margin:8px auto;display:flex;gap:8px;';
-    wrap.innerHTML='<button class="btn btn-g" onclick="showTournament()" style="flex:1;font-size:.7rem;padding:12px;">🏆 ТУРНИР</button><button class="btn btn-g" onclick="showShop()" style="flex:1;font-size:.7rem;padding:12px;">🛒 МАГАЗИН</button>';
-    var grid=document.getElementById('gameGrid');
-    if(grid&&grid.parentNode)grid.parentNode.insertBefore(wrap,grid.nextSibling);
-  }
-
-  // Add leaderboard button if not exists
-  if(!document.getElementById("lbBtn")){
-    var btn=document.createElement("button");
-    btn.id="lbBtn";
-    btn.className="btn btn-gray";
-    btn.style.cssText="width:100%;max-width:380px;margin:8px auto;display:block;font-size:.7rem;";
-    btn.innerHTML="🏆 ТАБЛИЦА ЛИДЕРОВ";
-    btn.onclick=showLeaderboard;
-    var grid=document.getElementById("gameGrid");
-    if(grid&&grid.parentNode)grid.parentNode.insertBefore(btn,grid.nextSibling);
-  }
-
-  var gridEl=document.getElementById('gameGrid');gridEl.innerHTML='';
+  var gridEl=document.getElementById('gameGrid');
+  if(!gridEl)return;
+  gridEl.innerHTML='';
   GAMES.forEach(g=>{
-    const div=document.createElement('div');div.className='mg-card';
-    const best=getBest(g.id);
+    var div=document.createElement('div');div.className='mg-card';
+    var best=getBest(g.id);
     div.innerHTML='<div class="mg-icon">'+g.icon+'</div><div class="mg-name">'+g.name.replace('\n','<br>')+'</div><div class="mg-desc">'+g.desc+'</div><div class="mg-best">'+(best>0?'\u2699'+best:'\u2699\u2014')+'</div>';
-    div.onclick=()=>startGame(g.id);grid.appendChild(div);});updG();}
+    div.onclick=function(){startGame(g.id);};
+    gridEl.appendChild(div);
+  });
+  updG();
+}
 
 function goHome(){if(document.referrer)history.back();else window.location.href='index.html';}
 function backToMenu(){stopAll();showS('sMenu');buildMenu();loadStats();}
