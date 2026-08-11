@@ -300,7 +300,7 @@
   <button class="btn" style="border-color:#ff00aa;color:#ff00aa;" onclick="window.location.href='minigames.html'">[ ⚡ 10 МИНИ-ИГР ]<br><span style="font-size:.5rem;opacity:.7;">5-6 → 10-11 КЛАСС · ПО УВЕЛИЧЕНИЮ</span></button>
 
   <div class="other-label" style="color:#00f5ff;margin-top:14px;">── 5–11 КЛАСС ──</div>
-  <button class="btn btn-gold" onclick="startWithIntro()" style="border-color:#00f5ff;color:#00f5ff;">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">УГЛЫ СТРЕЛОК · СЛОЖНЫЕ ЗАДАЧИ</span></button>
+  <button class="btn btn-gold" onclick="showS('intro-screen')" style="border-color:#00f5ff;color:#00f5ff;">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">УГЛЫ СТРЕЛОК · СЛОЖНЫЕ ЗАДАЧИ</span></button>
 
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:14px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
 </div>
@@ -761,18 +761,22 @@ function fitClock(){
 }
 
 /* ══ СОХРАНЕНИЕ ══ */
-const SAVE={coins:0,ach:[],lvCount:[0,0,0,0],ckWins:0};
+const SAVE={coins:0,ach:[],lvCount:[0,0,0,0],ckWins:0,vlWins:0,vlBestSand:0};
 function saveData(){
   localStorage.setItem('cag_coins',SAVE.coins);
   localStorage.setItem('cag_ach',JSON.stringify(SAVE.ach));
   localStorage.setItem('cag_lv_cnt',JSON.stringify(SAVE.lvCount));
   localStorage.setItem('cag_ck_wins',SAVE.ckWins);
+  localStorage.setItem('cag_vl_wins',SAVE.vlWins);
+  localStorage.setItem('cag_vl_best',SAVE.vlBestSand);
 }
 function loadData(){
   SAVE.coins=parseInt(localStorage.getItem('cag_coins')||'0');
   try{SAVE.ach=JSON.parse(localStorage.getItem('cag_ach')||'[]');}catch(e){SAVE.ach=[];}
   try{SAVE.lvCount=JSON.parse(localStorage.getItem('cag_lv_cnt')||'[0,0,0,0]');}catch(e){SAVE.lvCount=[0,0,0,0];}
   SAVE.ckWins=parseInt(localStorage.getItem('cag_ck_wins')||'0');
+  SAVE.vlWins=parseInt(localStorage.getItem('cag_vl_wins')||'0');
+  SAVE.vlBestSand=parseInt(localStorage.getItem('cag_vl_best')||'0');
 }
 loadData();
 // стартовый бонус 500 монет отключён
@@ -807,6 +811,12 @@ const ACHIEVEMENTS=[
   {id:'ck3', icon:'🌌', name:'Магистр временного хаоса',     desc:'Победи в «Хранителях Времени» 3 раза',  cond:s=>s.ckWins>=3},
   {id:'ck4', icon:'⚛️', name:'Академик часовой переменной',  desc:'Победи в «Хранителях Времени» 4 раза',  cond:s=>s.ckWins>=4},
   {id:'ck5', icon:'👑', name:'Профессор минутного постоянства', desc:'Победи в «Хранителях Времени» 5 раз', cond:s=>s.ckWins>=5},
+  // ── ВЛАСТЕЛИНЫ ВРЕМЕНИ ──
+  {id:'vl1',  icon:'🎯', name:'Путешественник по циферблату', desc:'Пройди «Властелины Времени» 1 раз',  cond:s=>s.vlWins>=1},
+  {id:'vl3',  icon:'⏳', name:'Собиратель песка времени',      desc:'Пройди «Властелины Времени» 3 раза', cond:s=>s.vlWins>=3},
+  {id:'vl5',  icon:'🌟', name:'Мастер секторов',                desc:'Пройди «Властелины Времени» 5 раз',  cond:s=>s.vlWins>=5},
+  {id:'vl10', icon:'👑', name:'Властелин Времени',              desc:'Пройди «Властелины Времени» 10 раз', cond:s=>s.vlWins>=10},
+  {id:'vl50', icon:'💎', name:'Легенда циферблата',             desc:'Пройди «Властелины Времени» 50 раз', cond:s=>s.vlWins>=50},
 ];
 function checkAchievements(){
   ACHIEVEMENTS.forEach(a=>{
@@ -1656,9 +1666,30 @@ function vlExamAnswer(idx){
 }
 
 function vlShowWin(){
+  // Сохраняем прогресс
+  SAVE.vlWins++;
+  if(vlState.sand > SAVE.vlBestSand) SAVE.vlBestSand = vlState.sand;
+  saveData();
+  checkAchievements();
+
+  // Финальная концовка
+  const VL_ENDINGS = [
+    {title:'⏳ ВЛАСТЕЛИН ВРЕМЕНИ', text:'Циферблат покорён. Песок времени подчиняется тебе. Ты прошёл все сектора — от зелёных до красных — и сдал финальный экзамен. История часов раскрыта.', icon:'🏆'},
+    {title:'🌟 МАСТЕР ЦИФЕРБЛАТА', text:'От первых минут до последних секунд — ты овладел временем. Сектора сложности пройдены, экзамен сдан. Ты — настоящий Властелин Времени.', icon:'🌟'},
+    {title:'⚡ ПОВЕЛИТЕЛЬ СТРЕЛОК', text:'Часовая, минутная, секундная — все стрелки танцуют под твою дудку. Ты прошёл путь от зелёного сектора до финального экзамена. Время повержено.', icon:'⚡'},
+    {title:'🔮 ХРАНИТЕЛЬ ВЕЧНОСТИ', text:'Песок времени собран, экзамен пройден. Ты больше не ученик — ты Властелин. Каждый угол, каждый интервал, каждый такт — теперь твои.', icon:'🔮'},
+  ];
+  const ending = VL_ENDINGS[SAVE.vlWins % VL_ENDINGS.length];
+  const rank = SAVE.vlWins >= 50 ? '💎 Легенда циферблата' : SAVE.vlWins >= 10 ? '👑 Властелин Времени' : SAVE.vlWins >= 5 ? '🌟 Мастер секторов' : SAVE.vlWins >= 3 ? '⏳ Собиратель песка времени' : '🎯 Путешественник по циферблату';
+
   document.getElementById('vl-exam-area').style.display='none';
   document.getElementById('vl-win-screen').style.display='block';
   document.getElementById('vl-win-sand').innerHTML=
+    '<div style="font-size:2.5rem;margin-bottom:8px;">'+ending.icon+'</div>'+
+    '<div style="font-size:.85rem;color:#ffd700;font-family:Orbitron,monospace;letter-spacing:1px;margin-bottom:8px;">'+ending.title+'</div>'+
+    '<div style="font-size:.72rem;color:#aabbcc;line-height:1.6;margin-bottom:14px;">'+ending.text+'</div>'+
+    '<div style="font-size:.72rem;color:#bb88ff;margin-bottom:4px;">Текущий титул: <b>'+rank+'</b></div>'+
+    '<div style="font-size:.7rem;color:#667;margin-bottom:14px;">Побед: <b style="color:#ffd700">'+SAVE.vlWins+'</b> · Рекорд жетонов: <b style="color:#ffd700">'+SAVE.vlBestSand+'⏳</b></div>'+
     '⏳ Жетонов собрано: <b style="color:#ffd700">'+vlState.sand+'</b><br>'+
     '✅ Правильных ответов в экзамене: <b style="color:#00ff88">'+vlState.examCorrect+'/5</b>';
 }
