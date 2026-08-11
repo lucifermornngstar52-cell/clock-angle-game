@@ -52,21 +52,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
 </head>
 <body>
 <div id="toast"></div>
-<div class="screen" id="sAuth" style="justify-content:center;align-items:center;min-height:100vh;padding:20px;">
-  <div style="text-align:center;margin-bottom:30px;">
-    <div style="font-size:3rem;">⏰</div>
-    <div style="font-size:1.2rem;color:#fff;font-weight:bold;margin-top:10px;">Хранители Времени</div>
-    <div style="font-size:.6rem;color:var(--dg);margin-top:5px;">Войди чтобы сохранять прогресс</div>
-  </div>
-  <div style="width:100%;max-width:320px;">
-    <input id="authEmail" type="email" placeholder="Email" style="width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:#fff;font-size:.8rem;margin-bottom:10px;outline:none;">
-    <input id="authName" type="text" placeholder="Имя (необязательно)" style="width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;color:#fff;font-size:.8rem;margin-bottom:10px;outline:none;">
-    <div id="authErr" style="color:var(--y);font-size:.6rem;min-height:20px;margin-bottom:8px;"></div>
-    <button onclick="doAuth()" style="width:100%;background:linear-gradient(135deg,var(--c1),#0099aa);color:#001;border:none;border-radius:10px;padding:14px;font-size:.8rem;font-weight:bold;cursor:pointer;margin-bottom:8px;">ВОЙТИ</button>
-    <button onclick="skipAuth()" style="width:100%;background:var(--panel);color:var(--dg);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.7rem;cursor:pointer;">Играть без входа</button>
-  </div>
-</div>
-<div class="screen hidden" id="sMenu">
+<div class="screen" id="sMenu">
   <div class="pg-header">
     <button class="pg-back" onclick="goHome()">&#8592; МЕНЮ</button>
     <div class="pg-title">&#9881; МИНИ-ИГРЫ</div>
@@ -79,44 +65,6 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
     <button class="btn btn-g" onclick="showShop()" style="flex:1;font-size:.7rem;padding:12px;">МАГАЗИН</button>
   </div>
   <button class="btn btn-gray" onclick="showLeaderboard()" style="width:100%;max-width:420px;margin:0 auto 16px;display:block;font-size:.7rem;padding:12px;">ТАБЛИЦА ЛИДЕРОВ</button>
-</div>
-
-
-<div class="screen hidden" id="sLB" style="justify-content:flex-start;align-items:center;min-height:100vh;overflow-y:auto;padding:60px 10px 20px;">
-  <div class="pg-header" style="position:fixed;top:0;width:100%;max-width:420px;z-index:10;">
-    <button class="pg-back" onclick="showS('sMenu')">&#8592;</button>
-    <div class="pg-title"> ТАБЛИЦА ЛИДЕРОВ</div>
-    <div class="pg-stars"></div>
-  </div>
-  <div id="lbList" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:6px;margin-top:10px;"></div>
-</div>
-</div>
-
-<div class="screen hidden" id="sTournament" style="justify-content:flex-start;align-items:center;min-height:100vh;overflow-y:auto;padding:60px 10px 20px;">
-  <div class="pg-header" style="position:fixed;top:0;width:100%;max-width:420px;z-index:10;">
-    <button class="pg-back" onclick="showS('sMenu')">&#8592;</button>
-    <div class="pg-title"> ТУРНИР</div>
-    <div class="pg-stars">🪙 <span id="tCoins">0</span></div>
-  </div>
-  <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;width:100%;max-width:380px;margin-bottom:10px;text-align:center;">
-    <div style="font-size:.7rem;color:var(--c1);letter-spacing:1px;">НЕДЕЛЬНЫЙ ТУРНИР</div>
-    <div style="font-size:.55rem;color:var(--dg);margin-top:4px;">Топ-3 получают монеты: 🥇100 🥈50 🥉25</div>
-    <div style="font-size:.55rem;color:var(--dg);">Очки = шестерёнки + победы×10</div>
-  </div>
-  <div id="tList" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:6px;"></div>
-</div>
-
-<div class="screen hidden" id="sShop" style="justify-content:flex-start;align-items:center;min-height:100vh;overflow-y:auto;padding:60px 10px 20px;">
-  <div class="pg-header" style="position:fixed;top:0;width:100%;max-width:420px;z-index:10;">
-    <button class="pg-back" onclick="showS('sMenu')">&#8592;</button>
-    <div class="pg-title"> МАГАЗИН</div>
-    <div class="pg-stars">🪙 <span id="sCoins">0</span></div>
-  </div>
-  <div style="width:100%;max-width:380px;display:flex;gap:8px;margin-bottom:12px;">
-    <button onclick="claimDaily()" class="btn btn-g" style="flex:1;font-size:.65rem;padding:12px;">🎁 ЕЖЕДНЕВНЫЙ БОНУС +5</button>
-    <button onclick="watchAd()" class="btn btn-g" style="flex:1;font-size:.65rem;padding:12px;">📺 РЕКЛАМА +3</button>
-  </div>
-  <div id="shopList" style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:8px;"></div>
 </div>
 <div class="screen hidden" id="sResult">
   <div class="result-box">
@@ -148,14 +96,14 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <defs><filter id="gl1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
       <circle cx="115" cy="115" r="110" fill="rgba(0,0,0,.85)" stroke="rgba(0,245,255,.3)" stroke-width="2"/>
       <g id="g1mk"></g><g id="g1nm"></g>
-      <line id="g1hr" x1="115" y1="125" x2="115" y2="52" stroke="#ff00aa" stroke-width="8" stroke-linecap="round" transform="rotate(0 115 115)" style="cursor:grab"/>
-      <line id="g1mn" x1="115" y1="128" x2="115" y2="18" stroke="#00f5ff" stroke-width="5" stroke-linecap="round" transform="rotate(0 115 115)" style="cursor:grab"/>
+      <line id="g1hr" x1="115" y1="125" x2="115" y2="48" stroke="#ff3399" stroke-width="9" stroke-linecap="round" filter="drop-shadow(0 0 4px #ff00aa)" transform="rotate(0 115 115)" style="cursor:grab"/>
+      <line id="g1mn" x1="115" y1="128" x2="115" y2="14" stroke="#00ddff" stroke-width="6" stroke-linecap="round" filter="drop-shadow(0 0 4px #00f5ff)" transform="rotate(0 115 115)" style="cursor:grab"/>
       <circle cx="115" cy="115" r="8" fill="#fff" filter="url(#gl1)"/>
       <circle cx="115" cy="115" r="4" fill="#0a0a2a"/>
       <rect x="76" y="142" width="78" height="24" rx="5" fill="rgba(0,0,0,.9)" stroke="rgba(0,245,255,.25)"/>
       <text id="g1dt" x="115" y="159" text-anchor="middle" font-family="Orbitron,monospace" font-size="14" fill="#00f5ff">00:00</text>
-      <circle id="g1hitH" cx="115" cy="115" r="70" fill="transparent" style="cursor:grab;pointer-events:all;"/>
-      <circle id="g1hitM" cx="115" cy="115" r="100" fill="transparent" style="cursor:grab;pointer-events:none;"/>
+      <circle id="g1hitM" cx="115" cy="115" r="108" fill="transparent" style="cursor:grab;pointer-events:all;"/>
+      <circle id="g1hitH" cx="115" cy="115" r="72" fill="transparent" style="cursor:grab;pointer-events:all;"/>
     </svg>
   </div>
   <div style="font-size:.6rem;color:var(--dg);text-align:center;">Перетащи стрелки &#183; Синяя=минуты &#183; Розовая=часы</div>
@@ -178,7 +126,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <defs><filter id="gl2"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
       <circle cx="105" cy="105" r="100" fill="rgba(0,0,0,.7)" stroke="rgba(0,245,255,.2)" stroke-width="2"/>
       <g id="g2tk"></g>
-      <line id="g2sc" x1="105" y1="105" x2="105" y2="14" stroke="#00ff88" stroke-width="2.5" stroke-linecap="round" filter="url(#gl2)" transform="rotate(0 105 105)"/>
+      <line id="g2sc" x1="105" y1="105" x2="105" y2="10" stroke="#00ff88" stroke-width="4" stroke-linecap="round" filter="drop-shadow(0 0 6px #00ff88)" transform="rotate(0 105 105)"/>
       <circle cx="105" cy="105" r="4" fill="#fff"/>
       <text id="g2lt" x="105" y="135" text-anchor="middle" font-family="Orbitron,monospace" font-size="11" fill="rgba(255,255,255,.35)">0 кр.</text>
     </svg>
@@ -208,8 +156,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <circle cx="100" cy="100" r="95" fill="rgba(0,0,0,.85)" stroke="rgba(0,245,255,.25)" stroke-width="2"/>
       <g id="g3mk"></g>
       <path id="g3arc" d="" fill="none" stroke="rgba(255,215,0,.45)" stroke-width="2.5"/>
-      <line id="g3hr" x1="100" y1="100" x2="100" y2="48" stroke="#ff00aa" stroke-width="4.5" stroke-linecap="round" transform="rotate(0 100 100)"/>
-      <line id="g3mn" x1="100" y1="100" x2="100" y2="14" stroke="#00f5ff" stroke-width="3" stroke-linecap="round" transform="rotate(0 100 100)"/>
+      <line id="g3hr" x1="100" y1="100" x2="100" y2="42" stroke="#ff3399" stroke-width="6" stroke-linecap="round" filter="drop-shadow(0 0 4px #ff00aa)" transform="rotate(0 100 100)"/>
+      <line id="g3mn" x1="100" y1="100" x2="100" y2="10" stroke="#00ddff" stroke-width="4.5" stroke-linecap="round" filter="drop-shadow(0 0 4px #00f5ff)" transform="rotate(0 100 100)"/>
       <circle cx="100" cy="100" r="4" fill="#fff"/>
     </svg>
   </div>
@@ -233,8 +181,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
     <svg id="g4real" viewBox="0 0 140 140" width="140" height="140" style="display:block;margin:0 auto;">
       <circle cx="70" cy="70" r="66" fill="rgba(0,0,0,.85)" stroke="rgba(0,245,255,.3)" stroke-width="2"/>
       <g id="g4rm"></g>
-      <line id="g4rhr" x1="70" y1="70" x2="70" y2="34" stroke="#ff00aa" stroke-width="4" stroke-linecap="round" transform="rotate(0 70 70)"/>
-      <line id="g4rmn" x1="70" y1="70" x2="70" y2="11" stroke="#00f5ff" stroke-width="2.5" stroke-linecap="round" transform="rotate(0 70 70)"/>
+      <line id="g4rhr" x1="70" y1="70" x2="70" y2="30" stroke="#ff3399" stroke-width="5" stroke-linecap="round" filter="drop-shadow(0 0 3px #ff00aa)" transform="rotate(0 70 70)"/>
+      <line id="g4rmn" x1="70" y1="70" x2="70" y2="8" stroke="#00ddff" stroke-width="3.5" stroke-linecap="round" filter="drop-shadow(0 0 3px #00f5ff)" transform="rotate(0 70 70)"/>
       <circle cx="70" cy="70" r="3.5" fill="#fff"/>
     </svg>
     <div style="font-size:.6rem;color:var(--dg);margin-top:4px;">Время: <span id="g4rt" style="color:var(--c1);font-family:'Orbitron',monospace;"></span></div>
@@ -284,8 +232,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <circle cx="110" cy="110" r="105" fill="rgba(0,0,0,.85)" stroke="rgba(123,47,255,.4)" stroke-width="2"/>
       <g id="g6mk"></g>
       <path id="g6arc" d="" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="6"/>
-      <line id="g6hr" x1="110" y1="110" x2="110" y2="55" stroke="#ff00aa" stroke-width="6" stroke-linecap="round" transform="rotate(0 110 110)"/>
-      <line id="g6mn" x1="110" y1="110" x2="110" y2="14" stroke="#00f5ff" stroke-width="4" stroke-linecap="round" transform="rotate(0 110 110)"/>
+      <line id="g6hr" x1="110" y1="110" x2="110" y2="48" stroke="#ff3399" stroke-width="7" stroke-linecap="round" filter="drop-shadow(0 0 5px #ff00aa)" transform="rotate(0 110 110)"/>
+      <line id="g6mn" x1="110" y1="110" x2="110" y2="10" stroke="#00ddff" stroke-width="5" stroke-linecap="round" filter="drop-shadow(0 0 5px #00f5ff)" transform="rotate(0 110 110)"/>
       <circle cx="110" cy="110" r="6" fill="#fff" filter="url(#gl6)"/>
       <text id="g6at" x="110" y="172" text-anchor="middle" font-family="Orbitron,monospace" font-size="11" fill="rgba(255,255,255,.3)">delta=?</text>
     </svg>
@@ -398,7 +346,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
 </div>
 <script>
 const SCREENS=['sAuth','sMenu','sResult','sTournament','sShop','sLB','sG1','sG2','sG3','sG4','sG5','sG6','sG7','sG8','sG9','sG10'];
-function showS(id){SCREENS.forEach(s=>{const e=document.getElementById(s);if(e)e.classList.add('hidden');});const t=document.getElementById(id);if(t){t.classList.remove('hidden');}else{console.error('Screen not found:',id);}}
+function showS(id){SCREENS.forEach(s=>{const e=document.getElementById(s);if(e)e.classList.add('hidden');});const t=document.getElementById(id);if(t)t.classList.remove('hidden');}
 
 // SAVE
 function getG(){return parseInt(localStorage.getItem('mg_gears')||'0');}
@@ -448,45 +396,51 @@ function showResult(g,max,title,sub,nextFn){
   _rNext=nextFn;showS('sResult');}
 function resultNext(){if(_rNext)_rNext();}
 
-function award(n,gid){
-  addG(n);setBest(gid,n);toast('\u2699 +'+n+' жетонов!');
-  var names={1:'Довези автобус',2:'Поймай секунду',3:'Угол времени',4:'Мир зеркал',5:'Раскол времени',6:'Синхронизация',7:'Архитектор циферблата',8:'Построй треугольник',9:'Марсианский календарь',10:'Спаси навигатор'};
-  if(isAuthorized()){
-    syncProgress(names[gid]||('game'+gid),n,0);
-    supabaseTournamentScore(n, n);
-  }
-}
+function award(n,gid){addG(n);setBest(gid,n);toast('\u2699 +'+n+' жетонов!');}
 
 // MENU
 const GAMES=[
-  {id:1,icon:'\u23F0',name:'ДОВЕЗИ\nАВТОБУС',desc:'Перетащи стрелки на время прибытия'},
-  {id:2,icon:'\u{1F552}',name:'ПОЙМАЙ\nСЕКУНДУ',desc:'Нажми после N кругов стрелки'},
-  {id:3,icon:'\u{1F4D0}',name:'УГОЛ\nВРЕМЕНИ',desc:'Выстави угол между стрелками'},
-  {id:4,icon:'\u{1FA9E}',name:'МИР\nЗЕРКАЛ',desc:'Найди зеркальное отражение часов'},
-  {id:5,icon:'\u{1F9E9}',name:'РАСКОЛ\nВРЕМЕНИ',desc:'Раздели циферблат на равные суммы'},
-  {id:6,icon:'\u2699',name:'СИНХРО-\nНИЗАЦИЯ',desc:'Останови стрелки в момент совпадения'},
-  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с одинаковой суммой 26'},
-  {id:8,icon:'\u{1F53A}',name:'ПОСТРОЙ\nТРЕУГОЛЬНИК',desc:'Геометрия на циферблате'},
-  {id:9,icon:'\u{1F680}',name:'МАРСИАНСКИЙ\nКАЛЕНДАРЬ',desc:'Земное время в марсианское'},
-  {id:10,icon:'\u{1F6F0}',name:'СПАСИ\nНАВИГАТОР',desc:'Откалибруй GPS по Эйнштейну'},
+  {id:1,icon:'\u23F0',name:'ДОВЕЗИ\nАВТОБУС',desc:'Перетащи стрелки на время прибытия',grade:'5-6'},
+  {id:2,icon:'\u{1F552}',name:'ПОЙМАЙ\nСЕКУНДУ',desc:'Нажми после N кругов стрелки',grade:'5-6'},
+  {id:4,icon:'\u{1FA9E}',name:'МИР\nЗЕРКАЛ',desc:'Найди зеркальное отражение часов',grade:'5-6'},
+  {id:3,icon:'\u{1F4D0}',name:'УГОЛ\nВРЕМЕНИ',desc:'Выстави угол между стрелками',grade:'6-7'},
+  {id:6,icon:'\u2699',name:'СИНХРО-\nНИЗАЦИЯ',desc:'Останови стрелки в момент совпадения',grade:'6-7'},
+  {id:5,icon:'\u{1F9E9}',name:'РАСКОЛ\nВРЕМЕНИ',desc:'Раздели циферблат на равные суммы',grade:'7-8'},
+  {id:7,icon:'\u2702',name:'АРХИТЕКТОР\nЦИФЕРБЛАТА',desc:'6 частей с равной суммой 13',grade:'7-8'},
+  {id:8,icon:'\u{1F53A}',name:'ПОСТРОЙ\nТРЕУГОЛЬНИК',desc:'Геометрия на циферблате',grade:'8-9'},
+  {id:9,icon:'\u{1F680}',name:'МАРСИАНСКИЙ\nКАЛЕНДАРЬ',desc:'Земное время в марсианское',grade:'9-10'},
+  {id:10,icon:'\u{1F6F0}',name:'СПАСИ\nНАВИГАТОР',desc:'Откалибруй GPS по Эйнштейну',grade:'10-11'},
 ];
 
 function buildMenu(){
-  var gridEl=document.getElementById('gameGrid');
-  if(!gridEl)return;
-  gridEl.innerHTML='';
-  GAMES.forEach(g=>{
-    var div=document.createElement('div');div.className='mg-card';
-    var best=getBest(g.id);
-    div.innerHTML='<div class="mg-icon">'+g.icon+'</div><div class="mg-name">'+g.name.replace('\n','<br>')+'</div><div class="mg-desc">'+g.desc+'</div><div class="mg-best">'+(best>0?'\u2699'+best:'\u2699\u2014')+'</div>';
-    div.onclick=function(){startGame(g.id);};
-    gridEl.appendChild(div);
+  var grid=document.getElementById('gameGrid');grid.innerHTML='';
+  var grades={
+    '5-6':'📖 5–6 КЛАСС',
+    '6-7':'📗 6–7 КЛАСС',
+    '7-8':'📘 7–8 КЛАСС',
+    '8-9':'📙 8–9 КЛАСС',
+    '9-10':'🗚 9–10 КЛАСС',
+    '10-11':'🗚 10–11 КЛАСС'
+  };
+  var gradeOrder=['5-6','6-7','7-8','8-9','9-10','10-11'];
+  gradeOrder.forEach(function(gr){
+    var games=GAMES.filter(function(g){return g.grade===gr;});
+    if(games.length===0)return;
+    var hdr=document.createElement('div');
+    hdr.style.cssText='grid-column:1/-1;text-align:center;font-size:.5rem;letter-spacing:3px;color:var(--c2);padding:14px 0 4px;border-bottom:1px solid rgba(0,245,255,.1);margin-bottom:6px;';
+    hdr.textContent=grades[gr];
+    grid.appendChild(hdr);
+    games.forEach(function(g){
+      var div=document.createElement('div');div.className='mg-card';
+      var best=getBest(g.id);
+      div.innerHTML='<div class="mg-icon">'+g.icon+'</div><div class="mg-name">'+g.name.replace('\\n','<br>')+'</div><div class="mg-desc">'+g.desc+'</div><div class="mg-best">'+(best?'🏆 '+best:'')+'</div>';
+      div.onclick=function(){startGame(g.id);};grid.appendChild(div);
+    });
   });
   updG();
 }
-
 function goHome(){if(document.referrer)history.back();else window.location.href='index.html';}
-function backToMenu(){stopAll();showS('sMenu');buildMenu();loadStats();}
+function backToMenu(){stopAll();showS('sMenu');buildMenu();}
 function startGame(id){stopAll();switch(id){case 1:g1Init();break;case 2:g2Init();break;case 3:g3Init();break;case 4:g4Init();break;case 5:g5Init();break;case 6:g6Init();break;case 7:g7Init();break;case 8:g8Init();break;case 9:g9Init();break;case 10:g10Init();break;}}
 
 // ═══ G1 АВТОБУС ═══
@@ -498,7 +452,7 @@ function g1Init(){
   var svg=document.getElementById('g1svg');
   var drag=null;
   function ang(e){var rc=svg.getBoundingClientRect();var tc=e.touches?e.touches[0]:e;if(!tc&&e.changedTouches)tc=e.changedTouches[0];var x=(tc.clientX-rc.left)-rc.width/2,y=(tc.clientY-rc.top)-rc.height/2;return(Math.atan2(y,x)*180/Math.PI+90+360)%360;}
-  function sd(e,h){drag=h;e.preventDefault();e.stopPropagation();}
+  function sd(e,h){drag=h;g1._lastA=ang(e);e.preventDefault();e.stopPropagation();}
   var hrEl=document.getElementById('g1hr');
   var mnEl=document.getElementById('g1mn');
   var hitH=document.getElementById('g1hitH');
@@ -515,16 +469,18 @@ function g1Init(){
   mnEl.addEventListener('mousedown',function(e){sd(e,'m');});
   function mv(e){if(!drag)return;e.preventDefault();var a=ang(e);
     if(drag==='h'){
-      g1.hrD=a;
-      hrEl.setAttribute('transform','rotate('+a+' 115 115)');
+      var dh=a-g1._lastA;
+      if(dh>180)dh-=360; if(dh<-180)dh+=360;
+      g1.hrD+=dh;
+      g1._lastA=a;
+      hrEl.setAttribute('transform','rotate('+g1.hrD+' 115 115)');
     } else {
-      var oldMn=g1.mnD;
-      var delta=a-oldMn;
-      if(delta>180)delta-=360;if(delta<-180)delta+=360;
-      g1.mnD=a;
-      mnEl.setAttribute('transform','rotate('+a+' 115 115)');
-      g1.hrD+=delta/12;
-      g1.hrD=((g1.hrD%360)+360)%360;
+      var dm=a-g1._lastA;
+      if(dm>180)dm-=360; if(dm<-180)dm+=360;
+      g1.mnD+=dm;
+      g1._lastA=a;
+      mnEl.setAttribute('transform','rotate('+g1.mnD+' 115 115)');
+      g1.hrD=g1.mnD/12;
       hrEl.setAttribute('transform','rotate('+g1.hrD+' 115 115)');
     }
     var m=Math.round(g1.mnD/6)%60;
@@ -552,10 +508,9 @@ function g1Next(){
   document.getElementById('g1mn').setAttribute('transform','rotate(0 115 115)');
   document.getElementById('g1dt').textContent='00:00';}
 function g1Confirm(){
-  const m=Math.round(g1.mnD/6)%60,h=Math.round(g1.hrD/30)%24;
-  if(h<0)h+=24;if(m<0)m+=60;
-  const th=g1.tgt.h,tm=g1.tgt.m;
-  var dh=Math.abs(h-th);if(dh>12)dh=24-dh;var dm=Math.abs(m-tm);
+  const m=((Math.round(g1.mnD/6)%60)+60)%60,h=((Math.round(g1.hrD/30)%24)+24)%24;
+  const th=((g1.tgt.h%24)+24)%24,tm=g1.tgt.m;
+  const dh=Math.abs(h-th),dm=Math.abs(m-tm);
   const fb=document.getElementById('g1fb');
   let ge=0;
   if(dh===0&&dm<=3){ge=3;fb.textContent='\u2705 Верно! +3\u2699';fb.style.color='var(--g)';g1.score++;}
@@ -572,12 +527,12 @@ function g2Init(){
     const l=document.createElementNS('http://www.w3.org/2000/svg','line');
     l.setAttribute('x1',105+r1*Math.cos(a));l.setAttribute('y1',105+r1*Math.sin(a));
     l.setAttribute('x2',105+r2*Math.cos(a));l.setAttribute('y2',105+r2*Math.sin(a));
-    l.setAttribute('stroke',maj?'rgba(0,255,136,.7)':'rgba(0,255,136,.2)');l.setAttribute('stroke-width',maj?'2':'1');
+    l.setAttribute('stroke',maj?'rgba(0,255,136,.9)':'rgba(0,255,136,.35)');l.setAttribute('stroke-width',maj?'2.5':'1.5');
     tk.appendChild(l);}
   g2={round:0,totalG:0};g2Next();showS('sG2');}
 function g2Next(){
   if(g2.round>=5){award(g2.totalG,2);showResult(g2.totalG,15,'\u23F1 РЕФЛЕКСЫ!','Жетонов: '+g2.totalG+'/15',null);return;}
-  g2.target=g2.round+1;g2.speed=2+g2.round*0.65;g2.running=false;
+  var G2TASKS=[15,75,30,60,45];g2.target=G2TASKS[g2.round]||5;g2.speed=2+g2.round*0.65;g2.running=false;
   document.getElementById('g2R').textContent=(g2.round+1)+'/5';
   document.getElementById('g2Ac').textContent='-';document.getElementById('g2Laps').textContent=g2.target;
   document.getElementById('g2dp').textContent='0 кр.';document.getElementById('g2fb').textContent='';
@@ -609,7 +564,7 @@ function g2Tap(){
   g2.round++;reg(setTimeout(g2Next,2100));}
 
 // ═══ G3 УГОЛ ═══
-const G3T=[{h:3,m:0,a:90},{h:6,m:0,a:180},{h:12,m:0,a:0},{h:9,m:0,a:270},{h:3,m:30,a:105},{h:6,m:30,a:15},{h:1,m:0,a:30},{h:4,m:0,a:120},{h:2,m:0,a:60},{h:10,m:30,a:135}];
+const G3T=[{h:15,m:30,a:75},{h:16,m:10,a:65},{h:12,m:15,a:90},{h:8,m:0,a:120},{h:6,m:0,a:180},{h:3,m:0,a:90},{h:20,m:20,a:130},{h:18,m:0,a:180},{h:14,m:50,a:25},{h:12,m:30,a:165}];
 let g3={};
 function g3Init(){drawMarks(document.getElementById('g3mk'),null,100,100,93,10);g3={round:0,score:0,gears:0};g3Next();showS('sG3');}
 function g3Next(){
@@ -638,15 +593,15 @@ function g3Confirm(){
   g3.round++;reg(setTimeout(g3Next,1900));}
 
 // ═══ G4 ЗЕРКАЛА ═══
-const G4T=[{h:3,m:0},{h:9,m:15},{h:7,m:45},{h:1,m:30},{h:10,m:10},{h:4,m:20},{h:2,m:55},{h:11,m:5},{h:8,m:40},{h:6,m:25}];
+const G4T=[{h:9,m:20},{h:11,m:15},{h:17,m:55},{h:6,m:45},{h:10,m:10},{h:12,m:35},{h:3,m:0},{h:7,m:30},{h:8,m:40},{h:6,m:25}];
 let g4={};
 function g4Mirror(h,m){const md=(m/60)*360,hd=((h%12)/12)*360+(m/60)*30;return{md:(360-md)%360,hd:(360-hd)%360};}
 function g4MiniClock(svg,hd,md){
   svg.innerHTML='';const cx=70,cy=70,r=64;
   const bg=document.createElementNS('http://www.w3.org/2000/svg','circle');bg.setAttribute('cx',cx);bg.setAttribute('cy',cy);bg.setAttribute('r',r);bg.setAttribute('fill','rgba(0,0,0,.85)');bg.setAttribute('stroke','rgba(0,245,255,.25)');bg.setAttribute('stroke-width','1.5');svg.appendChild(bg);
   for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2-Math.PI/2;const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',cx+(r-6)*Math.cos(a));l.setAttribute('y1',cy+(r-6)*Math.sin(a));l.setAttribute('x2',cx+(r-1)*Math.cos(a));l.setAttribute('y2',cy+(r-1)*Math.sin(a));l.setAttribute('stroke','rgba(0,245,255,.4)');l.setAttribute('stroke-width','1.5');svg.appendChild(l);}
-  const hr=document.createElementNS('http://www.w3.org/2000/svg','line');hr.setAttribute('x1',cx);hr.setAttribute('y1',cy);hr.setAttribute('x2',cx);hr.setAttribute('y2',cy-(r-20));hr.setAttribute('stroke','#ff00aa');hr.setAttribute('stroke-width','3.5');hr.setAttribute('stroke-linecap','round');hr.setAttribute('transform','rotate('+hd+' '+cx+' '+cy+')');svg.appendChild(hr);
-  const mn=document.createElementNS('http://www.w3.org/2000/svg','line');mn.setAttribute('x1',cx);mn.setAttribute('y1',cy);mn.setAttribute('x2',cx);mn.setAttribute('y2',cy-(r-6));mn.setAttribute('stroke','#00f5ff');mn.setAttribute('stroke-width','2');mn.setAttribute('stroke-linecap','round');mn.setAttribute('transform','rotate('+md+' '+cx+' '+cy+')');svg.appendChild(mn);
+  const hr=document.createElementNS('http://www.w3.org/2000/svg','line');hr.setAttribute('x1',cx);hr.setAttribute('y1',cy);hr.setAttribute('x2',cx);hr.setAttribute('y2',cy-(r-20));hr.setAttribute('stroke','#ff3399');hr.setAttribute('stroke-width','4.5');hr.setAttribute('filter','drop-shadow(0 0 3px #ff00aa)');hr.setAttribute('stroke-linecap','round');hr.setAttribute('transform','rotate('+hd+' '+cx+' '+cy+')');svg.appendChild(hr);
+  const mn=document.createElementNS('http://www.w3.org/2000/svg','line');mn.setAttribute('x1',cx);mn.setAttribute('y1',cy);mn.setAttribute('x2',cx);mn.setAttribute('y2',cy-(r-6));mn.setAttribute('stroke','#00ddff');mn.setAttribute('stroke-width','3');mn.setAttribute('filter','drop-shadow(0 0 3px #00f5ff)');mn.setAttribute('stroke-linecap','round');mn.setAttribute('transform','rotate('+md+' '+cx+' '+cy+')');svg.appendChild(mn);
   const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('cx',cx);dot.setAttribute('cy',cy);dot.setAttribute('r','3');dot.setAttribute('fill','#fff');svg.appendChild(dot);}
 function g4Init(){drawMarks(document.getElementById('g4rm'),null,70,70,63,9);g4={round:0,score:0,gears:0};g4Next();showS('sG4');}
 function g4Next(){
@@ -829,7 +784,7 @@ function g7Render(){
     st.setAttribute('x',cx+lr*Math.cos(maR));st.setAttribute('y',cy+lr*Math.sin(maR));
     st.setAttribute('text-anchor','middle');st.setAttribute('dominant-baseline','central');
     st.setAttribute('font-family','Orbitron,monospace');st.setAttribute('font-size','10');
-    st.setAttribute('fill',parts[pi]===26?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
+    st.setAttribute('fill',parts[pi]===13?'var(--g)':'var(--y)');st.setAttribute('font-weight','bold');
     st.textContent=parts[pi];svg.appendChild(st);}}
   svg.onclick=function(e){if(g7.lines.length>=5){toast('\u041c\u0430\u043a\u0441 5 \u043b\u0438\u043d\u0438\u0439!');return;}
     var rc=svg.getBoundingClientRect();var x=e.clientX-rc.left-rc.width/2,y=e.clientY-rc.top-rc.height/2;
@@ -844,11 +799,11 @@ function g7Parts(){var angs=[0];g7.lines.forEach(function(a){angs.push(((a%360)+
     for(var n=1;n<=12;n++){var na=((n/12)*360)%360;var rel=(na-sa+360)%360,span=(ea-sa+360)%360;if(rel<span)sum+=n;}parts.push(sum);}return parts;}
 function g7UpdateParts(){var parts=g7Parts();var c=document.getElementById('g7parts');
   if(!parts.length){c.innerHTML='';return;}
-  c.innerHTML=parts.map(function(s,i){var ok=s===26;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
+  c.innerHTML=parts.map(function(s,i){var ok=s===13;return '<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:4px 10px;">P'+(i+1)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+s+'</b></div>';}).join('');}
 function g7Reset(){g7.lines=[];document.getElementById('g7L').textContent='0/5';document.getElementById('g7parts').innerHTML='';document.getElementById('g7fb').textContent='';g7Render();}
 function g7Check(){var parts=g7Parts();var fb=document.getElementById('g7fb');
   if(g7.lines.length<5){fb.textContent='\u041d\u0443\u0436\u043d\u043e 5 \u043b\u0438\u043d\u0438\u0439!';fb.style.color='var(--y)';return;}
-  var ok=parts.every(function(s){return s===26;});
+  var ok=parts.every(function(s){return s===13;});
   if(ok){fb.textContent='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0412\u0441\u0435 = 26! +5\u2699';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u0426\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d!',null);},1600);}
   else{var w=parts.filter(function(s){return s!==26;}).length;fb.textContent='\u274C '+w+' \u0447\u0430\u0441\u0442\u0435\u0439 \u043d\u0435\u0432\u0435\u0440\u043d\u044b.';fb.style.color='var(--r)';}}
 // ═══ G8 ТРЕУГОЛЬНИК ═══
@@ -980,572 +935,111 @@ function g10Ans(idx){
 // INIT
 buildMenu();showS('sMenu');
 
-// ═══ SUPABASE INTEGRATION ═══
-// ═══════════════════════════════════════════════════
-// SUPABASE API CLIENT — Хранители Времени
-// Подключение к базе данных Supabase (бесплатно, 24/7)
-// ═══════════════════════════════════════════════════
-
-const SUPABASE_URL = 'https://usulgiwtqdxmgonqhpck.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_8aX2OBxUMsOKWTiGum8dcA_z8-peLRM'; // ← вставь anon public key
-
-// ─── РЕГИСТРАЦИЯ / ВХОД ───
-async function supabaseAuth(email, fullName) {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/auth_user`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ p_email: email, p_name: fullName || null })
-    });
-    const data = await res.json();
-    if (data.ok) {
-      localStorage.setItem('game_email', email);
-      localStorage.setItem('game_user', JSON.stringify(data.user));
-    }
-    return data;
-  } catch (e) {
-    console.error('Auth error:', e);
-    return { ok: false, error: e.message };
+/* ══ АУДИО — Классическая мелодия (Пахельбель Канон) ══ */
+let AC,MG,SG;let mv=.4,sv=.7;
+let bgMelody=null,bgBass=null;
+function initA(){
+  if(AC)return;
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  MG=AC.createGain();MG.gain.value=mv*.25;MG.connect(AC.destination);
+  SG=AC.createGain();SG.gain.value=sv;SG.connect(AC.destination);
+  const melody=[
+    [587.33,1200],[659.25,1200],[739.99,1200],[783.99,1200],
+    [880,1200],[739.99,1200],[783.99,1200],[659.25,1200],
+    [587.33,1200],[659.25,1200],[739.99,1200],[880,1200],
+    [987.77,1200],[880,1200],[783.99,1200],[739.99,1200],
+    [587.33,800],[523.25,400],[587.33,1200],[659.25,1200],
+    [739.99,1200],[659.25,1200],[587.33,1200],[523.25,1200],
+    [493.88,1200],[523.25,1200],[587.33,1200],[659.25,1200],
+    [587.33,1200],[523.25,1200],[493.88,1200],[440,1200]
+  ];
+  const bass=[
+    [146.83,2400],[110,2400],[123.47,2400],[92.5,2400],
+    [98,2400],[146.83,2400],[98,2400],[110,2400],
+    [146.83,2400],[110,2400],[123.47,2400],[92.5,2400],
+    [98,2400],[146.83,2400],[98,2400],[110,2400]
+  ];
+  let mi=0,bi=0;
+  function playNote(freq,dur,type,vol,dest){
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.connect(g);g.connect(dest);o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(0,AC.currentTime);
+    g.gain.linearRampToValueAtTime(vol,AC.currentTime+0.08);
+    g.gain.linearRampToValueAtTime(vol*.7,AC.currentTime+dur*.5);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+dur/1000);
+    o.start(AC.currentTime);o.stop(AC.currentTime+dur/1000+.1);
   }
+  bgMelody=setInterval(()=>{if(!AC||AC.state==='suspended')return;
+    const n=melody[mi++%melody.length];playNote(n[0],n[1],'sine',.3,MG);},1200);
+  bgBass=setInterval(()=>{if(!AC||AC.state==='suspended')return;
+    const b=bass[bi++%bass.length];playNote(b[0],b[1],'sine',.2,MG);},2400);
 }
-
-// ─── СОХРАНИТЬ ПРОГРЕСС МИНИ-ИГРЫ ───
-async function supabaseSaveProgress(minigame, score, gears, completed) {
-  const email = localStorage.getItem('game_email');
-  if (!email) return { ok: false, error: 'Не авторизован' };
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/save_progress`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        p_email: email,
-        p_minigame: minigame,
-        p_score: score || 0,
-        p_gears: gears || 0,
-        p_completed: completed || false
-      })
-    });
-    return await res.json();
-  } catch (e) {
-    console.error('Save error:', e);
-    return { ok: false, error: e.message };
-  }
+function sfx(t){
+  if(!AC)return;
+  if(t==='ok'){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(SG);
+    o.type='sine';o.frequency.setValueAtTime(523,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(784,AC.currentTime+0.1);
+    o.frequency.linearRampToValueAtTime(1047,AC.currentTime+0.2);
+    g.gain.setValueAtTime(.3,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+0.4);
+    o.start(AC.currentTime);o.stop(AC.currentTime+0.4);}
+  else if(t==='no'){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(SG);
+    o.type='sawtooth';o.frequency.setValueAtTime(200,AC.currentTime);
+    o.frequency.linearRampToValueAtTime(80,AC.currentTime+0.3);
+    g.gain.setValueAtTime(.25,AC.currentTime);
+    g.gain.linearRampToValueAtTime(0,AC.currentTime+0.3);
+    o.start(AC.currentTime);o.stop(AC.currentTime+0.3);}
+  else if(t==='up'){const notes=[523,659,784,1047];notes.forEach((f,i)=>{
+    const oo=AC.createOscillator(),gg=AC.createGain();oo.connect(gg);gg.connect(SG);
+    oo.frequency.value=f;gg.gain.setValueAtTime(.25,AC.currentTime+i*0.12);
+    gg.gain.linearRampToValueAtTime(0,AC.currentTime+i*0.12+0.25);
+    oo.start(AC.currentTime+i*0.12);oo.stop(AC.currentTime+i*0.12+0.25);});}
 }
-
-// ─── РЕГИСТРАЦИЯ ПОБЕДЫ ───
-async function supabaseRegisterVictory() {
-  const email = localStorage.getItem('game_email');
-  if (!email) return { ok: false, error: 'Не авторизован' };
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_victory`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ p_mail: email })
-    });
-    return await res.json();
-  } catch (e) {
-    console.error('Victory error:', e);
-    return { ok: false, error: e.message };
-  }
-}
-
-// ─── ПОЛУЧИТЬ ПРОГРЕСС ───
-async function supabaseGetProgress() {
-  const email = localStorage.getItem('game_email');
-  if (!email) return { ok: false, error: 'Не авторизован' };
-
-  try {
-    // Получаем пользователя
-    const userRes = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`
-      }
-    });
-    const userData = await userRes.json();
-
-    // Получаем прогресс
-    const progRes = await fetch(`${SUPABASE_URL}/rest/v1/game_progress?user_email=eq.${encodeURIComponent(email)}`, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`
-      }
-    });
-    const progress = await progRes.json();
-
-    const totalGears = progress.reduce((s, p) => s + (p.gears_earned || 0), 0);
-    const completedGames = progress.filter(p => p.completed).length;
-
-    return {
-      ok: true,
-      user: userData[0] || null,
-      progress: progress,
-      stats: {
-        total_gears: totalGears,
-        completed_games: completedGames,
-        rank: userData[0]?.current_rank || 'Новичок',
-        wins: userData[0]?.total_wins || 0
-      }
-    };
-  } catch (e) {
-    console.error('Get progress error:', e);
-    return { ok: false, error: e.message };
-  }
-}
-
-// ─── ТАБЛИЦА ЛИДЕРОВ ───
-async function supabaseGetLeaderboard(limit = 10) {
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?order=score.desc&limit=${limit}`, {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`
-      }
-    });
-    const data = await res.json();
-    return {
-      ok: true,
-      leaderboard: data.map((p, i) => ({
-        rank: i + 1,
-        name: p.display_name,
-        gears: p.total_gears,
-        wins: p.total_wins,
-        vl_wins: p.vl_wins,
-        score: p.score
-      }))
-    };
-  } catch (e) {
-    console.error('Leaderboard error:', e);
-    return { ok: false, error: e.message };
-  }
-}
-
-// ─── МАТЧМЕЙКИНГ ───
-async function supabaseFindMatch(displayName, peerId) {
-  const email = localStorage.getItem('game_email');
-  if (!email) return { ok: false, error: 'Не авторизован' };
-
-  try {
-    // Проверяем — есть ли уже матч
-    const existingRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/matchmaking?user_email=eq.${encodeURIComponent(email)}&status=in.(waiting,matched,playing)`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
-    );
-    const existing = await existingRes.json();
-    if (existing.length > 0) {
-      return { ok: true, status: existing[0].status, match: existing[0] };
-    }
-
-    // Ищем соперника
-    const waitingRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/matchmaking?status=eq.waiting&user_email=neq.${encodeURIComponent(email)}`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
-    );
-    const waiting = await waitingRes.json();
-
-    if (waiting.length > 0) {
-      const opp = waiting[0];
-      const matchId = 'match_' + Date.now();
-
-      await fetch(`${SUPABASE_URL}/rest/v1/matchmaking?id=eq.${opp.id}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: 'matched', match_id: matchId, opponent_email: email })
-      });
-
-      await fetch(`${SUPABASE_URL}/rest/v1/matchmaking`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          user_email: email,
-          display_name: displayName || email.split('@')[0],
-          status: 'matched',
-          match_id: matchId,
-          peer_id: peerId || '',
-          opponent_email: opp.user_email,
-          created_at: new Date().toISOString()
-        })
-      });
-
-      return {
-        ok: true,
-        status: 'matched',
-        match_id: matchId,
-        opponent: {
-          email: opp.user_email,
-          name: opp.display_name,
-          peer_id: opp.peer_id || ''
-        }
-      };
-    }
-
-    // Встаём в очередь
-    await fetch(`${SUPABASE_URL}/rest/v1/matchmaking`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user_email: email,
-        display_name: displayName || email.split('@')[0],
-        status: 'waiting',
-        peer_id: peerId || '',
-        created_at: new Date().toISOString()
-      })
-    });
-
-    return { ok: true, status: 'waiting', message: 'Поиск соперника...' };
-  } catch (e) {
-    console.error('Matchmaking error:', e);
-    return { ok: false, error: e.message };
-  }
-}
-
-// ─── ЗАВЕРШИТЬ МАТЧ ───
-async function supabaseFinishMatch(matchId, result) {
-  const email = localStorage.getItem('game_email');
-  if (!email) return { ok: false, error: 'Не авторизован' };
-
-  try {
-    await fetch(
-      `${SUPABASE_URL}/rest/v1/matchmaking?user_email=eq.${encodeURIComponent(email)}&match_id=eq.${matchId}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: 'finished' })
-      }
-    );
-
-    if (result === 'win') {
-      const v = await supabaseRegisterVictory();
-      return v;
-    }
-
-    return { ok: true, result: result || 'lose' };
-  } catch (e) {
-    return { ok: false, error: e.message };
-  }
-}
-
-// ─── ПРОВЕРКА АВТОРИЗАЦИИ ───
-function isAuthorized() {
-  return !!localStorage.getItem('game_email');
-}
-
-function getEmail() {
-  return localStorage.getItem('game_email') || '';
-}
-
-function getUser() {
-  try {
-    return JSON.parse(localStorage.getItem('game_user') || 'null');
-  } catch { return null; }
-}
-
-function logout() {
-  localStorage.removeItem('game_email');
-  localStorage.removeItem('game_user');
-}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&AC)AC.suspend();else if(!document.hidden&&AC)AC.resume();});
+window.addEventListener('pagehide',()=>{if(AC)AC.suspend();});
+window.addEventListener('blur',()=>{if(AC)AC.suspend();});
+window.addEventListener('focus',()=>{if(AC&&AC.state==='suspended')AC.resume();});
 
 
-// ═══ AUTH LOGIC ═══
+
+// ═══ SUPABASE ═══
+const SUPABASE_URL='https://usulgiwtqdxmgonqhpck.supabase.co';
+const SUPABASE_KEY='sb_publishable_8aX2OBxUMsOKWTiGum8dcA_z8-peLRM';
+function isAuthorized(){return localStorage.getItem('game_email')!==null;}
+function getEmail(){return localStorage.getItem('game_email')||'';}
+function getUser(){try{return JSON.parse(localStorage.getItem('game_user')||'null');}catch(e){return null;}}
 async function doAuth(){
-  var em=document.getElementById('authEmail').value.trim();
-  var nm=document.getElementById('authName').value.trim();
-  var err=document.getElementById('authErr');
-  if(!em||!em.includes('@')){err.textContent='Введите email';return;}
-  err.textContent='Вход...';
-  var r=await supabaseAuth(em,nm);
-  if(r.ok){
-    err.textContent='';
-    document.getElementById('sAuth').classList.add('hidden');
-    showS('sMenu');
-    buildMenu();
-    updG();
-    loadStats();
-  }else{
-    err.textContent='Ошибка: '+(r.error||'попробуйте снова');
-  }
+  var n=document.getElementById('authName').value.trim(),e=document.getElementById('authEmail').value.trim();
+  if(!e){alert('Введите email');return;}if(!n)n=e.split('@')[0];
+  try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:e,p_name:n})}).then(r=>r.json());
+  if(r.ok){localStorage.setItem('game_email',e);localStorage.setItem('game_user',JSON.stringify(r.user));backToMenu();}else alert('Ошибка');}catch(e){alert('Ошибка сети');}
 }
+function skipAuth(){localStorage.setItem('game_email','guest');backToMenu();}
+async function loadStats(){if(!isAuthorized()||getEmail()==='guest')return;}
+async function syncProgress(g,s,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/save_progress',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_game:g,p_score:s,p_wins:w})});}catch(e){}}
+async function syncVictory(g){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_gears:g})});supabaseTournamentScore(g,1);}catch(e){}}
+async function supabaseTournamentScore(g,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/update_tournament_score',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail(),p_score:g+w*10,p_gears:g})});}catch(e){}}
+async function showTournament(){showS('sTournament');var l=document.getElementById('tList');l.innerHTML='Загрузка...';try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_tournament',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_limit:20})}).then(r=>r.json());if(r.ok&&r.leaderboard&&r.leaderboard.length>0){l.innerHTML=r.leaderboard.map((p,i)=>{var m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);return '<div style="display:flex;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;">'+p.display_name+'<br><small>'+p.gears+'⚙ '+p.wins+'🏆</small></div><div style="color:var(--y);">'+p.score+'</div></div>';}).join('');}else l.innerHTML='Пока нет игроков';}catch(e){l.innerHTML='Ошибка';}}
+async function showShop(){showS('sShop');var c=await getCoins();document.getElementById('shopCoins').textContent='💰'+c;var items=[{id:'hint15',icon:'⏰',name:'+15 мин',cost:10},{id:'hint30',icon:'⏳',name:'+30 мин',cost:18},{id:'showans',icon:'💡',name:'Ответ',cost:20},{id:'shield',icon:'🛡️',name:'Щит',cost:30}];document.getElementById('shopItems').innerHTML=items.map(it=>'<div style="display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;"><div style="font-size:1.2rem;">'+it.icon+'</div><div style="flex:1;">'+it.name+'</div><button onclick="buyItem(\''+it.id+'\','+it.cost+')" style="background:var(--c1);color:#000;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;">'+it.cost+'💰</button></div>').join('');}
+async function getCoins(){if(!isAuthorized()||getEmail()==='guest')return 0;try{var r=await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(getEmail())+'&select=coins',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r[0])return r[0].coins||0;}catch(e){}return 0;}
+async function claimDaily(){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_daily_bonus',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail()})}).then(r=>r.json());if(r.ok){alert('+5 монет!');showShop();}else alert('Уже получено');}catch(e){alert('Ошибка');}}
+async function watchAd(){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_ad_reward',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail()})}).then(r=>r.json());if(r.ok){alert('+3 монеты!');showShop();}else alert('Подождите 30с');}catch(e){alert('Ошибка');}}
+async function buyItem(id,cost){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/spend_coins',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail(),p_amount:cost})}).then(r=>r.json());if(r.ok){alert('Куплено! Остаток: '+r.remaining);showShop();}else alert('Недостаточно: '+r.have+'/'+r.need);}catch(e){alert('Ошибка');}}
+async function showLeaderboard(){showS('sLB');var l=document.getElementById('lbList');l.innerHTML='Загрузка...';try{var r=await fetch(SUPABASE_URL+'/rest/v1/leaderboard?order=score.desc&limit=20',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r.length>0){l.innerHTML=r.map((p,i)=>{var m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);return '<div style="display:flex;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;">'+(p.display_name||p.full_name||'Игрок')+'<br><small>'+(p.total_gears||0)+'⚙ '+(p.total_wins||0)+'🏆</small></div><div style="color:var(--y);">'+(p.score||0)+'</div></div>';}).join('');}else l.innerHTML='Пока нет игроков';}catch(e){l.innerHTML='Ошибка';}}
 
-function skipAuth(){
-  document.getElementById('sAuth').classList.add('hidden');
-  showS('sMenu');
-  buildMenu();
-}
-
-async function loadStats(){
-  if(!isAuthorized())return;
-  var r=await supabaseGetProgress();
-  if(r.ok&&r.user){
-    // Sync local gears with server
-    var serverGears=r.stats.total_gears;
-    var localGears=getG();
-    if(serverGears>localGears){
-      localStorage.setItem('mg_gears',serverGears);
-      updG();
-    }
-    // Show rank
-    var rankEl=document.querySelector('.pg-stars');
-    if(rankEl)rankEl.textContent='⭐ '+r.stats.rank;
-  }
-}
-
-async function showLeaderboard(){
-  showS('sLB');
-  var list=document.getElementById('lbList');
-  list.innerHTML='<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Загрузка...</div>';
-  var r=await supabaseGetLeaderboard(20);
-  if(r.ok&&r.leaderboard.length>0){
-    list.innerHTML=r.leaderboard.map((p,i)=>{
-      var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'<span style="color:var(--dg)">'+(i+1)+'</span>';
-      var me=p.name===getEmail().split('@')[0]||p.name===getUser()?.full_name;
-      return '<div style="display:flex;align-items:center;gap:10px;background:'+(me?'rgba(0,245,255,.08)':'var(--panel)')+';border:1px solid '+(me?'var(--c1)':'var(--border)')+';border-radius:10px;padding:10px 14px;">'
-        +'<div style="font-size:1.2rem;width:30px;text-align:center;">'+medal+'</div>'
-        +'<div style="flex:1;"><div style="font-size:.75rem;color:'+(me?'var(--c1)':'#fff')+';">'+p.name+'</div>'
-        +'<div style="font-size:.55rem;color:var(--dg);">⚙'+p.gears+' · 🏆'+p.wins+'</div></div>'
-        +'<div style="font-family:Orbitron,monospace;font-size:.9rem;color:var(--y);">'+p.score+'</div></div>';
-    }).join('');
-  }else{
-    list.innerHTML='<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Пока нет игроков. Будь первым!</div>';
-  }
-}
-
-// Sync progress after each minigame
-async function syncProgress(gameName,gears,score){
-  if(!isAuthorized())return;
-  await supabaseSaveProgress(gameName,score,gears,true);
-}
-
-// Sync victory
-async function syncVictory(){
-  if(!isAuthorized())return;
-  await supabaseRegisterVictory();
-}
 
 
 // STARTUP
 document.addEventListener('DOMContentLoaded',function(){
-  try{
-    if(typeof buildMenu==='function')buildMenu();
-  }catch(e){console.error('buildMenu error:',e);}
+  try{if(typeof buildMenu==='function')buildMenu();}catch(e){console.error(e);}
   if(isAuthorized()){
     showS('sMenu');
     if(typeof loadStats==='function')loadStats();
-  } else {
+  }else{
     showS('sAuth');
   }
 });
 
-
-// ═══ TORNAMENT + SHOP ═══
-async function supabaseTournamentScore(score, gears) {
-  var email = localStorage.getItem('game_email');
-  if (!email) return {ok:false};
-  try {
-    var res = await fetch(SUPABASE_URL+'/rest/v1/rpc/update_tournament_score', {
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_mail:email, p_score:score||0, p_gears:gears||0})
-    });
-    return await res.json();
-  } catch(e) { return {ok:false,error:e.message}; }
-}
-
-async function supabaseDailyBonus() {
-  var email = localStorage.getItem('game_email');
-  if (!email) return {ok:false};
-  try {
-    var res = await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_daily_bonus', {
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_mail:email})
-    });
-    return await res.json();
-  } catch(e) { return {ok:false,error:e.message}; }
-}
-
-async function supabaseAdReward() {
-  var email = localStorage.getItem('game_email');
-  if (!email) return {ok:false};
-  try {
-    var res = await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_ad_reward', {
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_mail:email})
-    });
-    return await res.json();
-  } catch(e) { return {ok:false,error:e.message}; }
-}
-
-async function supabaseSpendCoins(amount) {
-  var email = localStorage.getItem('game_email');
-  if (!email) return {ok:false};
-  try {
-    var res = await fetch(SUPABASE_URL+'/rest/v1/rpc/spend_coins', {
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_mail:email, p_amount:amount})
-    });
-    return await res.json();
-  } catch(e) { return {ok:false,error:e.message}; }
-}
-
-async function supabaseGetTournament() {
-  try {
-    var res = await fetch(SUPABASE_URL+'/rest/v1/rpc/get_tournament', {
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_limit:20})
-    });
-    return await res.json();
-  } catch(e) { return {ok:false,error:e.message}; }
-}
-
-async function getCoins() {
-  var email = localStorage.getItem('game_email');
-  if (!email) return 0;
-  try {
-    var res = await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(email)+'&select=coins', {
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    var data = await res.json();
-    return data[0] ? (data[0].coins || 0) : 0;
-  } catch(e) { return 0; }
-}
-
-// ═══ TOURNAMENT SCREEN ═══
-async function showTournament() {
-  showS('sTournament');
-  var list = document.getElementById('tList');
-  list.innerHTML = '<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Загрузка...</div>';
-  
-  var coins = await getCoins();
-  var cEl = document.getElementById('tCoins');
-  if (cEl) cEl.textContent = coins;
-  
-  var r = await supabaseGetTournament();
-  if (r.ok && r.leaderboard && r.leaderboard.length > 0) {
-    var myEmail = localStorage.getItem('game_email') || '';
-    list.innerHTML = r.leaderboard.map(function(p, i) {
-      var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '<span style="color:var(--dg)">'+(i+1)+'</span>';
-      var isMe = p.user_email === myEmail;
-      var reward = i < 3 ? ['100','50','25'][i] : '';
-      var bg = isMe ? 'rgba(0,245,255,.08)' : 'var(--panel)';
-      var bd = isMe ? 'var(--c1)' : 'var(--border)';
-      var nm = isMe ? '<b style="color:var(--c1)">'+p.display_name+'</b>' : p.display_name;
-      var rw = reward ? '<span style="color:var(--y);font-size:.7rem;">+'+reward+' монет</span>' : '';
-      return '<div style="display:flex;align-items:center;gap:10px;background:'+bg+';border:1px solid '+bd+';border-radius:10px;padding:10px 14px;">'
-        + '<div style="font-size:1.2rem;width:30px;text-align:center;">'+medal+'</div>'
-        + '<div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+nm+'</div>'
-        + '<div style="font-size:.55rem;color:var(--dg);">зуб:'+p.total_gears+' · очки:'+p.total_score+'</div></div>'
-        + '<div>'+rw+'</div></div>';
-    }).join('');
-  } else {
-    list.innerHTML = '<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Турнир начался! Играй мини-игры чтобы набрать очки.<br>Топ-3 получат монеты!</div>';
-  }
-}
-
-// ═══ SHOP SCREEN ═══
-var SHOP_ITEMS = [
-  {id:'hint15', icon:'⏰', name:'Подсказка +15 мин', desc:'Добавляет 15 минут к хронометру', cost:10},
-  {id:'hint30', icon:'⏳', name:'Подсказка +30 мин', desc:'Добавляет 30 минут к хронометру', cost:18},
-  {id:'showans', icon:'💡', name:'Показать ответ', desc:'Открывает правильный ответ', cost:25},
-  {id:'extralife', icon:'❤️', name:'Доп. жизнь', desc:'Продолжить после ошибки', cost:30},
-  {id:'skip', icon:'⏭️', name:'Пропустить вопрос', desc:'Пропустить сложный вопрос', cost:15},
-];
-
-async function showShop() {
-  showS('sShop');
-  var coins = await getCoins();
-  var cEl = document.getElementById('sCoins');
-  if (cEl) cEl.textContent = coins;
-  
-  var list = document.getElementById('shopList');
-  list.innerHTML = SHOP_ITEMS.map(function(item) {
-    var canBuy = coins >= item.cost;
-    var btnStyle = canBuy 
-      ? 'background:linear-gradient(135deg,var(--c1),#0099aa);color:#001;'
-      : 'background:var(--panel);color:var(--dg);';
-    return '<div style="display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;">'
-      + '<div style="font-size:1.8rem;">'+item.icon+'</div>'
-      + '<div style="flex:1;"><div style="font-size:.8rem;color:#fff;">'+item.name+'</div>'
-      + '<div style="font-size:.6rem;color:var(--dg);">'+item.desc+'</div></div>'
-      + '<button onclick="buyItem(\''+item.id+'\','+item.cost+')" style="'+btnStyle+'border:none;border-radius:8px;padding:8px 12px;font-size:.7rem;font-weight:bold;cursor:pointer;">'
-      + '🪙 '+item.cost+'</button></div>';
-  }).join('');
-}
-
-async function buyItem(itemId, cost) {
-  var r = await supabaseSpendCoins(cost);
-  if (r.ok) {
-    localStorage.setItem('purchased_'+itemId, 'true');
-    toast('✅ Куплено! Используй в игре.');
-    showShop();
-  } else {
-    toast('❌ Недостаточно монет!');
-  }
-}
-
-// ═══ DAILY BONUS ═══
-async function claimDaily() {
-  var r = await supabaseDailyBonus();
-  if (r.ok) {
-    toast('🪙 +5 монет за ежедневный вход!');
-    showShop();
-  } else {
-    toast('Уже получал сегодня!');
-  }
-}
-
-// ═══ AD REWARD ═══
-var adCooldown = 0;
-async function watchAd() {
-  var now = Date.now();
-  if (now - adCooldown < 30000) {
-    toast('Подожди 30 сек перед следующей рекламой');
-    return;
-  }
-  adCooldown = now;
-  toast('📺 Реклама загружается...');
-  setTimeout(async function() {
-    var r = await supabaseAdReward();
-    if (r.ok) {
-      toast('🪙 +3 монеты за просмотр!');
-      showShop();
-    } else {
-      toast('Ошибка получения награды');
-    }
-  }, 2000);
-}
-
 </script>
-</body></html>
+</body>
+</html>
