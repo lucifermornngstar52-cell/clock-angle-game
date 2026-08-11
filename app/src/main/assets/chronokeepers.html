@@ -224,17 +224,27 @@ html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Sh
   <div class="card" style="margin-top:12px;">
     <div class="lbl">Ваше имя</div>
     <input class="inp" id="nameInp" placeholder="ВВЕДИ ИМЯ" maxlength="12">
-    <button class="btn btn-gold" onclick="createRoom()" style="margin-bottom:8px;">⚡ СОЗДАТЬ КОМНАТУ</button>
-    <div class="divider">ИЛИ</div>
-    <div class="lbl" style="margin-top:8px;">Код комнаты</div>
-    <input class="inp" id="codeInp" placeholder="КОД" maxlength="6">
-    <button class="btn btn-cyan" onclick="joinRoom()">🔗 ВОЙТИ В КОМНАТУ</button>
+    <div id="hkMmIdle">
+      <button class="btn btn-gold" onclick="startAutoMatch()" style="margin-bottom:8px;">🎲 СЛУЧАЙНЫЙ СОПЕРНИК</button>
+      <div class="divider">ИЛИ ПО КОДУ</div>
+      <button class="btn btn-gold" onclick="createRoom()" style="margin-bottom:8px;">⚡ СОЗДАТЬ КОМНАТУ</button>
+      <div class="divider">ИЛИ</div>
+      <div class="lbl" style="margin-top:8px;">Код комнаты</div>
+      <input class="inp" id="codeInp" placeholder="КОД" maxlength="6">
+      <button class="btn btn-cyan" onclick="joinRoom()">🔗 ВОЙТИ В КОМНАТУ</button>
+    </div>
+    <div id="hkMmSearching" style="display:none;text-align:center;padding:12px 0;">
+      <div style="width:36px;height:36px;margin:0 auto 10px;border:3px solid rgba(255,255,255,.15);border-top:3px solid var(--gold,#ffd700);border-radius:50%;animation:hkspin 1s linear infinite;"></div>
+      <div style="font-size:.68rem;color:var(--gold,#ffd700);">Ищем соперника...</div>
+      <button class="btn btn-cyan" style="margin-top:10px;" onclick="cancelAutoMatch()">ОТМЕНА</button>
+    </div>
     <div class="status" id="lobbyStatus"></div>
   </div>
   <div style="font-size:.5rem;color:rgba(255,255,255,.15);margin-top:8px;text-align:center;max-width:300px;">
     Игра для 1–5 классов Казахстана · Математика · Стратегия
   </div>
 </div>
+<style>@keyframes hkspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
 
 <!-- ══ ОЖИДАНИЕ ══ -->
 <div class="screen hidden" id="sWait">
@@ -448,6 +458,7 @@ let inFinalMission = false;
 // ═══════════════════════════════════════════════════════
 // QUESTIONS DATABASE
 // ═══════════════════════════════════════════════════════
+let hkAskedQ = {0:new Set(),1:new Set(),2:new Set()};
 function getQuestions(crystals) {
   const level = crystals < 2 ? 0 : crystals < 4 ? 1 : 2;
   const banks = [
@@ -492,7 +503,11 @@ function getQuestions(crystals) {
     ]
   ];
   const bank = banks[level];
-  return {q: bank[Math.floor(Math.random()*bank.length)], level};
+  let avail = bank.map((_,i)=>i).filter(i=>!hkAskedQ[level].has(i));
+  if(avail.length===0){ hkAskedQ[level] = new Set(); avail = bank.map((_,i)=>i); }
+  const pick = avail[Math.floor(Math.random()*avail.length)];
+  hkAskedQ[level].add(pick);
+  return {q: bank[pick], level};
 }
 
 // TIME CARDS
@@ -991,9 +1006,9 @@ function setStatus(id, text, cls='') {
   el.className = 'status ' + cls;
 }
 
-function createRoom() {
+function createRoom(presetCode) {
   myName = document.getElementById('nameInp').value.trim().toUpperCase() || 'ИГРОК1';
-  roomCode = randCode();
+  roomCode = presetCode || randCode();
   isHost = true;
   setStatus('lobbyStatus', 'Создаём комнату...', 'wait');
 
@@ -1015,9 +1030,9 @@ function createRoom() {
   peer.on('error', e => setStatus('lobbyStatus', 'Ошибка: ' + e.type, 'err'));
 }
 
-function joinRoom() {
+function joinRoom(presetCode) {
   myName = document.getElementById('nameInp').value.trim().toUpperCase() || 'ИГРОК2';
-  roomCode = document.getElementById('codeInp').value.trim().toUpperCase();
+  roomCode = presetCode || document.getElementById('codeInp').value.trim().toUpperCase();
   if(!roomCode) { setStatus('lobbyStatus','Введи код комнаты','err'); return; }
   isHost = false;
   setStatus('lobbyStatus','Подключаемся...','wait');
@@ -1421,7 +1436,7 @@ function logout() {
 
 
 // ═══ AUTH LOGIC ═══
-async async function doAuth(){
+async function doAuth(){
   var em=document.getElementById('authEmail').value.trim();
   var nm=document.getElementById('authName').value.trim();
   var err=document.getElementById('authErr');
@@ -1459,6 +1474,78 @@ window.addEventListener('load',function(){
     startStory();
   }
 });
+
+
+
+// ═══ АВТО-МАТЧМЕЙКИНГ (SUPABASE) ═══
+let hkMmPoll = null;
+function hkMmEmail(){ return (typeof getEmail==='function' && getEmail()) || (localStorage.getItem('game_email')||''); }
+
+async function startAutoMatch(){
+  if(!hkMmEmail()){
+    setStatus('lobbyStatus','Сначала войдите в аккаунт','err');
+    return;
+  }
+  myName = document.getElementById('nameInp').value.trim().toUpperCase() || 'ИГРОК';
+  document.getElementById('hkMmIdle').style.display = 'none';
+  document.getElementById('hkMmSearching').style.display = 'block';
+  try{
+    const r = await fetch(SUPABASE_URL+'/rest/v1/rpc/hk_join_matchmaking',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_email:hkMmEmail(), p_name:myName})
+    }).then(r=>r.json());
+    handleMmResult(r);
+  }catch(e){
+    setStatus('lobbyStatus','Ошибка сети','err');
+    hkMmReset();
+  }
+}
+
+async function pollAutoMatch(){
+  try{
+    const r = await fetch(SUPABASE_URL+'/rest/v1/rpc/hk_check_matchmaking',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_email:hkMmEmail()})
+    }).then(r=>r.json());
+    handleMmResult(r);
+  }catch(e){}
+}
+
+function handleMmResult(r){
+  if(r.ok && r.status==='matched'){
+    if(hkMmPoll){clearInterval(hkMmPoll);hkMmPoll=null;}
+    opName = r.opponent_name || 'Соперник';
+    document.getElementById('hkMmSearching').style.display = 'none';
+    document.getElementById('hkMmIdle').style.display = 'block';
+    if(r.role === 'host'){
+      createRoom(r.room_code);
+    } else {
+      joinRoom(r.room_code);
+    }
+  } else if(r.ok && r.status==='waiting'){
+    if(!hkMmPoll) hkMmPoll = setInterval(pollAutoMatch, 2000);
+  } else {
+    setStatus('lobbyStatus','Не удалось найти соперника','err');
+    hkMmReset();
+  }
+}
+
+function cancelAutoMatch(){
+  if(hkMmPoll){clearInterval(hkMmPoll);hkMmPoll=null;}
+  fetch(SUPABASE_URL+'/rest/v1/rpc/hk_cancel_matchmaking',{
+    method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({p_email:hkMmEmail()})
+  }).catch(function(){});
+  hkMmReset();
+}
+
+function hkMmReset(){
+  document.getElementById('hkMmSearching').style.display = 'none';
+  document.getElementById('hkMmIdle').style.display = 'block';
+}
 
 </script>
 </body>
