@@ -1446,7 +1446,7 @@ async function doAuth(){
   if(r.ok){
     err.textContent='';
     document.getElementById('sAuth').classList.add('hidden');
-    startStory();
+    showScreen('sLobby');
   }else{
     err.textContent='Ошибка: '+(r.error||'попробуйте снова');
   }
@@ -1471,7 +1471,14 @@ endGame = async function(win, reason){
 window.addEventListener('load',function(){
   if(isAuthorized()){
     document.getElementById('sAuth').classList.add('hidden');
-    startStory();
+    var saved = localStorage.getItem('game_user');
+    if(saved){
+      try{
+        var u = JSON.parse(saved);
+        if(u.full_name) document.getElementById('nameInp').value = u.full_name;
+      }catch(e){}
+    }
+    showScreen('sLobby');
   }
 });
 
