@@ -211,6 +211,51 @@
 <div id="ach-toast"></div>
 
 <!-- ══ ИНТРО ══ -->
+
+<!-- AUTH SCREEN -->
+<div class="screen hidden" id="sAuth" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
+  <div style="font-size:1.5rem;font-family:Orbitron,monospace;color:#00f5ff;letter-spacing:4px;margin-bottom:8px;">NUMBRA</div>
+  <div style="font-size:.6rem;color:#556;letter-spacing:2px;margin-bottom:30px;">// CLOCK ANGLE CRACKER //</div>
+  <div style="width:100%;max-width:320px;">
+    <input id="authName" type="text" placeholder="Имя" style="width:100%;padding:14px;background:#1a1a2e;border:1px solid #333;border-radius:10px;color:#fff;font-size:.8rem;margin-bottom:10px;font-family:inherit;">
+    <input id="authEmail" type="email" placeholder="Email" style="width:100%;padding:14px;background:#1a1a2e;border:1px solid #333;border-radius:10px;color:#fff;font-size:.8rem;margin-bottom:16px;font-family:inherit;">
+    <button onclick="doAuth()" style="width:100%;background:linear-gradient(135deg,#00f5ff,#0099aa);color:#000;border:none;border-radius:10px;padding:14px;font-size:.8rem;font-weight:bold;cursor:pointer;font-family:inherit;">ВОЙТИ</button>
+    <button onclick="skipAuth()" style="width:100%;background:#1a1a2e;color:#556;border:1px solid #333;border-radius:10px;padding:14px;font-size:.7rem;cursor:pointer;margin-top:10px;font-family:inherit;">ИГРАТЬ БЕЗ ВХОДА</button>
+  </div>
+</div>
+
+<!-- TOURNAMENT SCREEN -->
+<div class="screen hidden" id="sTournament" style="overflow-y:auto;padding:20px;padding-bottom:40px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    <button onclick="showS('main-menu')" style="background:none;border:none;color:#556;font-size:1rem;cursor:pointer;">←</button>
+    <div style="font-family:Orbitron,monospace;font-size:1rem;color:#00f5ff;">ТУРНИР</div>
+  </div>
+  <div id="tList" style="max-width:420px;margin:0 auto;"></div>
+</div>
+
+<!-- SHOP SCREEN -->
+<div class="screen hidden" id="sShop" style="overflow-y:auto;padding:20px;padding-bottom:40px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    <button onclick="showS('main-menu')" style="background:none;border:none;color:#556;font-size:1rem;cursor:pointer;">←</button>
+    <div style="font-family:Orbitron,monospace;font-size:1rem;color:#00f5ff;">МАГАЗИН</div>
+    <div style="margin-left:auto;font-size:.8rem;color:#ffd700;" id="shopCoins">0 монет</div>
+  </div>
+  <div id="shopItems" style="max-width:420px;margin:0 auto;"></div>
+  <div style="max-width:420px;margin:14px auto 0;">
+    <button onclick="claimDaily()" style="width:100%;background:linear-gradient(135deg,#00ff88,#00cc66);color:#000;border:none;border-radius:10px;padding:14px;font-size:.75rem;font-weight:bold;cursor:pointer;font-family:inherit;margin-bottom:10px;">ЕЖЕДНЕВНЫЙ БОНУС (+5)</button>
+    <button onclick="watchAd()" style="width:100%;background:#1a1a2e;border:1px solid #00f5ff;color:#00f5ff;border-radius:10px;padding:14px;font-size:.75rem;cursor:pointer;font-family:inherit;">РЕКЛАМА (+3)</button>
+  </div>
+</div>
+
+<!-- LEADERBOARD SCREEN -->
+<div class="screen hidden" id="sLB" style="overflow-y:auto;padding:20px;padding-bottom:40px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    <button onclick="showS('main-menu')" style="background:none;border:none;color:#556;font-size:1rem;cursor:pointer;">←</button>
+    <div style="font-family:Orbitron,monospace;font-size:1rem;color:#00f5ff;">ЛИДЕРЫ</div>
+  </div>
+  <div id="lbList" style="max-width:420px;margin:0 auto;"></div>
+</div>
+
 <div class="screen hidden" id="intro-screen">
   <div class="intro-frame">
     <div class="intro-badge">// СЕКРЕТНЫЙ ФАЙЛ — УРОВЕНЬ ДОСТУПА: МАКСИМАЛЬНЫЙ //</div>
@@ -234,10 +279,10 @@
   <button class="btn" onclick="openAch()">[ 🏆 ДОСТИЖЕНИЯ ]</button>
   <button class="btn" onclick="openSound()">[ 🔊 НАСТРОЙКИ ЗВУКА ]</button>
   <div style="display:flex;gap:8px;margin-top:8px;">
-    <button class="btn" onclick="showTournament()" style="flex:1;font-size:.7rem;padding:10px;">🏆 ТУРНИР</button>
-    <button class="btn" onclick="showShop()" style="flex:1;font-size:.7rem;padding:10px;">🛒 МАГАЗИН</button>
+    <button class="btn" onclick="showTournament()" style="flex:1;font-size:.7rem;padding:10px;">Турнир</button>
+    <button class="btn" onclick="showShop()" style="flex:1;font-size:.7rem;padding:10px;">Магазин</button>
   </div>
-  <button class="btn" onclick="showLeaderboard()" style="margin-top:8px;font-size:.7rem;">📊 ТАБЛИЦА ЛИДЕРОВ</button>
+  <button class="btn" onclick="showLeaderboard()" style="margin-top:8px;font-size:.7rem;">Таблица лидеров</button>
 </div>
 
 <!-- ══ МЕНЮ ИГРЫ — РАЗДЕЛЕНИЕ ПО КЛАССАМ ══ -->
@@ -724,11 +769,6 @@ function checkIntro(){
   }else{
     showS('sAuth');
   }
-}
-function closeIntro(){showS('main-menu');updMenuCoins();}
-function startWithIntro(){
-  // Всегда показываем предысторию перед игрой
-  showS('intro-screen');
 }
 function closeIntroAndStart(){
   // После предыстории — сразу в игру
@@ -1756,223 +1796,30 @@ function hkGameNext(correct){
 }
 
 
-
-// ═══ SUPABASE CONFIG ═══
+// SUPABASE
 const SUPABASE_URL='https://usulgiwtqdxmgonqhpck.supabase.co';
 const SUPABASE_KEY='sb_publishable_8aX2OBxUMsOKWTiGum8dcA_z8-peLRM';
-
 function isAuthorized(){return localStorage.getItem('game_email')!==null;}
 function getEmail(){return localStorage.getItem('game_email')||'';}
 function getUser(){try{return JSON.parse(localStorage.getItem('game_user')||'null');}catch(e){return null;}}
-
 async function doAuth(){
-  var name=document.getElementById('authName').value.trim();
-  var email=document.getElementById('authEmail').value.trim();
-  if(!email){alert('Введите email');return;}
-  if(!name)name=email.split('@')[0];
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_email:email,p_name:name})
-    }).then(r=>r.json());
-    if(r.ok){
-      localStorage.setItem('game_email',email);
-      localStorage.setItem('game_user',JSON.stringify(r.user));
-      showS('main-menu');
-      if(typeof loadStats==='function')loadStats();
-    }else{alert('Ошибка авторизации');}
-  }catch(e){alert('Ошибка сети: '+e.message);}
+  var n=document.getElementById('authName').value.trim(),em=document.getElementById('authEmail').value.trim();
+  if(!em){alert('Введите email');return;}if(!n)n=em.split('@')[0];
+  try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:em,p_name:n})}).then(r=>r.json());
+  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));showS('main-menu');if(typeof loadStats==='function')loadStats();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
 }
-
-function skipAuth(){
-  localStorage.setItem('game_email','guest');
-  showS('main-menu');
-}
-
-async function loadStats(){
-  if(!isAuthorized())return;
-  var email=getEmail();
-  if(email==='guest')return;
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_user_progress?email='+encodeURIComponent(email),{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    }).then(r=>r.json());
-    if(r&&r.ok){
-      var el=document.getElementById('menu-coins');
-      if(el&&r.user)el.textContent='💰 '+(r.user.coins||0)+' монет';
-    }
-  }catch(e){}
-}
-
-async function syncProgress(game,score,wins){
-  if(!isAuthorized()||getEmail()==='guest')return;
-  try{
-    await fetch(SUPABASE_URL+'/rest/v1/rpc/save_progress',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_email:getEmail(),p_game:game,p_score:score,p_wins:wins})
-    });
-  }catch(e){}
-}
-
-async function syncVictory(gears){
-  if(!isAuthorized()||getEmail()==='guest')return;
-  try{
-    await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_email:getEmail(),p_gears:gears})
-    });
-    supabaseTournamentScore(gears,1);
-  }catch(e){}
-}
-
-async function supabaseTournamentScore(gears,wins){
-  if(!isAuthorized()||getEmail()==='guest')return;
-  try{
-    await fetch(SUPABASE_URL+'/rest/v1/rpc/update_tournament_score',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_mail:getEmail(),p_score:gears+wins*10,p_gears:gears})
-    });
-  }catch(e){}
-}
-
-async function showTournament(){
-  showS('sTournament');
-  var list=document.getElementById('tList');
-  list.innerHTML='<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Загрузка...</div>';
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_tournament',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_limit:20})
-    }).then(r=>r.json());
-    if(r.ok&&r.leaderboard&&r.leaderboard.length>0){
-      list.innerHTML=r.leaderboard.map((p,i)=>{
-        var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'<span style="color:var(--dg)">'+(i+1)+'</span>';
-        return '<div style="display:flex;align-items:center;gap:10px;background:'+(i<3?'rgba(255,215,0,.08)':'var(--panel)')+';border:1px solid '+(i<3?'var(--y,#ffd700)':'var(--border)')+';border-radius:10px;padding:12px;margin-bottom:8px;">'
-          +'<div style="font-size:1.2rem;width:30px;text-align:center;">'+medal+'</div>'
-          +'<div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+p.display_name+'</div>'
-          +'<div style="font-size:.55rem;color:var(--dg);">⚙'+p.gears+' · 🏆'+p.wins+'</div></div>'
-          +'<div style="font-family:Orbitron,monospace;font-size:.9rem;color:var(--y,#ffd700);">'+p.score+'</div></div>';
-      }).join('');
-    }else{
-      list.innerHTML='<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Пока нет игроков. Будь первым!</div>';
-    }
-  }catch(e){
-    list.innerHTML='<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Ошибка загрузки</div>';
-  }
-}
-
-async function showShop(){
-  showS('sShop');
-  var el=document.getElementById('shopCoins');
-  var coins=await getCoins();
-  el.textContent='💰 '+coins;
-  var items=[
-    {id:'hint15',icon:'⏰',name:'Подсказка +15 мин',desc:'Добавляет 15 минут к хронометру',cost:10},
-    {id:'hint30',icon:'⏳',name:'Подсказка +30 мин',desc:'Добавляет 30 минут к хронометру',cost:18},
-    {id:'showans',icon:'💡',name:'Показать ответ',desc:'Открывает правильный ответ',cost:20},
-    {id:'shield',icon:'🛡️',name:'Щит от парадокса',desc:'Защита от одной ошибки',cost:30}
-  ];
-  document.getElementById('shopItems').innerHTML=items.map(it=>
-    '<div style="display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;">'
-    +'<div style="font-size:1.4rem;">'+it.icon+'</div>'
-    +'<div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+it.name+'</div>'
-    +'<div style="font-size:.55rem;color:var(--dg);">'+it.desc+'</div></div>'
-    +'<button onclick="buyItem(\''+it.id+'\','+it.cost+')" style="background:var(--c1,#00f5ff);color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:.7rem;font-weight:bold;cursor:pointer;">'+it.cost+' 💰</button>'
-    +'</div>'
-  ).join('');
-}
-
-async function getCoins(){
-  if(!isAuthorized()||getEmail()==='guest')return 0;
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(getEmail())+'&select=coins',{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    }).then(r=>r.json());
-    if(r&&r[0])return r[0].coins||0;
-  }catch(e){}
-  return 0;
-}
-
-async function claimDaily(){
-  if(!isAuthorized()||getEmail()==='guest'){alert('Войдите чтобы получить бонус');return;}
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_daily_bonus',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_mail:getEmail()})
-    }).then(r=>r.json());
-    if(r.ok){
-      alert('Получено 5 монет!');
-      showShop();
-    }else{
-      alert('Уже получено сегодня!');
-    }
-  }catch(e){alert('Ошибка: '+e.message);}
-}
-
-async function watchAd(){
-  if(!isAuthorized()||getEmail()==='guest'){alert('Войдите чтобы получить монеты');return;}
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_ad_reward',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_mail:getEmail()})
-    }).then(r=>r.json());
-    if(r.ok){
-      alert('Получено 3 монеты!');
-      showShop();
-    }else{
-      alert('Подождите 30 секунд перед повтором!');
-    }
-  }catch(e){alert('Ошибка: '+e.message);}
-}
-
-async function buyItem(itemId,cost){
-  if(!isAuthorized()||getEmail()==='guest'){alert('Войдите чтобы покупать');return;}
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/spend_coins',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_mail:getEmail(),p_amount:cost})
-    }).then(r=>r.json());
-    if(r.ok){
-      alert('Куплено! Остаток: '+r.remaining+' монет');
-      showShop();
-    }else{
-      alert('Недостаточно монет! У вас: '+r.have+', нужно: '+r.need);
-    }
-  }catch(e){alert('Ошибка: '+e.message);}
-}
-
-async function showLeaderboard(){
-  showS('sLB');
-  var list=document.getElementById('lbList');
-  list.innerHTML='<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Загрузка...</div>';
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/leaderboard?order=score.desc&limit=20',{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    }).then(r=>r.json());
-    if(r&&r.length>0){
-      list.innerHTML=r.map((p,i)=>{
-        var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'<span style="color:var(--dg)">'+(i+1)+'</span>';
-        return '<div style="display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">'
-          +'<div style="font-size:1.2rem;width:30px;text-align:center;">'+medal+'</div>'
-          +'<div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+(p.display_name||p.full_name||'Игрок')+'</div>'
-          +'<div style="font-size:.55rem;color:var(--dg);">⚙'+(p.total_gears||0)+' · 🏆'+(p.total_wins||0)+'</div></div>'
-          +'<div style="font-family:Orbitron,monospace;font-size:.9rem;color:var(--y,#ffd700);">'+(p.score||0)+'</div></div>';
-      }).join('');
-    }else{
-      list.innerHTML='<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Пока нет игроков</div>';
-    }
-  }catch(e){
-    list.innerHTML='<div style="text-align:center;color:var(--dg);font-size:.7rem;padding:20px;">Ошибка загрузки</div>';
-  }
-}
+function skipAuth(){localStorage.setItem('game_email','guest');showS('main-menu');}
+async function loadStats(){if(!isAuthorized()||getEmail()==='guest')return;try{var r=await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(getEmail())+'&select=coins',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r[0]){var el=document.getElementById('menu-coins');if(el)el.textContent=(r[0].coins||0)+' монет';}}catch(e){}}
+async function syncProgress(g,s,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/save_progress',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_game:g,p_score:s,p_wins:w})});}catch(e){}}
+async function syncVictory(gears){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_gears:gears})});supabaseTournamentScore(gears,1);}catch(e){}}
+async function supabaseTournamentScore(g,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/update_tournament_score',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail(),p_score:g+w*10,p_gears:g})});}catch(e){}}
+async function showTournament(){showS('sTournament');var l=document.getElementById('tList');l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Загрузка...</div>';try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_tournament',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_limit:20})}).then(r=>r.json());if(r.ok&&r.leaderboard&&r.leaderboard.length>0){l.innerHTML=r.leaderboard.map(function(p,i){var m=i===0?'1':i===1?'2':i===2?'3':(i+1);return '<div style="display:flex;align-items:center;gap:10px;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+p.display_name+'</div><div style="font-size:.55rem;color:#556;">'+p.gears+' / '+p.wins+'</div></div><div style="color:#ffd700;">'+p.score+'</div></div>';}).join('');}else l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Пока нет игроков</div>';}catch(e){l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Ошибка</div>';}}
+async function showShop(){showS('sShop');var c=await getCoins();document.getElementById('shopCoins').textContent=c+' монет';var items=[{id:'hint15',name:'+15 мин',cost:10},{id:'hint30',name:'+30 мин',cost:18},{id:'showans',name:'Ответ',cost:20},{id:'shield',name:'Щит',cost:30}];document.getElementById('shopItems').innerHTML=items.map(function(it){return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:14px;margin-bottom:10px;"><div style="flex:1;font-size:.75rem;color:#fff;">'+it.name+'</div><button onclick="buyItem(\''+it.id+'\','+it.cost+')" style="background:#00f5ff;color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:.7rem;font-weight:bold;cursor:pointer;">'+it.cost+'</button></div>';}).join('');}
+async function getCoins(){if(!isAuthorized()||getEmail()==='guest')return 0;try{var r=await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(getEmail())+'&select=coins',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r[0])return r[0].coins||0;}catch(e){}return 0;}
+async function claimDaily(){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_daily_bonus',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail()})}).then(r=>r.json());if(r.ok){alert('+5 монет!');showShop();}else alert('Уже получено');}catch(e){alert('Ошибка');}}
+async function watchAd(){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_ad_reward',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail()})}).then(r=>r.json());if(r.ok){alert('+3 монеты!');showShop();}else alert('Подождите 30с');}catch(e){alert('Ошибка');}}
+async function buyItem(id,cost){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/spend_coins',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail(),p_amount:cost})}).then(r=>r.json());if(r.ok){alert('Куплено! Остаток: '+r.remaining);showShop();}else alert('Недостаточно');}catch(e){alert('Ошибка');}}
+async function showLeaderboard(){showS('sLB');var l=document.getElementById('lbList');l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Загрузка...</div>';try{var r=await fetch(SUPABASE_URL+'/rest/v1/leaderboard?order=score.desc&limit=20',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r.length>0){l.innerHTML=r.map(function(p,i){var m=i===0?'1':i===1?'2':i===2?'3':(i+1);return '<div style="display:flex;align-items:center;gap:10px;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+(p.display_name||p.full_name||'Игрок')+'</div><div style="font-size:.55rem;color:#556;">'+(p.total_gears||0)+' / '+(p.total_wins||0)+'</div></div><div style="color:#ffd700;">'+(p.score||0)+'</div></div>';}).join('');}else l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Пока нет игроков</div>';}catch(e){l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Ошибка</div>';}}
 
 </script>
 <!-- vlastelini-overlay удалён: теперь используются screen-ы -->
