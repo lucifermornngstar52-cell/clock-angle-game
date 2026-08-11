@@ -102,11 +102,6 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
   </div>
   <div style="font-size:.48rem;color:var(--dg);letter-spacing:3px;">// 10 ИСПЫТАНИЙ ВРЕМЕНИ //</div>
   <div class="menu-grid" id="gameGrid"></div>
-  <div style="width:100%;max-width:420px;margin:12px auto 8px;display:flex;gap:8px;">
-    <button class="btn btn-g" onclick="showTournament()" style="flex:1;font-size:.7rem;padding:12px;">ТУРНИР</button>
-    <button class="btn btn-g" onclick="showShop()" style="flex:1;font-size:.7rem;padding:12px;">МАГАЗИН</button>
-  </div>
-  <button class="btn btn-gray" onclick="showLeaderboard()" style="width:100%;max-width:420px;margin:0 auto 16px;display:block;font-size:.7rem;padding:12px;">ТАБЛИЦА ЛИДЕРОВ</button>
 </div>
 <div class="screen hidden" id="sResult">
   <div class="result-box">
@@ -527,8 +522,8 @@ function g1Init(){
     }
     var m=Math.round(g1.mnD/6)%60;
     if(m<0)m+=60;
-    var h=Math.round(g1.hrD/30)%24;
-    if(h<0)h+=24;
+    var h24=Math.round(g1.hrD/30)%24;
+    if(h24<0)h24+=24;
     document.getElementById('g1dt').textContent=fmt(h24,m);}
   document.addEventListener('touchmove',mv,{passive:false});
   document.addEventListener('mousemove',mv);
