@@ -601,7 +601,7 @@ function g2Tap(){
   g2.round++;reg(setTimeout(g2Next,2100));}
 
 // ═══ G3 УГОЛ ═══
-const G3T=[{h:15,m:30,a:75},{h:16,m:10,a:65},{h:12,m:15,a:90},{h:8,m:0,a:120},{h:6,m:0,a:180},{h:3,m:0,a:90},{h:20,m:20,a:130},{h:18,m:0,a:180},{h:14,m:50,a:25},{h:12,m:30,a:165}];
+const G3T=[{h:15,m:30,a:75},{h:16,m:10,a:65},{h:12,m:15,a:90},{h:8,m:0,a:120},{h:6,m:0,a:180},{h:3,m:0,a:90},{h:20,m:20,a:130},{h:18,m:0,a:180},{h:14,m:50,a:145},{h:12,m:30,a:165}];
 let g3={};
 function g3Init(){drawMarks(document.getElementById('g3mk'),null,100,100,93,10);g3={round:0,score:0,gears:0};g3Next();showS('sG3');}
 function g3Next(){
@@ -615,7 +615,16 @@ function g3Next(){
   document.getElementById('g3fb').textContent='';g3Arc(0);}
 function g3Arc(v){
   const arc=document.getElementById('g3arc');if(v<3){arc.setAttribute('d','');return;}
-  const r=38,cx=100,cy=100,s=-Math.PI/2,e=s+v*Math.PI/180;
+  const r=38,cx=100,cy=100;
+  const t=g3.cur;
+  // Реальные углы стрелок (0°=12 часов, по часовой стрелке — как в setHands)
+  const md=(t.m/60)*360, hd=((t.h%12)/12)*360+(t.m/60)*30;
+  // Кратчайшая дуга МЕЖДУ стрелками: определяем, от какой стрелки начинать дугу
+  const diff=((md-hd)%360+360)%360;
+  const startDeg = diff<=180 ? hd : md;
+  // Переводим из "SVG rotate" системы (0°=верх) в canvas-угол (0°=право)
+  const toRad=deg=>(deg-90)*Math.PI/180;
+  const s=toRad(startDeg),e=toRad(startDeg+v);
   const x1=cx+r*Math.cos(s),y1=cy+r*Math.sin(s),x2=cx+r*Math.cos(e),y2=cy+r*Math.sin(e);
   arc.setAttribute('d','M '+x1+' '+y1+' A '+r+' '+r+' 0 '+(v>180?1:0)+' 1 '+x2+' '+y2);}
 function g3Slide(){const v=parseInt(document.getElementById('g3sl').value);document.getElementById('g3ua').textContent=v;g3Arc(v);}
