@@ -192,7 +192,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
       <defs><filter id="gl3"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
       <circle cx="100" cy="100" r="95" fill="rgba(0,0,0,.85)" stroke="rgba(0,245,255,.25)" stroke-width="2"/>
       <g id="g3mk"></g>
-      <path id="g3arc" d="" fill="none" stroke="rgba(255,215,0,.45)" stroke-width="2.5"/>
+      <!-- жёлтая дуга убрана: она выдавала точный ответ при совпадении со стрелкой -->
       <line id="g3hr" x1="100" y1="100" x2="100" y2="42" stroke="#ff3399" stroke-width="6" stroke-linecap="round" filter="drop-shadow(0 0 4px #ff00aa)" transform="rotate(0 100 100)"/>
       <line id="g3mn" x1="100" y1="100" x2="100" y2="10" stroke="#00ddff" stroke-width="4.5" stroke-linecap="round" filter="drop-shadow(0 0 4px #00f5ff)" transform="rotate(0 100 100)"/>
       <circle cx="100" cy="100" r="4" fill="#fff"/>
@@ -614,19 +614,10 @@ function g3Next(){
   document.getElementById('g3sl').value=0;document.getElementById('g3ua').textContent='0';
   document.getElementById('g3fb').textContent='';g3Arc(0);}
 function g3Arc(v){
-  const arc=document.getElementById('g3arc');if(v<3){arc.setAttribute('d','');return;}
-  const r=38,cx=100,cy=100;
-  const t=g3.cur;
-  // Реальные углы стрелок (0°=12 часов, по часовой стрелке — как в setHands)
-  const md=(t.m/60)*360, hd=((t.h%12)/12)*360+(t.m/60)*30;
-  // Кратчайшая дуга МЕЖДУ стрелками: определяем, от какой стрелки начинать дугу
-  const diff=((md-hd)%360+360)%360;
-  const startDeg = diff<=180 ? hd : md;
-  // Переводим из "SVG rotate" системы (0°=верх) в canvas-угол (0°=право)
-  const toRad=deg=>(deg-90)*Math.PI/180;
-  const s=toRad(startDeg),e=toRad(startDeg+v);
-  const x1=cx+r*Math.cos(s),y1=cy+r*Math.sin(s),x2=cx+r*Math.cos(e),y2=cy+r*Math.sin(e);
-  arc.setAttribute('d','M '+x1+' '+y1+' A '+r+' '+r+' 0 '+(v>180?1:0)+' 1 '+x2+' '+y2);}
+  // Жёлтая дуга убрана по просьбе тестеров: она была привязана к реальному положению стрелки
+  // и точно совпадала с ней в момент правильного ответа, тем самым выдавая ответ без расчётов.
+  // Игрок теперь ориентируется только на число под ползунком.
+}
 function g3Slide(){const v=parseInt(document.getElementById('g3sl').value);document.getElementById('g3ua').textContent=v;g3Arc(v);}
 function g3Confirm(){
   const u=parseInt(document.getElementById('g3sl').value),a=g3.cur.a,d=Math.abs(u-a);
