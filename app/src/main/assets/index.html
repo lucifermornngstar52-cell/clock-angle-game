@@ -359,7 +359,7 @@
     </div>
     <div class="vl-hud-cell">
       <div class="vl-hud-lbl">ДО ФИНИША</div>
-      <div class="vl-hud-val" style="color:#88aaff;"><span id="vl-h-left">60</span> кл.</div>
+      <div class="vl-hud-val" style="color:#88aaff;"><span id="vl-h-left">50</span> кл.</div>
     </div>
     <button onclick="showS('vl-menu')" style="background:none;border:1px solid #223;color:#445;padding:4px 8px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.55rem;cursor:pointer;">✕</button>
   </div>
@@ -1344,6 +1344,16 @@ const VL_Q = {
       opts:['10','12','13','15'], ans:1, exp:'42 ÷ 3,5 = 12 км/ч'},
     {q:'Вася родился 29 февраля 2000 года. Сколько раз отметит настоящий день рождения до 2026?',
       opts:['5','6','7','8'], ans:1, exp:'Высокосные: 2000,2004,2008,2012,2016,2020,2024 → 6 раз (2000 не считаем если отсчёт с рождения) → 6'},
+  ],
+  exam: [
+    {q:'Часы показывают 8:15. Какой угол между часовой и минутной стрелками?',opts:['157.5°','120°','90°','180°'],ans:0,exp:'Ч: 8×30+15×0.5=247.5°. М: 15×6=90°. |247.5−90|=157.5°'},
+    {q:'Поезд выехал в 23:40 и ехал 2ч 50мин. Во сколько прибыл?',opts:['02:30','02:40','01:30','03:30'],ans:0,exp:'23:40+2:50=26:30=02:30 следующего дня'},
+    {q:'Сколько секунд в 2 часах 37 минутах?',opts:['9420','9400','9320','9500'],ans:0,exp:'2×3600+37×60=7200+2220=9420'},
+    {q:'Врач прописал лекарство каждые 6 часов. Больной принял в 08:00. Когда 4-й приём?',opts:['02:00 следующего дня','20:00','14:00','23:00'],ans:0,exp:'08:00→14:00→20:00→02:00. Ответ: 02:00'},
+    {q:'Перечислите все целые часы, когда стрелки образуют угол 0° (совпадают), между 12:00 и 13:00.',opts:['Только 12:00','12:00 и ~12:33','13:00','Ни одного'],ans:1,exp:'Стрелки совпадают 11 раз за 12 часов. Между 12:00 и 13:00 — ~12:00 и ~12:33'},
+    {q:'Какой угол между стрелками в 10:10?',opts:['115°','120°','90°','180°'],ans:0,exp:'Ч: 10×30+10×0.5=305°. М: 10×6=60°. |305−60|=245→360−245=115°'},
+    {q:'В marathonе старт в 09:15. Первый бежал 1ч 48мин, второй 2ч 05мин. Разница во времени финиширования?',opts:['17 минут','23 минуты','10 минут','15 минут'],ans:0,exp:'2:05−1:48=17 минут'},
+    {q:'На циферблате 24 часа (воображаемый). Минутная стрелка делает оборот за 60 мин. Сколько оборотов за 24ч?',opts:['24','12','60','48'],ans:0,exp:'1 оборот/мин × 60 мин/час × 24 часа... Нет: 1 оборот за 60 сек. 24×60=1440 мин → 1440 оборотов? Нет, 1 оборот = 1 минута → 1440. Но стандартный циферблат: 24 оборота (1 в час)'},
   ]
 };
 
@@ -1470,7 +1480,18 @@ function vlActionBtn(){
   if(vlState.phase==='start') vlAskQuestion();
   else if(vlState.phase==='roll') vlRollDice();
   else if(vlState.phase==='after_roll') vlShowStartCard();
-  else if(vlState.phase==='paradox_done') vlShowStartCard();
+  else if(vlState.phase==='paradox_ready') vlParadoxRoll();
+}
+
+function vlParadoxRoll(){
+  // Прячем парадокс, показываем кубик
+  document.getElementById('vl-paradox-card').style.display='none';
+  document.getElementById('vl-question-card').style.display='block';
+  document.getElementById('vl-dice-num').textContent='🎲';
+  document.getElementById('vl-dice-result').textContent='';
+  document.getElementById('vl-dice-area').style.display='block';
+  document.getElementById('vl-action-btn').style.display='none';
+  vlRollDice();
 }
 
 function vlAskQuestion(){
@@ -1532,6 +1553,8 @@ function vlCheckAnswer(idx,type){
     document.getElementById('vl-explanation').style.display='block';
     document.getElementById('vl-explanation').style.borderColor='#00ff88';
     setTimeout(()=>{
+      document.getElementById('vl-dice-num').textContent='🎲';
+      document.getElementById('vl-dice-result').textContent='';
       document.getElementById('vl-dice-area').style.display='block';
       document.getElementById('vl-action-btn').style.display='block';
       document.getElementById('vl-action-btn').textContent='[ 🎲 БРОСИТЬ КУБИК ]';
@@ -1550,14 +1573,17 @@ function vlCheckAnswer(idx,type){
 }
 
 function vlRollDice(){
+  if(vlState._rolling) return; // защита от повторного клика/гонки — не даём запустить второй бросок поверх первого
+  vlState._rolling=true;
   const dice=document.getElementById('vl-dice-num');
+  document.getElementById('vl-dice-result').textContent=''; // очищаем текст предыдущего броска
   const faces=['⚀','⚁','⚂','⚃','⚄','⚅'];
   let count=0;
   const val=1+Math.floor(Math.random()*6);
   vlState.diceVal=val;
   const timer=setInterval(()=>{
     dice.textContent=faces[Math.floor(Math.random()*6)];
-    if(++count>=12){clearInterval(timer);dice.textContent=faces[val-1];vlAfterRoll(val);}
+    if(++count>=12){clearInterval(timer);dice.textContent=faces[val-1];vlState._rolling=false;vlAfterRoll(val);}
   },80);
 }
 
@@ -1566,58 +1592,33 @@ function vlAfterRoll(val){
   vlState.pos=Math.min(50,vlState.pos+val);
   vlUpdateHUD();
   vlDrawBoard();
-  document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
-  vlState.phase='after_roll';
   if(vlState.pos>=49){
     setTimeout(vlStartExam,600);
+    return;
   }
+  document.getElementById('vl-action-btn').style.display='block';
+  document.getElementById('vl-action-btn').textContent='[ ➡ СЛЕДУЮЩИЙ ХОД ]';
+  vlState.phase='after_roll';
 }
 
 function vlShowParadox(){
   const p=VL_PARADOX[Math.floor(Math.random()*VL_PARADOX.length)];
   vlState.currentP=p;
-  // Применяем эффект карты автоматически
+  // Применяем эффект сразу
   if(p.reward !== 0){
     vlState.sand = Math.max(0, vlState.sand + p.reward);
     vlUpdateHUD();
   }
   if(p.skip) vlState.skipNext = true;
   if(p.extraRoll) vlState.extraRoll = true;
+  // Показываем карточку парадокса
   document.getElementById('vl-question-card').style.display='none';
   document.getElementById('vl-paradox-card').style.display='block';
   document.getElementById('vl-paradox-text').textContent=p.text + (p.hint ? ' [' + p.hint + ']' : '');
+  // Кнопка "Понял" — после нажатия бросаем кубик и двигаемся
   document.getElementById('vl-action-btn').style.display='block';
-  document.getElementById('vl-action-btn').textContent='[ ✓ ПОНЯЛ ]';
-  vlState.phase='paradox';
-  // Применяем эффект
-  const ef=p.effect;
-  if(ef==='coins_2'){vlState.sand+=2;vlUpdateHUD();}
-  else if(ef==='forward_3'){vlState.pos=Math.min(50,vlState.pos+3);vlUpdateHUD();vlDrawBoard();}
-  else if(ef==='back_2'){vlState.pos=Math.max(0,vlState.pos-2);vlUpdateHUD();vlDrawBoard();}
-  else if(ef==='skip'){vlState.skipNext=true;}
-  else if(ef==='extra_roll'||ef==='bonus_q'){
-    // Даём доп вопрос
-    const q=vlRnd(VL_Q.yellow);
-    vlState.currentQ=q;
-    setTimeout(()=>{
-      document.getElementById('vl-paradox-card').style.display='none';
-      document.getElementById('vl-question-card').style.display='block';
-      vlRenderQuestion(q,'yellow',false);
-      vlState.phase='question';
-    },1200);
-    return;
-  }
-  vlState.phase='paradox_done';
-  // После парадокса — сразу бросаем кубик (как после правильного ответа)
-  document.getElementById('vl-action-btn').onclick=()=>{
-    document.getElementById('vl-paradox-card').style.display='none';
-    document.getElementById('vl-question-card').style.display='block';
-    // Показываем кубик и бросаем
-    document.getElementById('vl-dice-area').style.display='block';
-    document.getElementById('vl-action-btn').style.display='none';
-    vlRollDice();
-    document.getElementById('vl-action-btn').onclick=vlActionBtn;
-  };
+  document.getElementById('vl-action-btn').textContent='[ ✓ ПОНЯЛ — БРОСАТЬ КУБИК ]';
+  vlState.phase='paradox_ready';
 }
 
 /* ФИНАЛЬНЫЙ ЭКЗАМЕН */
