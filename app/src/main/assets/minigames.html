@@ -287,11 +287,11 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
   </div>
   <div class="score-bar">
     <div><div class="sc-label">ЛИНИЙ</div><div class="sc-val" id="g7L">0/5</div></div>
-    <div><div class="sc-label">ЦЕЛЬ</div><div class="sc-val" style="color:var(--y);">6x26</div></div>
+    <div><div class="sc-label">ЦЕЛЬ</div><div class="sc-val" style="color:var(--y);">6x13</div></div>
   </div>
   <div class="card" style="text-align:center;">
     <div class="card-title">ЗАДАНИЕ</div>
-    <div class="card-body" style="font-size:.7rem;color:var(--dg);">Нажми на циферблат — проведи <b style="color:var(--y)">5 линий через центр</b>, разделив на 6 частей с суммой <b style="color:var(--c1)">26</b></div>
+    <div class="card-body" style="font-size:.7rem;color:var(--dg);">Нажми на циферблат — проведи <b style="color:var(--y)">5 линий через центр</b>, разделив на 6 частей с суммой <b style="color:var(--c1)">13</b></div>
   </div>
   <div style="position:relative;width:240px;height:240px;flex-shrink:0;">
     <svg id="g7svg" viewBox="0 0 240 240" width="240" height="240" style="cursor:crosshair;"></svg>
@@ -852,8 +852,8 @@ function g7Check(){
   var parts=g7Parts();var fb=document.getElementById('g7fb');
   if(g7.lines.length<5){fb.textContent='\u041d\u0443\u0436\u043d\u043e 5 \u043b\u0438\u043d\u0438\u0439!';fb.style.color='var(--y)';return;}
   var ok=parts.every(function(s){return s===13;});
-  if(ok){g7.locked=true;const _g7b=document.getElementById('g7cf');if(_g7b)_g7b.disabled=true;fb.textContent='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0412\u0441\u0435 = 26! +5\u2699';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u0426\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d!',null);},1600);}
-  else{var w=parts.filter(function(s){return s!==26;}).length;fb.textContent='\u274C '+w+' \u0447\u0430\u0441\u0442\u0435\u0439 \u043d\u0435\u0432\u0435\u0440\u043d\u044b.';fb.style.color='var(--r)';}}
+  if(ok){g7.locked=true;const _g7b=document.getElementById('g7cf');if(_g7b)_g7b.disabled=true;fb.textContent='\u{1F3C6} \u0418\u0414\u0415\u0410\u041b\u042c\u041d\u041e! \u0412\u0441\u0435 = 13! +5\u2699';fb.style.color='var(--g)';g7.gears+=5;award(g7.gears,7);setTimeout(function(){showResult(g7.gears,10,'\u0410\u0420\u0425\u0418\u0422\u0415\u041a\u0422\u041e\u0420!','\u0426\u0438\u0444\u0435\u0440\u0431\u043b\u0430\u0442 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d!',null);},1600);}
+  else{var w=parts.filter(function(s){return s!==13;}).length;fb.textContent='\u274C '+w+' \u0447\u0430\u0441\u0442\u0435\u0439 \u043d\u0435\u0432\u0435\u0440\u043d\u044b.';fb.style.color='var(--r)';}}
 // ═══ G8 ТРЕУГОЛЬНИК ═══
 const G8Q=[
   {pts:[12,4,8],q:'Как называется треугольник 12-4-8?',opts:['Прямоугольный','Равносторонний','Тупоугольный','Разносторонний'],ans:1,exp:'12-4-8 равноудалены на 120° — равносторонний'},
