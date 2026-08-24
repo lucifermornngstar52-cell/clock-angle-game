@@ -1,0 +1,48 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'windows/**'
+      - 'app/src/main/assets/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync latest game assets into windows/assets
+        shell: bash
+        run: |
+          cp app/src/main/assets/index.html windows/assets/index.html
+          cp app/src/main/assets/minigames.html windows/assets/minigames.html
+          cp app/src/main/assets/chronokeepers.html windows/assets/chronokeepers.html
+          cp app/src/main/assets/mathopoly.html windows/assets/mathopoly.html
+          cp app/src/main/assets/supabase_client.js windows/assets/supabase_client.js
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: windows
+        run: npm install
+
+      - name: Build portable EXE
+        working-directory: windows
+        run: npx electron-builder --win portable --x64
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: clock-angle-game-windows
+          path: windows/dist/*.exe
+          retention-days: 30

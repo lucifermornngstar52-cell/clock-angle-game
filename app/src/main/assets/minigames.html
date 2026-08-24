@@ -694,7 +694,7 @@ function g5Build(){
   document.getElementById('g5S').textContent=g5.score;
   document.getElementById('g5G').textContent='\u2699'+g5.gears;
   document.getElementById('g5fb').textContent='';
-  document.getElementById('g5Task').innerHTML='Нарисуй <b style="color:var(--y)">'+lvl.parts+' линию(и)</b> — суммы должны быть равны ('+lvl.hint+')';
+  document.getElementById('g5Task').innerHTML='Нарисуй <b style="color:var(--y)">'+g5.numLines+' лини'+(g5.numLines===1?'ю':'и')+'</b> — суммы должны быть равны ('+lvl.hint+')';
   g5Render();
 }
 function g5Render(){
