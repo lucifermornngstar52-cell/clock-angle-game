@@ -298,8 +298,6 @@
 
   <div class="other-label" style="color:#ff00aa;margin-top:14px;">── 5–11 КЛАСС ──</div>
   <button class="btn" style="border-color:#ff00aa;color:#ff00aa;" onclick="window.location.href='minigames.html'">[ ⚡ 10 МИНИ-ИГР ]<br><span style="font-size:.5rem;opacity:.7;">5-6 → 10-11 КЛАСС · ПО УВЕЛИЧЕНИЮ</span></button>
-
-  <div class="other-label" style="color:#00f5ff;margin-top:14px;">── 5–11 КЛАСС ──</div>
   <button class="btn btn-gold" onclick="showS('intro-screen')" style="border-color:#00f5ff;color:#00f5ff;">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">УГЛЫ СТРЕЛОК · СЛОЖНЫЕ ЗАДАЧИ</span></button>
 
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:14px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
@@ -1358,18 +1356,18 @@ const VL_Q = {
 };
 
 const VL_PARADOX = [
-  {text:'⚡ ЗЕРКАЛЬНОЕ ВРЕМЯ: Часы показывают 19:20, но в зеркале стрелки отразились. Скажи примерное "зеркальное" время — получишь +2⏳',
-   reward:2, hint:'Около 04:37'},
-  {text:'⚡ ВЕК ЖИВИ: Что дольше — треть века или 350 месяцев? Ответь правильно — получишь +3⏳',
-   reward:3, hint:'Треть века = 400 мес > 350 мес'},
-  {text:'⚡ ПАРАДОКС СТРЕЛОК: Часы отстают на 4 мин в сутки. Через сколько дней отстанут на час? +2⏳',
-   reward:2, hint:'60÷4 = 15 дней'},
+  {text:'⚡ ЗЕРКАЛЬНОЕ ВРЕМЯ: Часы показывают 19:20, а в зазеркалье время развернулось на 04:40. Ты поймал искажение! +2⏳',
+   reward:2},
+  {text:'⚡ ВЕК ЖИВИ: Треть века — это 400 месяцев, больше, чем 350. Знание веков приносит +3⏳',
+   reward:3},
+  {text:'⚡ ПАРАДОКС СТРЕЛОК: Часы отстают на 4 мин в сутки — за 15 дней наберётся целый час отставания. Компенсация +2⏳',
+   reward:2},
   {text:'⚡ КВАНТОВЫЙ ПРЫЖОК: Тебе возвращают 2⏳ просто так! Временной парадокс сработал в твою пользу.',
-   reward:2, hint:'Удача!'},
+   reward:2},
   {text:'⚡ ЧЁРНАЯ ДЫРА: Ты теряешь 1⏳. Время свернулось в точку... Следующий ход — дополнительный бросок!',
-   reward:-1, hint:'', extraRoll:true},
+   reward:-1, extraRoll:true},
   {text:'⚡ ВРЕМЕННАЯ ПЕТЛЯ: Пропусти следующий ход — ты застрял в петле. Зато получи +1⏳ компенсацию.',
-   reward:1, hint:'', skip:true},
+   reward:1, skip:true},
 ];
 
 const VL_CELL_TYPE = (n) => {
@@ -1614,7 +1612,7 @@ function vlShowParadox(){
   // Показываем карточку парадокса
   document.getElementById('vl-question-card').style.display='none';
   document.getElementById('vl-paradox-card').style.display='block';
-  document.getElementById('vl-paradox-text').textContent=p.text + (p.hint ? ' [' + p.hint + ']' : '');
+  document.getElementById('vl-paradox-text').textContent=p.text;
   // Кнопка "Понял" — после нажатия бросаем кубик и двигаемся
   document.getElementById('vl-action-btn').style.display='block';
   document.getElementById('vl-action-btn').textContent='[ ✓ ПОНЯЛ — БРОСАТЬ КУБИК ]';
