@@ -70,8 +70,8 @@
   #game-screen{
     display:flex;flex-direction:column;align-items:center;
     justify-content:flex-start;
-    padding:4px 8px 4px;
-    overflow:hidden; /* НЕ скроллим — всё должно помещаться */
+    padding:4px 6px 4px;
+    overflow-y:auto; /* Можно скроллить если не помещается */
     gap:0;
   }
 
@@ -88,14 +88,14 @@
   .q-hint{font-size:.58rem;color:rgba(255,200,0,.85);margin-top:2px;}
 
   /* Часы — адаптивный размер */
-  .clock-wrap{flex-shrink:0;margin:3px 0;}
+  .clock-wrap{flex-shrink:0;margin:2px 0;}
   .clock-wrap svg{filter:drop-shadow(0 0 8px rgba(0,255,65,.4));}
 
   /* Варианты */
   .choices-grid{display:grid;gap:5px;width:100%;flex-shrink:0;}
   .choices-grid.g4{grid-template-columns:1fr 1fr;margin-top:4px;}
   .choices-grid.g8{grid-template-columns:1fr 1fr;margin-top:3px;}
-  .choice-btn{background:rgba(0,18,0,.9);border:1px solid var(--border);border-radius:5px;
+  .choice-btn{background:rgba(0,18,0,.9);border:1px solid var(--border);border-radius:5px;min-height:38px;
     color:var(--g);font-family:'Orbitron',monospace;
     cursor:pointer;text-align:center;letter-spacing:1px;transition:all .12s;
     padding:10px 4px;font-size:.86rem;}
@@ -652,7 +652,7 @@
     </svg>
   </div>
   <!-- Варианты -->
-  <div id="choices-wrap"></div>
+  <div id="choices-wrap" style="min-height:80px;width:100%;"></div>
   <!-- КНОПКА ПОДТВЕРЖДЕНИЯ — сразу под вариантами -->
   <button id="confirm-btn" onclick="confirmMulti()">✓ ПОДТВЕРДИТЬ ВЫБОР</button>
   <!-- Фидбэк -->
@@ -750,9 +750,9 @@ function fitClock(){
   // Считаем оставшееся место под часы
   const gh = window.innerHeight;
   // Примерно под остальные элементы уходит ~370px (hud+qbox+choices+confirm+fb+hops+botrow)
-  const reserved = ST.lv === 3 ? 390 : 360;
-  const available = Math.max(110, gh - reserved);
-  const size = Math.min(available, 200); // макс 200px
+  const reserved = ST.lv === 3 ? 340 : 320;
+  const available = Math.max(100, gh - reserved);
+  const size = Math.min(available, 180); // макс 180px
   const svg = document.getElementById('clk');
   svg.setAttribute('width', size);
   svg.setAttribute('height', size);
