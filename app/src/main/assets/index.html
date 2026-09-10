@@ -780,10 +780,20 @@ loadData();
 // стартовый бонус 500 монет отключён
 
 /* ══ ИНТРО ══ */
+function maybeShowStory(){
+  // Welcome story — exactly once upon the first app launch
+  if(!localStorage.getItem('numbra_story_seen')){
+    localStorage.setItem('numbra_story_seen','1');
+    showS('intro-screen');
+    return true;
+  }
+  return false;
+}
 function checkIntro(){
   if(isAuthorized()){
     showS('main-menu');
     if(typeof loadStats==='function')loadStats();
+    maybeShowStory();
   }else{
     showS('sAuth');
   }
@@ -947,6 +957,15 @@ let multi_correctVals=[], multi_opts=[], multi_selected=new Set();
 
 /* ══ МАТЕМАТИКА ══ */
 function rndTime(){return{h:Math.floor(Math.random()*12),m:Math.floor(Math.random()*60),s:Math.floor(Math.random()*60)};}
+/* 5 unique questions per level: no repeated clock times within a level run */
+let usedTimes=new Set();
+function uniqueTime(){
+  let t,tries=0;
+  do{ t=rndTime(); tries++; }
+  while(usedTimes.has(t.h+':'+t.m+':'+t.s)&&tries<300);
+  usedTimes.add(t.h+':'+t.m+':'+t.s);
+  return t;
+}
 function calcAngles(t){
   return{s:t.s*6, m:t.m*6+t.s*0.1, h:(t.h%12)*30+t.m*0.5+t.s/120};
 }
@@ -1172,7 +1191,7 @@ function advance(){
   locked=false;document.getElementById('fb').textContent='';
   ST.qi++;
   if(ST.qi>=LVS[ST.lv].qc){levelDone();return;}
-  ST.time=rndTime();
+  ST.time=uniqueTime();
   const hs=ST.lv===0?0:HOP_AFTER[ST.lv-1],he=HOP_AFTER[ST.lv];
   ST.hops=Math.min(he,hs+Math.floor(ST.qi/LVS[ST.lv].qc*(he-hs)));
   buildHops();renderChoices();
@@ -1196,7 +1215,7 @@ function levelDone(){
   updMenuCoins();
 }
 function nextLevel(){
-  ST.lv++;ST.qi=0;ST.time=rndTime();locked=false;
+  ST.lv++;ST.qi=0;usedTimes=new Set();ST.time=uniqueTime();locked=false;
   showS('game-screen');buildHops();renderChoices();
   document.getElementById('fb').textContent='';
 }
@@ -1208,14 +1227,16 @@ function gameOver(){
 
 /* ══ СТАРТ / РЕСТАРТ ══ */
 function startGame(){
-  initA();locked=false;
-  ST={lv:0,qi:0,lives:3,hops:0,time:rndTime()};
+  initA();locked=false;usedTimes=new Set();
+  ST={lv:0,qi:0,lives:3,hops:0,time:uniqueTime()};
+  usedTimes.add(ST.time.h+':'+ST.time.m+':'+ST.time.s);
   showS('game-screen');drawTicks();buildHops();renderChoices();
   document.getElementById('fb').textContent='';
 }
 function restartGame(){
-  initA();locked=false;
-  ST={lv:0,qi:0,lives:3,hops:0,time:rndTime()};
+  initA();locked=false;usedTimes=new Set();
+  ST={lv:0,qi:0,lives:3,hops:0,time:uniqueTime()};
+  usedTimes.add(ST.time.h+':'+ST.time.m+':'+ST.time.s);
   showS('game-screen');buildHops();renderChoices();
   document.getElementById('fb').textContent='';
 }
@@ -1867,9 +1888,9 @@ async function doAuth(){
   var n=document.getElementById('authName').value.trim(),em=document.getElementById('authEmail').value.trim();
   if(!em){alert('Введите email');return;}if(!n)n=em.split('@')[0];
   try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:em,p_name:n})}).then(r=>r.json());
-  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));showS('main-menu');if(typeof loadStats==='function')loadStats();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
+  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));showS('main-menu');if(typeof loadStats==='function')loadStats();maybeShowStory();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
 }
-function skipAuth(){localStorage.setItem('game_email','guest');showS('main-menu');}
+function skipAuth(){localStorage.setItem('game_email','guest');showS('main-menu');maybeShowStory();}
 async function loadStats(){if(!isAuthorized()||getEmail()==='guest')return;try{var r=await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(getEmail())+'&select=coins',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r[0]){var el=document.getElementById('menu-coins');if(el)el.textContent=(r[0].coins||0)+' монет';}}catch(e){}}
 async function syncProgress(g,s,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/save_progress',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_game:g,p_score:s,p_wins:w})});}catch(e){}}
 async function syncVictory(gears){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_gears:gears})});supabaseTournamentScore(gears,1);}catch(e){}}
