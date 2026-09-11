@@ -725,6 +725,7 @@
   </div>
 </div>
 
+<script src="qb.js"></script>
 <script>
 /* ══ МАТРИЦА ══ */
 (()=>{
@@ -960,10 +961,12 @@ function rndTime(){return{h:Math.floor(Math.random()*12),m:Math.floor(Math.rando
 /* 5 unique questions per level: no repeated clock times within a level run */
 let usedTimes=new Set();
 function uniqueTime(){
-  let t,tries=0;
-  do{ t=rndTime(); tries++; }
-  while(usedTimes.has(t.h+':'+t.m+':'+t.s)&&tries<300);
-  usedTimes.add(t.h+':'+t.m+':'+t.s);
+  const B=QBANK['lv'+(ST.lv+1)]||[];
+  let idx,t,tries=0;
+  do{ idx=Math.floor(Math.random()*B.length); tries++;
+      const e=B[idx]; t={h:e[0],m:e[1],s:e[2]};
+  }while(usedTimes.has(idx)&&tries<500);
+  usedTimes.add(idx);
   return t;
 }
 function calcAngles(t){
@@ -1228,15 +1231,15 @@ function gameOver(){
 /* ══ СТАРТ / РЕСТАРТ ══ */
 function startGame(){
   initA();locked=false;usedTimes=new Set();
-  ST={lv:0,qi:0,lives:3,hops:0,time:uniqueTime()};
-  usedTimes.add(ST.time.h+':'+ST.time.m+':'+ST.time.s);
+  ST={lv:0,qi:0,lives:3,hops:0,time:{h:0,m:0,s:0}};
+  ST.time=uniqueTime();
   showS('game-screen');drawTicks();buildHops();renderChoices();
   document.getElementById('fb').textContent='';
 }
 function restartGame(){
   initA();locked=false;usedTimes=new Set();
-  ST={lv:0,qi:0,lives:3,hops:0,time:uniqueTime()};
-  usedTimes.add(ST.time.h+':'+ST.time.m+':'+ST.time.s);
+  ST={lv:0,qi:0,lives:3,hops:0,time:{h:0,m:0,s:0}};
+  ST.time=uniqueTime();
   showS('game-screen');buildHops();renderChoices();
   document.getElementById('fb').textContent='';
 }
