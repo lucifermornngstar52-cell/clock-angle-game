@@ -29,7 +29,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .ffront{border-radius:4px 10px 10px 4px;box-shadow:-8px 0 24px rgba(0,0,0,.35)}
 .fback{background:linear-gradient(-105deg,#efe6cc 0%,#f7f0dd 45%,#e7dcbc 100%);border-radius:10px 4px 4px 10px;transform:rotateY(180deg);box-shadow:8px 0 24px rgba(0,0,0,.35)}
 #cover{position:absolute;inset:0;z-index:60;cursor:pointer;transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.05,.3,1),box-shadow 1.15s;
- border-radius:10px;background:#05040a url('book_assets/cover-front.jpg') center/cover no-repeat;
+ border-radius:10px;background:#05040a url('book_assets/cover-front.jpg') center/contain no-repeat;
  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:0;padding:0;text-align:center;
  box-shadow:0 30px 80px rgba(0,0,0,.75), inset 0 0 0 2px rgba(167,139,250,.25), inset 0 0 60px rgba(124,58,237,.25)}
 #cover:hover{box-shadow:0 30px 90px rgba(0,0,0,.8), inset 0 0 0 2px rgba(167,139,250,.5), inset 0 0 60px rgba(124,58,237,.4)}
@@ -91,7 +91,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 #hint{position:fixed;top:12px;left:0;right:0;text-align:center;color:#6f6494;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;pointer-events:none}
 .edge{position:absolute;top:0;bottom:0;width:11%;z-index:50;cursor:pointer}
 #eL{left:0}#eR{right:0}
-.bc-full{position:absolute;top:-32px;left:-30px;right:-30px;bottom:-42px;background:url('book_assets/cover-back.jpg') center/cover no-repeat;border-radius:inherit}
+.bc-full{position:absolute;top:-32px;left:-30px;right:-30px;bottom:-42px;background:#05040a url('book_assets/cover-back.jpg') center/contain no-repeat;border-radius:inherit}
 @media(max-width:760px){
  .pghost,.fface{padding:20px 14px 30px;font-size:12px;line-height:1.5}
  .bc-full{top:-20px;left:-14px;right:-14px;bottom:-30px}
