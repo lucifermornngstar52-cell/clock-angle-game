@@ -8,9 +8,9 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
 :root{
-  --c1:#00f5ff;--c2:#7b2fff;--c3:#ff00aa;--c4:#00ff88;
+  --c1:#00f5ff;--c2:#7b2fff;--c3:#ff00aa;--c4:#97ce4c;
   --bg:#04040f;--panel:rgba(4,4,20,.97);--border:rgba(0,245,255,.2);
-  --gold:#ffd700;--red:#ff3131;--green:#00ff88;
+  --gold:#ffd700;--red:#ff3131;--green:#97ce4c;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
 html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'Share Tech Mono',monospace;overflow:hidden;}
@@ -387,7 +387,7 @@ function initBg() {
     r: Math.random()*1.5+.5,
     vx: (Math.random()-.5)*.3,
     vy: (Math.random()-.5)*.3,
-    color: ['#00f5ff','#7b2fff','#ff00aa','#00ff88'][Math.floor(Math.random()*4)],
+    color: ['#00f5ff','#7b2fff','#ff00aa','#97ce4c'][Math.floor(Math.random()*4)],
     alpha: Math.random()*.6+.2
   }));
 }
@@ -616,7 +616,7 @@ function updateClockVisual(t) {
   document.getElementById('clockDigital').textContent = fmtTime(t);
   // Color based on distance to 00:00
   const diff = timeDiff(t);
-  const color = diff < 30 ? '#00ff88' : diff < 120 ? '#ffd700' : '#00f5ff';
+  const color = diff < 30 ? '#97ce4c' : diff < 120 ? '#ffd700' : '#00f5ff';
   document.getElementById('clockDigital').setAttribute('fill', color);
   document.getElementById('minHand').setAttribute('stroke', color);
 }
@@ -703,7 +703,7 @@ function checkAnswer(idx) {
 
   if(correct) {
     myScore++;
-    showFx('✓ ВЕРНО!', '#00ff88', 800);
+    showFx('✓ ВЕРНО!', '#97ce4c', 800);
     // Дать карту
     const cardIdx = Math.floor(Math.random() * TIME_CARDS.length);
     myCards.push(cardIdx);

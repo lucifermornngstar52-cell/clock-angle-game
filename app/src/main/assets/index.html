@@ -6,7 +6,7 @@
 <title>Numbra</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-  :root{--g:#00ff41;--dg:#008f11;--bg:#0a0a0a;--panel:rgba(0,18,0,0.93);--border:rgba(0,255,65,0.25);}
+  :root{--g:#97ce4c;--dg:#4a7027;--bg:#070b23;--panel:rgba(9,14,44,0.93);--border:rgba(151,206,76,0.25);}
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{width:100%;height:100%;background:var(--bg);color:var(--g);font-family:'Share Tech Mono',monospace;overflow:hidden;}
   #mc{position:fixed;inset:0;z-index:0;opacity:.13;pointer-events:none;}
@@ -23,21 +23,21 @@
   /* ══ ИНТРО ══ */
   #intro-screen{gap:0;justify-content:center;padding:24px 20px;}
   .intro-frame{background:rgba(0,12,0,.97);border:1px solid var(--g);border-radius:10px;
-    padding:22px 18px;max-width:380px;width:100%;box-shadow:0 0 30px rgba(0,255,65,.15);}
+    padding:22px 18px;max-width:380px;width:100%;box-shadow:0 0 30px rgba(151,206,76,.15);}
   .intro-badge{font-size:.58rem;color:var(--dg);letter-spacing:3px;text-align:center;margin-bottom:12px;}
   .intro-title{font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:900;color:var(--g);
     text-shadow:0 0 12px var(--g);text-align:center;letter-spacing:2px;margin-bottom:14px;line-height:1.4;}
-  .intro-text{font-size:.76rem;color:rgba(0,255,65,.8);line-height:1.85;
+  .intro-text{font-size:.76rem;color:rgba(151,206,76,.8);line-height:1.85;
     border-left:2px solid var(--dg);padding-left:12px;margin-bottom:18px;}
   .intro-text span{color:var(--g);font-weight:bold;}
   .intro-cursor{display:inline-block;width:8px;height:13px;background:var(--g);
     animation:blink .7s infinite;vertical-align:middle;margin-left:2px;}
   @keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
-  .intro-btn{font-family:'Orbitron',monospace;font-size:.83rem;background:rgba(0,255,65,.1);
+  .intro-btn{font-family:'Orbitron',monospace;font-size:.83rem;background:rgba(151,206,76,.1);
     border:1px solid var(--g);color:var(--g);padding:12px 0;cursor:pointer;
     letter-spacing:2px;width:100%;text-align:center;border-radius:6px;
     text-shadow:0 0 8px var(--g);transition:all .2s;}
-  .intro-btn:active{background:rgba(0,255,65,.25);}
+  .intro-btn:active{background:rgba(151,206,76,.25);}
 
   /* ══ ГЛАВНОЕ МЕНЮ ══ */
   #main-menu{gap:12px;}
@@ -53,7 +53,7 @@
     border:1px solid var(--g);color:var(--g);padding:11px 0;cursor:pointer;
     letter-spacing:2px;text-transform:uppercase;width:100%;max-width:300px;
     text-align:center;transition:all .2s;border-radius:4px;}
-  .btn:active{background:rgba(0,255,65,.15);}
+  .btn:active{background:rgba(151,206,76,.15);}
   .btn.dis{opacity:.35;pointer-events:none;border-color:var(--dg);color:var(--dg);}
   .btn-gold{border-color:#ffd700;color:#ffd700;text-shadow:0 0 8px #ffd700;}
   .btn-gold:active{background:rgba(255,215,0,.12);}
@@ -89,20 +89,20 @@
 
   /* Часы — адаптивный размер */
   .clock-wrap{flex-shrink:0;margin:2px 0;}
-  .clock-wrap svg{filter:drop-shadow(0 0 8px rgba(0,255,65,.4));}
+  .clock-wrap svg{filter:drop-shadow(0 0 8px rgba(151,206,76,.4));}
 
   /* Варианты */
   .choices-grid{display:grid;gap:5px;width:100%;flex-shrink:0;}
   .choices-grid.g4{grid-template-columns:1fr 1fr;margin-top:4px;}
   .choices-grid.g8{grid-template-columns:1fr 1fr;margin-top:3px;}
-  .choice-btn{background:rgba(0,18,0,.9);border:1px solid var(--border);border-radius:5px;min-height:38px;
+  .choice-btn{background:rgba(9,14,44,.9);border:1px solid var(--border);border-radius:5px;min-height:38px;
     color:var(--g);font-family:'Orbitron',monospace;
     cursor:pointer;text-align:center;letter-spacing:1px;transition:all .12s;
     padding:10px 4px;font-size:.86rem;}
   .choices-grid.g8 .choice-btn{padding:7px 4px;font-size:.76rem;}
   .choice-btn:active{transform:scale(.96);}
   .choice-btn.selected{border-color:#0ff;background:rgba(0,255,255,.12);color:#0ff;box-shadow:0 0 8px rgba(0,255,255,.4);}
-  .choice-btn.correct{border-color:#00ff41!important;background:rgba(0,255,65,.22)!important;box-shadow:0 0 12px rgba(0,255,65,.6)!important;color:#fff!important;}
+  .choice-btn.correct{border-color:#97ce4c!important;background:rgba(151,206,76,.22)!important;box-shadow:0 0 12px rgba(151,206,76,.6)!important;color:#fff!important;}
   .choice-btn.wrong{border-color:#ff3131!important;background:rgba(255,49,49,.15)!important;box-shadow:0 0 10px rgba(255,49,49,.4)!important;color:#ff3131!important;}
   .choice-btn.missed{border-color:rgba(255,200,0,.7)!important;background:rgba(255,200,0,.08)!important;color:rgba(255,200,0,.9)!important;}
   .choice-btn.hint-hl{border-color:#ffd700!important;background:rgba(255,215,0,.18)!important;color:#ffd700!important;animation:glow .5s ease 3;}
@@ -112,17 +112,17 @@
   #confirm-btn{
     width:100%;margin-top:5px;flex-shrink:0;
     font-family:'Orbitron',monospace;font-size:.8rem;
-    background:rgba(0,255,65,.12);border:2px solid var(--g);border-radius:6px;
+    background:rgba(151,206,76,.12);border:2px solid var(--g);border-radius:6px;
     color:var(--g);padding:10px 0;cursor:pointer;letter-spacing:2px;
     text-shadow:0 0 6px var(--g);transition:all .2s;
     display:none;
   }
   #confirm-btn.visible{display:block;}
-  #confirm-btn:active{background:rgba(0,255,65,.28);}
+  #confirm-btn:active{background:rgba(151,206,76,.28);}
 
   .fb{font-family:'Orbitron',monospace;font-size:.7rem;text-align:center;
     min-height:14px;margin-top:2px;letter-spacing:1px;flex-shrink:0;}
-  .fb.ok{color:#00ff41;text-shadow:0 0 8px #00ff41;}
+  .fb.ok{color:#97ce4c;text-shadow:0 0 8px #97ce4c;}
   .fb.bad{color:#ff3131;text-shadow:0 0 8px #ff3131;}
   .fb.hint{color:#ffd700;text-shadow:0 0 8px #ffd700;}
 
@@ -134,7 +134,7 @@
     display:flex;align-items:center;justify-content:center;
     font-family:'Orbitron',monospace;font-size:.55rem;color:var(--dg);
     background:rgba(0,10,0,.6);transition:all .3s;}
-  .hop.done{border-color:var(--g);background:rgba(0,255,65,.12);color:var(--g);box-shadow:0 0 5px rgba(0,255,65,.3);}
+  .hop.done{border-color:var(--g);background:rgba(151,206,76,.12);color:var(--g);box-shadow:0 0 5px rgba(151,206,76,.3);}
   .hop.act{border-color:#0ff;background:rgba(0,255,255,.13);color:#0ff;box-shadow:0 0 8px rgba(0,255,255,.4);animation:pulse .9s infinite;}
 
   .bot-row{display:flex;gap:5px;width:100%;margin-top:3px;flex-shrink:0;}
@@ -145,7 +145,7 @@
   .hbtn:disabled{opacity:.4;pointer-events:none;}
   .mbtn{flex:.5;background:transparent;border:1px solid var(--border);border-radius:5px;
     color:var(--dg);font-family:'Share Tech Mono',monospace;font-size:.62rem;padding:7px 4px;cursor:pointer;}
-  .mbtn:active{background:rgba(0,255,65,.07);}
+  .mbtn:active{background:rgba(151,206,76,.07);}
 
   /* ══ РЕЗУЛЬТАТЫ / ГЕЙМОВЕР / ПОБЕДА ══ */
   #result-screen,#gameover-screen,#win-screen{gap:13px;}
@@ -158,7 +158,7 @@
   .win-title{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:900;color:#ffd700;
     text-shadow:0 0 16px #ffd700;text-align:center;letter-spacing:2px;margin-bottom:12px;
     line-height:1.4;animation:flicker 2s infinite;}
-  .win-text{font-size:.73rem;color:rgba(0,255,65,.85);line-height:1.9;
+  .win-text{font-size:.73rem;color:rgba(151,206,76,.85);line-height:1.9;
     border-left:2px solid rgba(255,215,0,.4);padding-left:10px;margin-bottom:14px;}
   .win-text .yr{color:#ffd700;font-family:'Orbitron',monospace;font-size:.88rem;text-shadow:0 0 10px #ffd700;}
   .win-stats{font-size:.7rem;color:var(--dg);text-align:center;margin-bottom:14px;line-height:1.7;}
@@ -176,7 +176,7 @@
   .popup-close{align-self:flex-end;background:transparent;border:1px solid var(--border);
     border-radius:5px;color:var(--dg);font-family:'Share Tech Mono',monospace;
     font-size:.72rem;padding:5px 12px;cursor:pointer;}
-  .popup-close:active{background:rgba(0,255,65,.1);}
+  .popup-close:active{background:rgba(151,206,76,.1);}
   .vrow{display:flex;align-items:center;gap:10px;width:100%;}
   .vrow label{font-size:.7rem;color:var(--dg);min-width:58px;}
   input[type=range]{-webkit-appearance:none;flex:1;height:3px;background:var(--dg);border-radius:2px;outline:none;}
@@ -185,7 +185,7 @@
   .vv{font-size:.7rem;min-width:32px;text-align:right;}
   .ach-item{display:flex;align-items:center;gap:10px;padding:8px 10px;
     background:rgba(0,10,0,.7);border:1px solid var(--border);border-radius:6px;}
-  .ach-item.unlocked{border-color:var(--g);background:rgba(0,255,65,.08);}
+  .ach-item.unlocked{border-color:var(--g);background:rgba(151,206,76,.08);}
   .ach-icon{font-size:1.1rem;min-width:26px;text-align:center;}
   .ach-info{flex:1;}
   .ach-name{font-size:.7rem;color:var(--dg);}
@@ -244,7 +244,7 @@
   </div>
   <div id="shopItems" style="max-width:420px;margin:0 auto;"></div>
   <div style="max-width:420px;margin:14px auto 0;">
-    <button onclick="claimDaily()" style="width:100%;background:linear-gradient(135deg,#00ff88,#00cc66);color:#000;border:none;border-radius:10px;padding:14px;font-size:.75rem;font-weight:bold;cursor:pointer;font-family:inherit;margin-bottom:10px;">ЕЖЕДНЕВНЫЙ БОНУС (+5)</button>
+    <button onclick="claimDaily()" style="width:100%;background:linear-gradient(135deg,#97ce4c,#00cc66);color:#000;border:none;border-radius:10px;padding:14px;font-size:.75rem;font-weight:bold;cursor:pointer;font-family:inherit;margin-bottom:10px;">ЕЖЕДНЕВНЫЙ БОНУС (+5)</button>
     <button onclick="watchAd()" style="width:100%;background:#1a1a2e;border:1px solid #00f5ff;color:#00f5ff;border-radius:10px;padding:14px;font-size:.75rem;cursor:pointer;font-family:inherit;">РЕКЛАМА (+3)</button>
   </div>
 </div>
@@ -260,22 +260,24 @@
 
 <div class="screen hidden" id="intro-screen">
   <div class="intro-frame">
-    <div class="intro-badge">// СЕКРЕТНЫЙ ФАЙЛ — УРОВЕНЬ ДОСТУПА: МАКСИМАЛЬНЫЙ //</div>
-    <div class="intro-title">⏱ МАШИНА ВРЕМЕНИ<br>ОБНАРУЖЕНА</div>
+    <img src="rm.png" style="width:68%;max-width:200px;border-radius:10px;border:1px solid #97ce4c;margin:0 auto 12px;display:block;">
+      <div class="intro-badge">// ЗАПИСЬ ИЗ ИЗМЕРЕНИЯ C-137 — СЕКРЕТНО //</div>
+    <div class="intro-title">🌀 МАШИНА ВРЕМЕНИ<br>ОБНАРУЖЕНА</div>
     <div class="intro-text">
-      Вы — <span>помощник учёного</span>. Пока профессор отлучился, вы обнаружили в его лаборатории странную машину с мерцающим циферблатом.<br><br>
-      Система заблокирована. Чтобы <span>получить доступ</span> — нужно решить серию задач на определение углов между стрелками часов.<br><br>
-      Четыре уровня, четыре эпохи. <span>История ждёт вас.</span><br><br>
-      Удачи, хакер.<span class="intro-cursor"></span>
+      Ты — <span>Морти</span>. Рик отлучился в другое измерение за соусом и оставил тебя в лаборатории одного. Ну, почти одного: тут гудит машина времени с мерцающим циферблатом.<br><br>
+      Система заперта. Чтобы <span>открыть портал</span> — реши серию задач на углы между стрелками часов.<br><br>
+      Четыре уровня, четыре измерения. <span>Не паникуй, Морти.</span><br><br>
+      Паника — враг точных вычислений.<span class="intro-cursor"></span>
     </div>
-    <button class="intro-btn" onclick="closeIntroAndStart()">[ НАЧАТЬ ВЗЛОМ ]</button>
+    <button class="intro-btn" onclick="closeIntroAndStart()">[ ОТКРЫТЬ ПОРТАЛ ]</button>
   </div>
 </div>
 
 <!-- ══ ГЛАВНОЕ МЕНЮ ══ -->
 <div class="screen hidden" id="main-menu">
   <div class="mtitle">NUMBRA</div>
-  <div class="msub">// CLOCK ANGLE CRACKER //</div>
+  <div class="msub">// МУЛЬТИВСЕЛЕННАЯ УГЛОВ //</div>
+    <img src="rm.png" style="width:42%;max-width:150px;border-radius:12px;border:1px solid #97ce4c;margin:10px auto;display:block;">
   <div class="menu-coins" id="menu-coins">💰 0 монет</div>
   <button class="btn" onclick="showS('game-menu')">[ 🎮 ИГРАТЬ ]</button>
   <button class="btn" onclick="openAch()">[ 🏆 ДОСТИЖЕНИЯ ]</button>
@@ -292,7 +294,7 @@
   <div class="gmenu-title">🎮 ВЫБОР ИГРЫ</div>
   <div class="gmenu-sub">// ВЫБЕРИ ПО КЛАССУ //</div>
 
-  <div class="other-label" style="color:#00ff88;">── 0–11 КЛАСС ──</div>
+  <div class="other-label" style="color:#97ce4c;">── 0–11 КЛАСС ──</div>
   <button class="btn btn-gold" onclick="showS('vl-menu')" style="border-color:#ffd700;color:#ffd700;">[ 👑 ВЛАСТЕЛИНЫ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">ВИКТОРИНА · СЕКТОРА СЛОЖНОСТИ</span></button>
   <button class="btn btn-gold" onclick="window.location.href='chronokeepers.html'" style="border-color:#7b2fff;color:#7b2fffb3;">[ ⏳ ХРАНИТЕЛИ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">МУЛЬТИПЛЕЕР · КАРТЫ ВРЕМЕНИ</span></button>
 
@@ -329,7 +331,7 @@
 #vl-answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .vl-opt{padding:10px 6px;background:rgba(255,255,255,.04);border:1px solid #1f3050;color:#aabbcc;border-radius:8px;font-size:.75rem;font-family:'Orbitron',monospace;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;}
 .vl-opt:active{transform:scale(.97);}
-.vl-opt.correct{background:rgba(0,255,136,.15);border-color:#00ff88;color:#00ff88;}
+.vl-opt.correct{background:rgba(0,255,136,.15);border-color:#97ce4c;color:#97ce4c;}
 .vl-opt.wrong{background:rgba(255,68,85,.15);border-color:#ff4455;color:#ff4455;}
 #vl-explanation{display:none;margin-top:10px;padding:10px 12px;background:rgba(0,0,0,.3);border-radius:8px;font-size:.75rem;color:#aabbcc;line-height:1.5;border-left:3px solid #ffd700;}
 #vl-dice-area{display:none;text-align:center;padding:10px 0 4px;}
@@ -353,7 +355,7 @@
     </div>
     <div class="vl-hud-cell">
       <div class="vl-hud-lbl">КЛЕТКА</div>
-      <div class="vl-hud-val" style="color:#00ff88;"><span id="vl-h-pos">0</span>/49</div>
+      <div class="vl-hud-val" style="color:#97ce4c;"><span id="vl-h-pos">0</span>/49</div>
     </div>
     <div class="vl-hud-cell">
       <div class="vl-hud-lbl">ДО ФИНИША</div>
@@ -412,18 +414,18 @@
   <div style="color:#aabbcc;font-size:.78rem;line-height:1.8;font-family:inherit;">
     <div style="color:#ffd700;font-size:.72rem;margin:8px 0 3px;">🎯 ЦЕЛЬ</div>
     Первым дойти до 49-й клетки и пройти <b style="color:#ffd700">Финальный Экзамен</b>. Кто наберёт больше жетонов <b>⏳</b> — тот Властелин Времени!
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 КАК ИГРАТЬ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🎲 КАК ИГРАТЬ</div>
     1. Нажми <b>«Начать ход»</b> — получишь карточку с вопросом<br>
     2. Выбери правильный ответ<br>
-    3. <b style="color:#00ff88">Верно</b> → получаешь жетоны + бросаешь кубик + двигаешься вперёд<br>
+    3. <b style="color:#97ce4c">Верно</b> → получаешь жетоны + бросаешь кубик + двигаешься вперёд<br>
     4. <b style="color:#ff4455">Неверно</b> → стоишь на месте, видишь объяснение
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🟢🟡🔴 КЛЕТКИ</div>
-    <b style="color:#00ff88">🟢 Зелёные (1–20)</b> — лёгкие вопросы, +1 ⏳<br>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🟢🟡🔴 КЛЕТКИ</div>
+    <b style="color:#97ce4c">🟢 Зелёные (1–20)</b> — лёгкие вопросы, +1 ⏳<br>
     <b style="color:#ffd700">🟡 Жёлтые (21–40)</b> — средние вопросы, +2 ⏳<br>
     <b style="color:#ff4455">🔴 Красные (41–48)</b> — сложные вопросы, +3 ⏳<br>
     <b style="color:#bb88ff">⚡ Парадокс (10,20,30,40)</b> — бонус или штраф<br>
     <b style="color:#ffd700">👑 Клетка 49</b> — Финальный Экзамен из 5 вопросов!
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🏆 ФИНАЛ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🏆 ФИНАЛ</div>
     На клетке 49 — ответь на 5 вопросов подряд. За каждый верный +3 ⏳. Пройди экзамен — и ты Властелин Времени!
   </div>
   <button class="btn" style="margin-top:16px;border-color:var(--dg);color:var(--dg);" onclick="showS('vl-menu')">[ ← НАЗАД ]</button>
@@ -434,8 +436,8 @@
   <div class="gmenu-title" style="font-size:.75rem;line-height:1.3;">⚗️ ХРАНИТЕЛИ ВРЕМЕНИ<br><span style="font-size:.55rem;color:#88aabb;letter-spacing:1px;">QUANTUM SHIFT</span></div>
   <div class="gmenu-sub">// РЕАКТОР ВЗОРВАЛСЯ · СТАБИЛИЗИРУЙ ВРЕМЯ //</div>
   <div id="hk-matchmaking" style="display:none;flex-direction:column;align-items:center;gap:12px;padding:20px;">
-    <div id="hk-mm-status" style="font-size:.7rem;color:#00ff88;">Поиск соперника...</div>
-    <div id="hk-mm-spinner" style="width:40px;height:40px;border:3px solid #1a2a4a;border-top:3px solid #00ff88;border-radius:50%;animation:spin 1s linear infinite;"></div>
+    <div id="hk-mm-status" style="font-size:.7rem;color:#97ce4c;">Поиск соперника...</div>
+    <div id="hk-mm-spinner" style="width:40px;height:40px;border:3px solid #1a2a4a;border-top:3px solid #97ce4c;border-radius:50%;animation:spin 1s linear infinite;"></div>
     <button class="btn" style="border-color:#ff4455;color:#ff4455;font-size:.6rem;padding:8px;" onclick="cancelMatchmaking()">[ ОТМЕНИТЬ ]</button>
   </div>
   <div id="hk-menu-buttons">
@@ -556,7 +558,7 @@
 <div class="screen hidden" id="hk-game">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#0a0f20;border-bottom:1px solid #1a2a4a;">
     <span style="font-size:.65rem;color:#556;font-family:'Orbitron',monospace;letter-spacing:1px;">КВАНТОВЫЙ СДВИГ</span><span id="hk-opponent" style="font-size:.6rem;color:#ffd700;margin-left:8px;"></span>
-    <span style="font-size:.82rem;color:#00ff88;">💎 <b id="hk-crystals">0</b> кристалла</span>
+    <span style="font-size:.82rem;color:#97ce4c;">💎 <b id="hk-crystals">0</b> кристалла</span>
     <button onclick="showS('hk-menu')" style="background:none;border:1px solid #334;color:#556;padding:3px 9px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.6rem;cursor:pointer;">✕</button>
   </div>
   <div style="overflow-y:auto;padding:10px 12px 20px;">
@@ -569,13 +571,13 @@
       <div id="hk-cd-pts" style="position:absolute;top:12px;right:12px;font-size:.72rem;padding:3px 9px;border-radius:20px;display:none;font-weight:700;"></div>
       <div id="hk-cd-q" style="font-size:.86rem;color:#ddeeff;line-height:1.5;margin:8px 0 14px;padding-right:44px;">Нажми «Следующая миссия» чтобы начать!</div>
       <button id="hk-cd-reveal" onclick="hkGameReveal()" style="display:none;width:100%;padding:10px;background:rgba(255,255,255,.05);border:1px solid #2a3a5a;color:#88aabb;border-radius:7px;font-family:'Orbitron',monospace;font-size:.7rem;cursor:pointer;">[ 👁 ОТКРЫТЬ ОТВЕТ ]</button>
-      <div id="hk-cd-ans" style="display:none;padding:10px;background:rgba(0,0,0,.3);border-radius:7px;font-size:.78rem;color:#cce8ff;line-height:1.5;margin-top:8px;border-left:3px solid #00ff88;"></div>
+      <div id="hk-cd-ans" style="display:none;padding:10px;background:rgba(0,0,0,.3);border-radius:7px;font-size:.78rem;color:#cce8ff;line-height:1.5;margin-top:8px;border-left:3px solid #97ce4c;"></div>
       <div id="hk-cd-btns" style="display:none;gap:8px;margin-top:10px;">
         <button onclick="hkGameNext(false)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #ff4455;background:rgba(255,68,85,.1);color:#ff4455;width:48%">✗ НЕВЕРНО<br>+0 💎</button>
-        <button onclick="hkGameNext(true)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #00ff88;background:rgba(0,255,136,.1);color:#00ff88;width:48%" id="hk-right-btn">✓ ВЕРНО<br><span id="hk-pts-lbl">+1 💎</span></button>
+        <button onclick="hkGameNext(true)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #97ce4c;background:rgba(0,255,136,.1);color:#97ce4c;width:48%" id="hk-right-btn">✓ ВЕРНО<br><span id="hk-pts-lbl">+1 💎</span></button>
       </div>
     </div>
-    <button id="hk-deal-btn" onclick="hkGameDeal()" style="width:100%;padding:13px;background:rgba(0,255,136,.08);border:1px solid #00ff88;color:#00ff88;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ ⚗️ СЛЕДУЮЩАЯ МИССИЯ ]</button>
+    <button id="hk-deal-btn" onclick="hkGameDeal()" style="width:100%;padding:13px;background:rgba(0,255,136,.08);border:1px solid #97ce4c;color:#97ce4c;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ ⚗️ СЛЕДУЮЩАЯ МИССИЯ ]</button>
     <div id="hk-win-msg" style="display:none;text-align:center;padding:20px 12px;font-size:.9rem;color:#ffd700;">
       🏆 ХРОНОМЕТР СИНХРОНИЗИРОВАН!<br>
       <span style="font-size:.7rem;color:#aabbcc;">Ты собрал 5 Хроно-кристаллов и стабилизировал время.<br>Реактор перезапущен. Мир спасён. ⚗️</span><br>
@@ -589,27 +591,27 @@
 <div class="screen hidden" id="hk-rules" style="overflow-y:auto;padding:14px 16px 60px;">
   <div class="gmenu-title" style="font-size:.8rem;padding:10px 0 6px;">📜 ПРАВИЛА</div>
   <div style="color:#aabbcc;font-size:.78rem;line-height:1.8;font-family:inherit;">
-    <div style="color:#00ff88;font-size:.72rem;margin:8px 0 3px;">⚗️ СЕТТИНГ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:8px 0 3px;">⚗️ СЕТТИНГ</div>
     Вы — учёные-хрононавты. Временной реактор взорвался. Мир застрял в петлях. Цель — починить Хронометры и стабилизировать время раньше соперников.
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎯 ЦЕЛЬ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🎯 ЦЕЛЬ</div>
     Первым собрать <b style="color:#ffd700">5 Хроно-кристаллов 💎</b> за правильные ответы — или синхронизировать Хронометр с Эталоном (<b>00:00</b>).
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 СТАРТ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🎲 СТАРТ</div>
     Каждый игрок начинает с <b>поломанными часами</b> — случайное время (04:15, 18:40...). Нужно привести их к 00:00, решая задачи.
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">⏱🗓🌌 УРОВНИ</div>
-    <b style="color:#00ff88">Секундомер</b> — часы и минуты в пределах суток, +1 💎<br>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">⏱🗓🌌 УРОВНИ</div>
+    <b style="color:#97ce4c">Секундомер</b> — часы и минуты в пределах суток, +1 💎<br>
     <b style="color:#ffd700">Календарь</b> — дни, недели, часовые пояса, +2 💎<br>
     <b style="color:#ff4455">Парадокс</b> — время вспять, нестандартные правила, +3 💎<br>
     <b style="color:#bb88ff">🃏 Хроно-магия</b> — мешают соперникам или помогают себе
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🃏 КАРТЫ ХРОНО-МАГИИ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🃏 КАРТЫ ХРОНО-МАГИИ</div>
     <b>⏪ Временная петля</b> — соперник −45 мин и решает заново<br>
     <b>😵 Джетлаг</b> — соперник решает задачу вслепую (без часов)<br>
     <b>⏩ Перевод стрелок</b> — кражу минут у лидера себе
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🏆 ПОБЕДА</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🏆 ПОБЕДА</div>
     Первым собрать 5 💎 — или синхронизировать хронометр с 00:00. Остальные могут доиграть до конца колоды для финального счёта.
 
     <div style="margin-top:18px;padding:12px;background:rgba(0,255,136,.06);border-radius:8px;border:1px solid rgba(0,255,136,.2);text-align:center;font-size:.72rem;color:#88ddaa;line-height:1.7;">
@@ -641,14 +643,14 @@
   <!-- Часы -->
   <div class="clock-wrap" id="clock-wrap">
     <svg id="clk" viewBox="-90 -90 180 180">
-      <circle r="88" fill="rgba(0,10,0,.95)" stroke="#00ff41" stroke-width="2"/>
-      <circle r="83" fill="none" stroke="rgba(0,255,65,.1)" stroke-width="1"/>
+      <circle r="88" fill="rgba(0,10,0,.95)" stroke="#97ce4c" stroke-width="2"/>
+      <circle r="83" fill="none" stroke="rgba(151,206,76,.1)" stroke-width="1"/>
       <g id="ticks"></g><g id="nums"></g>
       <path id="arc" fill="rgba(255,255,0,.07)" stroke="rgba(255,255,0,.5)" stroke-width="1.5" d=""/>
       <line id="hh" x1="0" y1="0" x2="0" y2="-46" stroke="#ff6b35" stroke-width="6" stroke-linecap="round" filter="drop-shadow(0 0 6px #ff6b35)"/>
-      <line id="mh" x1="0" y1="0" x2="0" y2="-65" stroke="#00ff88" stroke-width="5" stroke-linecap="round" filter="drop-shadow(0 0 6px #00ff88)"/>
+      <line id="mh" x1="0" y1="0" x2="0" y2="-65" stroke="#97ce4c" stroke-width="5" stroke-linecap="round" filter="drop-shadow(0 0 6px #97ce4c)"/>
       <line id="sh" x1="0" y1="5" x2="0" y2="-72" stroke="#00ddff" stroke-width="3" stroke-linecap="round" filter="drop-shadow(0 0 5px #00ddff)"/>
-      <circle r="4" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
+      <circle r="4" fill="#97ce4c" stroke="#000" stroke-width="1.5"/>
     </svg>
   </div>
   <!-- Варианты -->
@@ -674,13 +676,13 @@
 <div class="screen hidden" id="result-screen">
   <div class="rtitle" id="rt"></div>
   <div class="rinfo" id="ri"></div>
-  <button class="btn" id="next-btn" onclick="nextLevel()">[ СЛЕДУЮЩИЙ УРОВЕНЬ ]</button>
+  <button class="btn" id="next-btn" onclick="nextLevel()">[ СЛЕДУЮЩЕЕ ИЗМЕРЕНИЕ ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
 </div>
 
 <!-- ══ ГЕЙМОВЕР ══ -->
 <div class="screen hidden" id="gameover-screen">
-  <div class="rtitle" style="color:#ff3131;text-shadow:0 0 18px #ff3131;">ВЗЛОМ ПРОВАЛЕН</div>
+  <div class="rtitle" style="color:#ff3131;text-shadow:0 0 18px #ff3131;">ПОРТАЛ СХЛОПНУЛСЯ</div>
   <div class="rinfo" id="gi"></div>
   <button class="btn" onclick="restartGame()">[ ПОПРОБОВАТЬ СНОВА ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
@@ -689,8 +691,8 @@
 <!-- ══ ПОБЕДА ══ -->
 <div class="screen hidden" id="win-screen">
   <div class="win-frame">
-    <div class="win-badge">// ВЗЛОМ ЗАВЕРШЁН — ДОСТУП ПОЛУЧЕН //</div>
-    <div class="win-title">🚀 МАШИНА ВРЕМЕНИ<br>ЗАПУЩЕНА!</div>
+    <div class="win-badge">// ПОРТАЛ ОТКРЫТ — ДОСТУП ПОЛУЧЕН //</div>
+    <div class="win-title">🌀 ПОРТАЛ ОТКРЫТ!<br>МАШИНА ВРЕМЕНИ ЗАПУЩЕНА!</div>
     <div class="win-text" id="win-text"></div>
     <div class="win-stats" id="win-stats"></div>
     <button class="btn" style="width:100%;margin-bottom:8px;" onclick="restartGame()">[ НОВОЕ ПУТЕШЕСТВИЕ ]</button>
@@ -727,16 +729,21 @@
 
 <script src="qb.js"></script>
 <script>
-/* ══ МАТРИЦА ══ */
+/* ══ РЕПЛИКИ РИКА ══ */
+const RICK_OK=['✓ ГЕНИАЛЬНО, МОРТИ!','✓ НАУКА ПОБЕДИЛА!','✓ РИК БЫ ГОРДИЛСЯ!','✓ ПОРТАЛ СТАБИЛЕН!','✓ ВОТ ЭТО Я ПОНИМАЮ, НАУКА!'];
+const RICK_NO=['✗ НЕВЕРНО, МОРТИ!','✗ НЕВЕРНО, НО НЕ ПАНИКУЙ!','✗ РИК ТАК НЕ ОШИБАЕТСЯ!','✗ ПОРТАЛ ЗАШИПЕЛ!','✗ МОРТИ, ТЫ СНОВА ПАНИКУЕШЬ!'];
+const pick=a=>a[Math.random()*a.length|0];
+
+/* ══ ПОРТАЛЬНЫЙ ШУМ ══ */
 (()=>{
   const c=document.getElementById('mc'),x=c.getContext('2d');
   const rz=()=>{c.width=innerWidth;c.height=innerHeight;};rz();addEventListener('resize',rz);
-  const ch='アイウエオ01αβ∑∏∞#@$%&(){}<>?\\|'.split('');let dr=[];
+  const ch='∑∏∞ΔΩψ≈⧖×÷αβθ01<C137>'.split('');let dr=[];
   const cols=()=>Math.floor(c.width/13);
   setInterval(()=>{
     if(dr.length!==cols())dr=Array.from({length:cols()},()=>Math.random()*c.height/13|0);
     x.fillStyle='rgba(10,10,10,.08)';x.fillRect(0,0,c.width,c.height);
-    x.fillStyle='#00ff41';x.font='11px Share Tech Mono';
+    x.fillStyle='#97ce4c';x.font='11px Share Tech Mono';
     dr.forEach((y,i)=>{x.fillText(ch[Math.random()*ch.length|0],i*13,y*13);
       if(y*13>c.height&&Math.random()>.975)dr[i]=0;dr[i]++;});
   },55);
@@ -1023,11 +1030,11 @@ function drawTicks(){
     const line=document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute('x1',Math.sin(rad)*r1v);line.setAttribute('y1',-Math.cos(rad)*r1v);
     line.setAttribute('x2',Math.sin(rad)*r2v);line.setAttribute('y2',-Math.cos(rad)*r2v);
-    line.setAttribute('stroke',maj?'#00ff88':'rgba(0,255,136,.5)');line.setAttribute('stroke-width',maj?'2.5':'1.5');
+    line.setAttribute('stroke',maj?'#97ce4c':'rgba(0,255,136,.5)');line.setAttribute('stroke-width',maj?'2.5':'1.5');
     tg.appendChild(line);
     if(maj){const num=i/5||12,nr=61,t=document.createElementNS('http://www.w3.org/2000/svg','text');
       t.setAttribute('x',Math.sin(rad)*nr);t.setAttribute('y',-Math.cos(rad)*nr+3.5);
-      t.setAttribute('text-anchor','middle');t.setAttribute('fill','rgba(0,255,65,.55)');
+      t.setAttribute('text-anchor','middle');t.setAttribute('fill','rgba(151,206,76,.55)');
       t.setAttribute('font-size','7.5');t.setAttribute('font-family','Orbitron,monospace');
       t.textContent=num;ng.appendChild(t);}
   }
@@ -1138,12 +1145,12 @@ function pickSingle(idx){
     for(let i=0;i<4;i++)document.getElementById('cb'+i).disabled=true;
     ST.lives--;
     document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
-    sfx('no');showFb('✗ НЕВЕРНО!','bad');
+    sfx('no');showFb(pick(RICK_NO),'bad');
     if(ST.lives<=0)setTimeout(gameOver,1100);else setTimeout(advance,1200);
   }else{
     sfx('ok');SAVE.coins+=LVS[ST.lv].cp;saveData();
     document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
+    showFb(pick(RICK_OK)+' +'+LVS[ST.lv].cp+'🪙','ok');
     setTimeout(advance,900);
   }
 }
@@ -1157,7 +1164,7 @@ function toggleMulti(idx){
 }
 function confirmMulti(){
   if(locked)return;
-  if(multi_selected.size===0){showFb('Выбери хотя бы один ответ!','hint');return;}
+  if(multi_selected.size===0){showFb('Морти, выбери хотя бы один ответ!','hint');return;}
   initA();locked=true;
   const cSet=new Set(multi_correctVals);
   const selVals=new Set([...multi_selected].map(i=>multi_opts[i]));
@@ -1173,17 +1180,17 @@ function confirmMulti(){
   if(perfect){
     sfx('ok');SAVE.coins+=LVS[ST.lv].cp;saveData();
     document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
+    showFb(pick(RICK_OK)+' +'+LVS[ST.lv].cp+'🪙','ok');
     setTimeout(advance,1000);
   }else{
     sfx('no');ST.lives--;
     document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
     const missed=[...cSet].filter(v=>!selVals.has(v)).length;
     const extra=[...selVals].filter(v=>!cSet.has(v)).length;
-    let msg='✗ НЕВЕРНО!';
-    if(missed&&extra)msg='✗ Пропущенные и лишние!';
-    else if(missed)msg='✗ Не все правильные!';
-    else if(extra)msg='✗ Есть лишние!';
+    let msg=pick(RICK_NO);
+    if(missed&&extra)msg='✗ И пропустил, и лишку, Морти!';
+    else if(missed)msg='✗ Не все, Морти! Не все!';
+    else if(extra)msg='✗ Лишний ответ, Морти!';
     showFb(msg,'bad');
     if(ST.lives<=0)setTimeout(gameOver,1200);else setTimeout(advance,1400);
   }
@@ -1205,15 +1212,15 @@ function levelDone(){
   if(ST.lv>=3){
     const d=WIN_YEARS[Math.floor(Math.random()*WIN_YEARS.length)];
     document.getElementById('win-text').innerHTML=
-      `Система взломана. Координаты установлены.<br><br>
+      `Рик будет гордиться. Наверное. Координаты установлены.<br><br>
        Вы перенеслись в <span class="yr">${d.y} год ${d.era}</span><br>
        📍 ${d.place} — ${d.desc}.<br><br>
-       Оглядитесь. История открыта перед вами. 😏`;
+       Не паникуй и оглядись: история открыта перед тобой, Морти. *уэрп*`;
     document.getElementById('win-stats').innerHTML=`Монет: <b>${SAVE.coins}🪙</b> &nbsp;|&nbsp; Жизней: <b>${ST.lives}</b>`;
     showS('win-screen');updMenuCoins();return;
   }
   showS('result-screen');
-  document.getElementById('rt').textContent=LVS[ST.lv].title+' ВЗЛОМАН!';
+  document.getElementById('rt').textContent=LVS[ST.lv].title+' — ПОРТАЛ ОТКРЫТ!';
   document.getElementById('ri').innerHTML='Монет: <b>'+SAVE.coins+'🪙</b> &nbsp;|&nbsp; Жизней: <b>'+ST.lives+'</b>';
   updMenuCoins();
 }
@@ -1255,12 +1262,12 @@ function useHint(){
   document.getElementById('hint-btn').disabled=true;hintUsed=true;
   if(ST.lv<3){
     document.getElementById('cb'+single_correctIdx).classList.add('hint-hl');
-    showFb('💡 Правильный ответ выделен!','hint');
+    showFb('💡 Рик подсветил правильный ответ!','hint');
   }else{
     const ci=multi_opts.reduce((acc,v,i)=>{if(multi_correctVals.includes(v))acc.push(i);return acc;},[]);
     const ri=ci[Math.floor(Math.random()*ci.length)];
     document.getElementById('cb'+ri).classList.add('hint-hl');
-    showFb('💡 Один из правильных выделен!','hint');
+    showFb('💡 Рик подсветил один из них!','hint');
   }
 }
 
@@ -1467,7 +1474,7 @@ function vlShowStartCard(){
   const pos = vlState.pos;
   const nextType = VL_CELL_TYPE(pos + 1);
   const typeInfo = {
-    green:  {badge:'🟢 ЗЕЛЁНЫЙ СЕКТОР — лёгкий (+1⏳)', color:'#00ff88', bg:'rgba(0,255,136,.12)',
+    green:  {badge:'🟢 ЗЕЛЁНЫЙ СЕКТОР — лёгкий (+1⏳)', color:'#97ce4c', bg:'rgba(0,255,136,.12)',
              hint:'Следующая клетка: простые задачи на время'},
     yellow: {badge:'🟡 ЖЁЛТЫЙ СЕКТОР — средний (+2⏳)', color:'#ffd700', bg:'rgba(255,215,0,.12)',
              hint:'Следующая клетка: задачи посложнее'},
@@ -1541,7 +1548,7 @@ function vlAskQuestion(){
 }
 
 function vlRenderQuestion(q,type,isExam){
-  const colors={green:'#00ff88',yellow:'#ffd700',red:'#ff4455',exam:'#bb88ff'};
+  const colors={green:'#97ce4c',yellow:'#ffd700',red:'#ff4455',exam:'#bb88ff'};
   const labels={green:'🟢 ЛЁГКОЕ +1⏳',yellow:'🟡 СРЕДНЕЕ +2⏳',red:'🔴 СЛОЖНОЕ +3⏳',exam:'👑 ЭКЗАМЕН +3⏳'};
   const c=colors[type]||'#aaa';
   const badge=document.getElementById('vl-q-badge');
@@ -1573,7 +1580,7 @@ function vlCheckAnswer(idx,type){
     vlUpdateHUD();
     document.getElementById('vl-explanation').innerHTML='✅ Верно! <span style="color:#ffd700">+'+pts+'⏳</span>';
     document.getElementById('vl-explanation').style.display='block';
-    document.getElementById('vl-explanation').style.borderColor='#00ff88';
+    document.getElementById('vl-explanation').style.borderColor='#97ce4c';
     setTimeout(()=>{
       document.getElementById('vl-dice-num').textContent='🎲';
       document.getElementById('vl-dice-result').textContent='';
@@ -1714,7 +1721,7 @@ function vlShowWin(){
     '<div style="font-size:.72rem;color:#bb88ff;margin-bottom:4px;">Текущий титул: <b>'+rank+'</b></div>'+
     '<div style="font-size:.7rem;color:#667;margin-bottom:14px;">Побед: <b style="color:#ffd700">'+SAVE.vlWins+'</b> · Рекорд жетонов: <b style="color:#ffd700">'+SAVE.vlBestSand+'⏳</b></div>'+
     '⏳ Жетонов собрано: <b style="color:#ffd700">'+vlState.sand+'</b><br>'+
-    '✅ Правильных ответов в экзамене: <b style="color:#00ff88">'+vlState.examCorrect+'/5</b>';
+    '✅ Правильных ответов в экзамене: <b style="color:#97ce4c">'+vlState.examCorrect+'/5</b>';
 }
 
 /* ИГРОВОЕ ПОЛЕ */
@@ -1793,7 +1800,7 @@ const HK_CARDS = [
   {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'😵 Джетлаг! Следующий соперник решает задачу без часов — только в уме.', a:'Спецкарта: переверни хронометр соперника. Ошибся — теряет ход'},
   {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'⏩ Перевод стрелок! Укради от 15 до 60 минут у лидера.', a:'Спецкарта: бери минуты у того кто ближе к победе'},
 ];
-const HK_COLOR = {green:'#00ff88',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
+const HK_COLOR = {green:'#97ce4c',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
 let hkCrystals = 0, hkDeck = [], hkCurrent = null;
 let hkUsedCards = new Set();
 let hkIsBot = false, hkMatchId = null, hkMyScore = 0, hkMatchSeed = 0;
@@ -2098,13 +2105,13 @@ function showMatchResult(result){
   if(tie){
     html = '<div style="font-size:2rem;">🤝</div><div style="font-size:.9rem;color:#ffd700;margin:12px 0;">Ничья!</div>';
   } else if(won){
-    html = '<div style="font-size:2rem;">🏆</div><div style="font-size:.9rem;color:#00ff88;margin:12px 0;">Победа!</div>';
+    html = '<div style="font-size:2rem;">🏆</div><div style="font-size:.9rem;color:#97ce4c;margin:12px 0;">Победа!</div>';
     if(typeof syncVictory === 'function') syncVictory(hkMyScore);
   } else {
     html = '<div style="font-size:2rem;">💪</div><div style="font-size:.9rem;color:#ff4455;margin:12px 0;">Поражение</div>';
   }
   html += '<div style="display:flex;gap:20px;justify-content:center;margin:20px 0;">';
-  html += '<div style="text-align:center;"><div style="font-size:.6rem;color:#556;">ВЫ</div><div style="font-size:1.5rem;color:#00ff88;">'+result.my_score+'💎</div></div>';
+  html += '<div style="text-align:center;"><div style="font-size:.6rem;color:#556;">ВЫ</div><div style="font-size:1.5rem;color:#97ce4c;">'+result.my_score+'💎</div></div>';
   html += '<div style="text-align:center;"><div style="font-size:.6rem;color:#556;">'+(result.opponent_name||'Соперник')+'</div><div style="font-size:1.5rem;color:#ff4455;">'+result.opponent_score+'💎</div></div>';
   html += '</div>';
   
