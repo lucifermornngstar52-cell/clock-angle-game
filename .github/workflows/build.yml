@@ -19,8 +19,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+        shell: bash
 
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
