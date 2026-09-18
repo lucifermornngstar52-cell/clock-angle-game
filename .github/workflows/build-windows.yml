@@ -25,6 +25,10 @@ jobs:
           cp app/src/main/assets/mathopoly.html windows/assets/mathopoly.html
           cp app/src/main/assets/supabase_client.js windows/assets/supabase_client.js
           cp app/src/main/assets/rm.png windows/assets/rm.png
+          cp app/src/main/assets/jerry.png windows/assets/jerry.png
+          cp app/src/main/assets/rick_buff.png windows/assets/rick_buff.png
+          cp app/src/main/assets/rick_duo.png windows/assets/rick_duo.png
+          cp app/src/main/assets/rick_face.png windows/assets/rick_face.png
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
