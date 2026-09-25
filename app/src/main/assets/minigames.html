@@ -383,7 +383,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
 </div>
 <script>
 const SCREENS=['sAuth','sMenu','sResult','sTournament','sShop','sLB','sG1','sG2','sG3','sG4','sG5','sG6','sG7','sG8','sG9','sG10'];
-function showS(id){SCREENS.forEach(s=>{const e=document.getElementById(s);if(e)e.classList.add('hidden');});const t=document.getElementById(id);if(t)t.classList.remove('hidden');}
+function showS(id){
+  if(id!=='sG8'&&id!=='sG9'&&id!=='sG10'){mgActiveGame=0;if(typeof mgHintRefresh==='function')mgHintRefresh();}SCREENS.forEach(s=>{const e=document.getElementById(s);if(e)e.classList.add('hidden');});const t=document.getElementById(id);if(t)t.classList.remove('hidden');}
 
 // SAVE
 function getG(){return parseInt(localStorage.getItem('mg_gears')||'0');}
@@ -478,7 +479,7 @@ function buildMenu(){
 }
 function goHome(){if(document.referrer)history.back();else window.location.href='index.html';}
 function backToMenu(){stopAll();showS('sMenu');buildMenu();}
-function startGame(id){stopAll();switch(id){case 1:g1Init();break;case 2:g2Init();break;case 3:g3Init();break;case 4:g4Init();break;case 5:g5Init();break;case 6:g6Init();break;case 7:g7Init();break;case 8:g8Init();break;case 9:g9Init();break;case 10:g10Init();break;}}
+function startGame(id){stopAll();mgActiveGame=id;mgHintRefresh();switch(id){case 1:g1Init();break;case 2:g2Init();break;case 3:g3Init();break;case 4:g4Init();break;case 5:g5Init();break;case 6:g6Init();break;case 7:g7Init();break;case 8:g8Init();break;case 9:g9Init();break;case 10:g10Init();break;}}
 
 // ═══ G1 АВТОБУС ═══
 const G1T=[{dep:{h:8,m:0},tr:45,lbl:'Школьный рейс'},{dep:{h:14,m:30},tr:80,lbl:'Городской маршрут'},{dep:{h:9,m:15},tr:35,lbl:'Маршрутка'},{dep:{h:22,m:40},tr:50,lbl:'Ночной автобус'},{dep:{h:7,m:50},tr:25,lbl:'Утренний рейс'}];
@@ -1126,6 +1127,28 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 });
 
+</script>
+<button id="mg-hint-btn" onclick="mgUseHint()" title="Подсказка" style="display:none;position:fixed;left:10px;bottom:10px;z-index:99;background:rgba(13,26,46,.92);border:1px solid rgba(255,215,0,.6);border-radius:50%;width:38px;height:38px;font-size:1rem;cursor:pointer;">💡<span id="mg-hint-cnt" style="position:absolute;right:-3px;top:-3px;background:#ffd700;color:#000;border-radius:8px;padding:0 4px;font-size:.5rem;font-weight:bold;"></span></button>
+<script>
+var mgActiveGame=0;
+function mgHintRefresh(){
+  var b=document.getElementById('mg-hint-btn');if(!b)return;
+  b.style.display=(mgActiveGame===8||mgActiveGame===9||mgActiveGame===10)?'':'none';
+  var c=document.getElementById('mg-hint-cnt');if(c)c.textContent=(getItems().hint||0);
+}
+function mgUseHint(){
+  var it=getItems();
+  if((it.hint||0)<=0){alert('Нет подсказок! Купи в магазине (10 монет)');return;}
+  var wrap=null,ans=null;
+  if(mgActiveGame===8){wrap='#g8opts';ans=(typeof g8!=='undefined'&&g8&&g8.cur)?g8.cur.ans:null;}
+  else if(mgActiveGame===9){wrap='#g9opts';ans=(typeof G9Q!=='undefined'&&typeof g9!=='undefined'&&g9.round>=0)?G9Q[g9.round].ans:null;}
+  else if(mgActiveGame===10){wrap='#g10opts';ans=(typeof G10Q!=='undefined'&&typeof g10!=='undefined'&&g10.round>=0)?G10Q[g10.round].ans:null;}
+  if(!wrap||ans==null){alert('Нет активного вопроса');return;}
+  var b=document.querySelectorAll(wrap+' .opt-btn')[ans];
+  if(b){b.style.borderColor='var(--g)';b.style.background='rgba(0,255,136,.08)';}
+  it.hint--;localStorage.setItem('cag_items',JSON.stringify(it));
+  mgHintRefresh();
+}
 </script>
 </body>
 </html>

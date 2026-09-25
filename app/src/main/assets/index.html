@@ -143,6 +143,7 @@
     font-size:.62rem;padding:7px 4px;cursor:pointer;}
   .hbtn:active{background:rgba(255,200,0,.1);}
   .hbtn:disabled{opacity:.4;pointer-events:none;}
+  #hint-btn,#ans-btn{font-size:.55rem!important;padding:4px 8px!important;flex:none;}
   .mbtn{flex:.5;background:transparent;border:1px solid var(--border);border-radius:5px;
     color:var(--dg);font-family:'Share Tech Mono',monospace;font-size:.62rem;padding:7px 4px;cursor:pointer;}
   .mbtn:active{background:rgba(151,206,76,.07);}
@@ -1109,7 +1110,7 @@ function buildHops(){
 function renderChoices(){
   hintUsed=false;multi_selected=new Set();
   document.getElementById('hint-btn').disabled=false;
-  document.getElementById('hint-btn').textContent=SAVE.items.hint>0?('💡 ПОДСКАЗКА ('+SAVE.items.hint+' шт)'):'💡 ПОДСКАЗКА (-15🪙)';
+  document.getElementById('hint-btn').textContent=SAVE.items.hint>0?('💡×'+SAVE.items.hint):'💡 -15🪙';
   document.getElementById('fb').textContent='';
   updAnsBtn();
   const wrap=document.getElementById('choices-wrap');
@@ -1605,9 +1606,11 @@ function vlRenderQuestion(q,type,isExam){
     ans.appendChild(b);
   });
   document.getElementById('vl-action-btn').style.display='none';
+  vlHintAns=q.ans;vlHintShow(true);
 }
 
 function vlCheckAnswer(idx,type){
+  vlHintShow(false);
   const q=vlState.currentQ;
   const btns=document.querySelectorAll('#vl-answers .vl-opt');
   btns.forEach(b=>b.disabled=true);
@@ -1715,9 +1718,11 @@ function vlNextExamQ(){
     b.onclick=()=>vlExamAnswer(i);
     ans.appendChild(b);
   });
+  vlHintAns=q.ans;vlHintShow(true);
 }
 
 function vlExamAnswer(idx){
+  vlHintShow(false);
   const q=vlState.examPool[vlState.examQ];
   const btns=document.querySelectorAll('#vl-exam-answers .vl-opt');
   btns.forEach(b=>b.disabled=true);
@@ -2234,5 +2239,22 @@ function hkBotMove(){
 </script>
 <!-- vlastelini-overlay удалён: теперь используются screen-ы -->
 
+<button id="vl-hint-btn" onclick="vlUseHint()" title="Подсказка" style="display:none;position:fixed;left:10px;bottom:10px;z-index:99;background:rgba(13,26,46,.92);border:1px solid rgba(255,215,0,.6);border-radius:50%;width:38px;height:38px;font-size:1rem;cursor:pointer;">💡<span id="vl-hint-cnt" style="position:absolute;right:-3px;top:-3px;background:#ffd700;color:#000;border-radius:8px;padding:0 4px;font-size:.5rem;font-weight:bold;"></span></button>
+<script>
+function vlHintRefresh(){
+  var b=document.getElementById('vl-hint-btn');if(!b)return;
+  var c=document.getElementById('vl-hint-cnt');if(c)c.textContent=(SAVE.items.hint||0);
+}
+function vlHintShow(v){var b=document.getElementById('vl-hint-btn');if(b){b.style.display=v?'':'none';vlHintRefresh();}}
+function vlUseHint(){
+  if((SAVE.items.hint||0)<=0){alert('Нет подсказок! Купи в магазине (10 монет)');return;}
+  var btns=document.querySelectorAll('#vl-answers .vl-opt');
+  if(!btns.length)btns=document.querySelectorAll('#vl-exam-answers .vl-opt');
+  if(!btns.length||typeof vlHintAns==='undefined'||vlHintAns==null){alert('Нет активного вопроса');return;}
+  var b=btns[vlHintAns];
+  if(b){b.style.borderColor='#ffd700';b.style.background='rgba(255,215,0,.18)';}
+  SAVE.items.hint--;saveData();vlHintRefresh();
+}
+</script>
 </body>
 </html>
