@@ -243,6 +243,8 @@
     <div style="margin-left:auto;font-size:.8rem;color:#ffd700;" id="shopCoins">0 монет</div>
   </div>
   <div id="shopItems" style="max-width:420px;margin:0 auto;"></div>
+  <div style="max-width:420px;margin:22px auto 6px;font-family:Orbitron,monospace;font-size:.8rem;color:#97ce4c;text-align:center;">БОНУСЫ ЗА ПОДПИСКУ (+100🪙)</div>
+  <div id="subItems" style="max-width:420px;margin:0 auto;"></div>
   <div style="max-width:420px;margin:14px auto 0;">
     <button onclick="claimDaily()" style="width:100%;background:linear-gradient(135deg,#97ce4c,#00cc66);color:#000;border:none;border-radius:10px;padding:14px;font-size:.75rem;font-weight:bold;cursor:pointer;font-family:inherit;margin-bottom:10px;">ЕЖЕДНЕВНЫЙ БОНУС (+5)</button>
     <button onclick="watchAd()" style="width:100%;background:#1a1a2e;border:1px solid #00f5ff;color:#00f5ff;border-radius:10px;padding:14px;font-size:.75rem;cursor:pointer;font-family:inherit;">РЕКЛАМА (+3)</button>
@@ -771,10 +773,11 @@ function fitClock(){
 }
 
 /* ══ СОХРАНЕНИЕ ══ */
-const SAVE={coins:0,ach:[],lvCount:[0,0,0,0],ckWins:0,vlWins:0,vlBestSand:0,items:{hint:0,ans:0,shield:0}};
+const SAVE={coins:0,ach:[],lvCount:[0,0,0,0],ckWins:0,vlWins:0,vlBestSand:0,items:{hint:0,ans:0,shield:0},subs:{vt:0,vg:0,lt:0,lg:0}};
 function saveData(){
   localStorage.setItem('cag_coins',SAVE.coins);
   localStorage.setItem('cag_items',JSON.stringify(SAVE.items));
+  localStorage.setItem('cag_subs',JSON.stringify(SAVE.subs));
   localStorage.setItem('cag_ach',JSON.stringify(SAVE.ach));
   localStorage.setItem('cag_lv_cnt',JSON.stringify(SAVE.lvCount));
   localStorage.setItem('cag_ck_wins',SAVE.ckWins);
@@ -784,6 +787,7 @@ function saveData(){
 function loadData(){
   SAVE.coins=parseInt(localStorage.getItem('cag_coins')||'0');
   try{SAVE.items=JSON.parse(localStorage.getItem('cag_items')||'{"hint":0,"ans":0,"shield":0}');}catch(e){SAVE.items={hint:0,ans:0,shield:0};}
+  try{SAVE.subs=JSON.parse(localStorage.getItem('cag_subs')||'{"vt":0,"vg":0,"lt":0,"lg":0}');}catch(e){SAVE.subs={vt:0,vg:0,lt:0,lg:0};}
   try{SAVE.ach=JSON.parse(localStorage.getItem('cag_ach')||'[]');}catch(e){SAVE.ach=[];}
   try{SAVE.lvCount=JSON.parse(localStorage.getItem('cag_lv_cnt')||'[0,0,0,0]');}catch(e){SAVE.lvCount=[0,0,0,0];}
   SAVE.ckWins=parseInt(localStorage.getItem('cag_ck_wins')||'0');
@@ -1940,6 +1944,31 @@ async function syncProgress(g,s,w){if(!isAuthorized()||getEmail()==='guest')retu
 async function syncVictory(gears){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_gears:gears})});supabaseTournamentScore(gears,1);}catch(e){}}
 async function supabaseTournamentScore(g,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/update_tournament_score',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail(),p_score:g+w*10,p_gears:g})});}catch(e){}}
 async function showTournament(){showS('sTournament');var l=document.getElementById('tList');l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Загрузка...</div>';try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_tournament',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_limit:20})}).then(r=>r.json());if(r.ok&&r.leaderboard&&r.leaderboard.length>0){l.innerHTML=r.leaderboard.map(function(p,i){var m=i===0?'1':i===1?'2':i===2?'3':(i+1);return '<div style="display:flex;align-items:center;gap:10px;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+p.display_name+'</div><div style="font-size:.55rem;color:#556;">'+p.gears+' / '+p.wins+'</div></div><div style="color:#ffd700;">'+p.score+'</div></div>';}).join('');}else l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Пока нет игроков</div>';}catch(e){l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Ошибка</div>';}}
+const SUB_LINKS=[
+  {id:'vt',name:'TikTok @vestaa33',url:'https://www.tiktok.com/@vestaa33'},
+  {id:'vg',name:'Telegram @Vestikst',url:'https://t.me/Vestikst'},
+  {id:'lt',name:'TikTok @lizabet7934',url:'https://www.tiktok.com/@lizabet7934'},
+  {id:'lg',name:'Telegram @lyrikst',url:'https://t.me/lyrikst'}
+];
+function renderSubs(){
+  document.getElementById('subItems').innerHTML=SUB_LINKS.map(function(sl){
+    var done=SAVE.subs[sl.id];
+    return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:14px;margin-bottom:10px;"><div style="flex:1;font-size:.75rem;color:#fff;">'+sl.name+'<div style="font-size:.55rem;color:#556;">'+(done?'✅ бонус получен':'подпишись и получи 100 монет')+'</div></div>'+(done?'<div style="font-size:.7rem;color:#97ce4c;">✅</div>':'<button onclick="claimSub(\''+sl.id+'\')" style="background:#97ce4c;color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:.7rem;font-weight:bold;cursor:pointer;">+100🪙</button>')+'</div>';
+  }).join('');
+}
+function claimSub(id){
+  initA();
+  var sl=null;
+  for(var i=0;i<SUB_LINKS.length;i++)if(SUB_LINKS[i].id===id)sl=SUB_LINKS[i];
+  if(!sl)return;
+  if(SAVE.subs[id]){alert('Бонус за эту подписку уже получен!');return;}
+  var w=window.open(sl.url,'_blank');
+  if(!w)window.location.href=sl.url;
+  if(confirm('Ты подписался на '+sl.name+'? Забрать 100 монет?')){
+    SAVE.subs[id]=1;SAVE.coins+=100;saveData();updMenuCoins();showShop();
+    alert('+100 монет! Спасибо за подписку!');
+  }
+}
 function showShop(){
   showS('sShop');
   document.getElementById('shopCoins').textContent=SAVE.coins+' монет';
@@ -1950,6 +1979,7 @@ function showShop(){
     {id:'shield',name:'🛡 Щит (спасает жизнь)',cost:30,own:SAVE.items.shield}
   ];
   document.getElementById('shopItems').innerHTML=inv.map(function(it){return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:14px;margin-bottom:10px;"><div style="flex:1;font-size:.75rem;color:#fff;">'+it.name+'<div style="font-size:.55rem;color:#556;">куплено: '+it.own+'</div></div><button onclick="buyItem(\''+it.id+'\','+it.cost+')" style="background:#00f5ff;color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:.7rem;font-weight:bold;cursor:pointer;">'+it.cost+'🪙</button></div>';}).join('');
+  renderSubs();
 }
 function getCoins(){return SAVE.coins;}
 function claimDaily(){

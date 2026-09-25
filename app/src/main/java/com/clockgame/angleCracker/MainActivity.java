@@ -26,7 +26,21 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                    try {
+                        startActivity(new android.content.Intent(
+                            android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)));
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+                return false;
+            }
+        });
         webView.setWebChromeClient(new WebChromeClient());
 
         webView.loadUrl("file:///android_asset/index.html");

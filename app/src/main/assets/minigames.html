@@ -1070,7 +1070,36 @@ async function supabaseTournamentScore(g,w){if(!isAuthorized()||getEmail()==='gu
 async function showTournament(){showS('sTournament');var l=document.getElementById('tList');l.innerHTML='Загрузка...';try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_tournament',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_limit:20})}).then(r=>r.json());if(r.ok&&r.leaderboard&&r.leaderboard.length>0){l.innerHTML=r.leaderboard.map(function(p,i){return '<div style="display:flex;gap:10px;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:8px;"><div>'+(i+1)+'</div><div style="flex:1;">'+p.display_name+'<br><small>'+p.gears+' / '+p.wins+'</small></div><div style="color:#ffd700;">'+p.score+'</div></div>';}).join('');}else l.innerHTML='Пока нет игроков';}catch(e){l.innerHTML='Ошибка';}}
 function getCoins(){return parseInt(localStorage.getItem('cag_coins')||'0');}
 function getItems(){try{return JSON.parse(localStorage.getItem('cag_items')||'{"hint":0,"ans":0,"shield":0}');}catch(e){return {hint:0,ans:0,shield:0};}}
-function showShop(){showS('sShop');var it=getItems();document.getElementById('shopCoins').textContent=getCoins()+' монет';var items=[{id:'hint15',name:'💡 Подсказка',cost:10,own:it.hint},{id:'hint30',name:'💡 Подсказка ×2',cost:18,own:it.hint},{id:'showans',name:'🎯 Показать ответ',cost:20,own:it.ans},{id:'shield',name:'🛡 Щит',cost:30,own:it.shield}];document.getElementById('shopItems').innerHTML=items.map(function(x){return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:10px;margin-bottom:8px;"><div style="flex:1;">'+x.name+'<div style="font-size:.55rem;color:#556;">куплено: '+x.own+'</div></div><button onclick="buyItem(\''+x.id+'\','+x.cost+')" style="background:#00f5ff;color:#000;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;">'+x.cost+'🪙</button></div>';}).join('');}
+var SUB_LINKS=[
+  {id:'vt',name:'TikTok @vestaa33',url:'https://www.tiktok.com/@vestaa33'},
+  {id:'vg',name:'Telegram @Vestikst',url:'https://t.me/Vestikst'},
+  {id:'lt',name:'TikTok @lizabet7934',url:'https://www.tiktok.com/@lizabet7934'},
+  {id:'lg',name:'Telegram @lyrikst',url:'https://t.me/lyrikst'}
+];
+function getSubs(){try{return JSON.parse(localStorage.getItem('cag_subs')||'{"vt":0,"vg":0,"lt":0,"lg":0}');}catch(e){return {vt:0,vg:0,lt:0,lg:0};}}
+function renderSubs(){
+  var subs=getSubs();
+  return SUB_LINKS.map(function(sl){
+    var done=subs[sl.id];
+    return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:10px;margin-bottom:8px;"><div style="flex:1;">'+sl.name+'<div style="font-size:.55rem;color:#556;">'+(done?'✅ бонус получен':'подпишись и получи 100 монет')+'</div></div>'+(done?'<div style="color:#97ce4c;">✅</div>':'<button onclick="claimSub(\''+sl.id+'\')" style="background:#97ce4c;color:#000;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;">+100🪙</button>')+'</div>';
+  }).join('');
+}
+function claimSub(id){
+  var sl=null;
+  for(var i=0;i<SUB_LINKS.length;i++)if(SUB_LINKS[i].id===id)sl=SUB_LINKS[i];
+  if(!sl)return;
+  var subs=getSubs();
+  if(subs[id]){alert('Бонус за эту подписку уже получен!');return;}
+  var w=window.open(sl.url,'_blank');
+  if(!w)window.location.href=sl.url;
+  if(confirm('Ты подписался на '+sl.name+'? Забрать 100 монет?')){
+    subs[id]=1;
+    localStorage.setItem('cag_subs',JSON.stringify(subs));
+    localStorage.setItem('cag_coins',getCoins()+100);
+    showShop();alert('+100 монет! Спасибо за подписку!');
+  }
+}
+function showShop(){showS('sShop');var it=getItems();document.getElementById('shopCoins').textContent=getCoins()+' монет';var items=[{id:'hint15',name:'💡 Подсказка',cost:10,own:it.hint},{id:'hint30',name:'💡 Подсказка ×2',cost:18,own:it.hint},{id:'showans',name:'🎯 Показать ответ',cost:20,own:it.ans},{id:'shield',name:'🛡 Щит',cost:30,own:it.shield}];document.getElementById('shopItems').innerHTML=items.map(function(x){return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:10px;margin-bottom:8px;"><div style="flex:1;">'+x.name+'<div style="font-size:.55rem;color:#556;">куплено: '+x.own+'</div></div><button onclick="buyItem(\''+x.id+'\','+x.cost+')" style="background:#00f5ff;color:#000;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;">'+x.cost+'🪙</button></div>';}).join('')+'<div style="margin:14px 0 6px;text-align:center;color:#97ce4c;font-size:.8rem;">БОНУСЫ ЗА ПОДПИСКУ (+100🪙)</div>'+renderSubs();}
 function claimDaily(){
   var today=new Date().toISOString().slice(0,10);
   if((localStorage.getItem('cag_daily')||'')===today){alert('Ежедневний бонус уже получен!');return;}
