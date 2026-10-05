@@ -40,6 +40,11 @@ jobs:
 
       - name: Build Release APK
         run: ./gradlew assembleRelease --no-daemon --stacktrace
+        env:
+          KEYSTORE_FILE: ${{ env.KEYSTORE_FILE }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Rename APK
         run: |
