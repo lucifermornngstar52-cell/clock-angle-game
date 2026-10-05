@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -29,12 +31,33 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Decode release keystore
+        run: |
+          echo "${KEYSTORE_BASE64}" | base64 -d > numbra-release.p12
+          echo "KEYSTORE_FILE=../numbra-release.p12" >> $GITHUB_ENV
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
-      - name: Upload APK
+      - name: Build Release APK
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Rename APK
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk numbra-release.apk
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: clock-angle-game-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: numbra-release-apk
+          path: numbra-release.apk
           retention-days: 30
+
+      - name: Create GitHub Release
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          gh release create numbra-release numbra-release.apk \
+            --title "Numbra Release v1.0" \
+            --notes "Релизная сборка Numbra — подписанный APK (alias: numbra)." \
+            --latest
+        env:
+          GH_TOKEN: ${{ github.token }}
