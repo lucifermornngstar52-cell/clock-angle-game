@@ -294,7 +294,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
     <div class="card-body" style="font-size:.7rem;color:var(--dg);">Выбирай числа по два: каждая пара должна дать в сумме <b style="color:var(--c1)">13</b>. Собери все <b style="color:var(--y)">6 пар</b>!</div>
   </div>
   <div style="position:relative;width:240px;height:240px;flex-shrink:0;">
-    <svg id="g7svg" viewBox="0 0 240 240" width="240" height="240" style="cursor:crosshair;"></svg>
+    <svg id="g7svg" viewBox="0 0 240 240" width="240" height="240"></svg>
+    <div id="g7btns" style="position:absolute;inset:0;"></div>
   </div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;font-size:.6rem;" id="g7parts"></div>
   <button class="btn btn-gray" onclick="g7Reset()" style="width:100%;max-width:380px;">&#8617; СБРОС</button>
@@ -814,23 +815,19 @@ function g7Render(){
     var l=document.createElementNS('http://www.w3.org/2000/svg','line');
     l.setAttribute('x1',p1[0]);l.setAttribute('y1',p1[1]);l.setAttribute('x2',p2[0]);l.setAttribute('y2',p2[1]);
     l.setAttribute('stroke','#ffd700');l.setAttribute('stroke-width','2.5');l.setAttribute('stroke-linecap','round');svg.appendChild(l);});
+  var wrap=document.getElementById('g7btns');if(wrap)wrap.innerHTML='';
   var paired={};g7.pairs.forEach(function(pr){paired[pr[0]]=1;paired[pr[1]]=1;});
   for(var n=1;n<=12;n++){(function(nn){
     var p=g7NumPos(nn);var isP=!!paired[nn];var isS=g7.sel===nn;
-    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r',15);
-    c.setAttribute('fill',isP?'rgba(151,206,76,.25)':(isS?'rgba(255,215,0,.25)':'rgba(6,6,24,.9)'));
-    c.setAttribute('stroke',isP?'#97ce4e':(isS?'#ffd700':'rgba(0,245,255,.35)'));c.setAttribute('stroke-width',isS?2.5:1.5);
-    c.setAttribute('data-n',nn);c.style.cursor='pointer';
-    var t=document.createElementNS('http://www.w3.org/2000/svg','text');
-    t.setAttribute('x',p[0]);t.setAttribute('y',p[1]);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');
-    t.setAttribute('font-family','Orbitron,monospace');t.setAttribute('font-size','13');t.setAttribute('font-weight','bold');
-    t.setAttribute('fill',isP?'#97ce4e':(isS?'#ffd700':'rgba(255,255,255,.85)'));t.textContent=nn;
-    var hit=function(e){e.preventDefault();e.stopPropagation();g7Tap(nn);};
-    c.addEventListener('click',hit);c.addEventListener('touchend',hit);
-    t.addEventListener('click',hit);t.addEventListener('touchend',hit);
-    t.setAttribute('pointer-events','none');
-    svg.appendChild(c);svg.appendChild(t);
+    var btn=document.createElement('button');
+    btn.setAttribute('data-n',nn);
+    btn.style.cssText='position:absolute;left:'+(p[0]/240*100)+'%;top:'+(p[1]/240*100)+'%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;font-family:Orbitron,monospace;font-size:13px;font-weight:bold;cursor:pointer;padding:0;line-height:1;outline:none;';
+    btn.style.background=isP?'rgba(151,206,76,.25)':(isS?'rgba(255,215,0,.25)':'rgba(6,6,24,.92)');
+    btn.style.border='2px solid '+(isP?'#97ce4e':(isS?'#ffd700':'rgba(0,245,255,.35)'));
+    btn.style.color=isP?'#97ce4e':(isS?'#ffd700':'rgba(255,255,255,.9)');
+    btn.textContent=nn;
+    btn.addEventListener('click',function(e){e.preventDefault();g7Tap(nn);});
+    if(wrap)wrap.appendChild(btn);
   })(n);}
 }
 function g7Tap(n){
