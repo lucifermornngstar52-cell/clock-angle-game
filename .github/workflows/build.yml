@@ -60,9 +60,14 @@ jobs:
       - name: Create GitHub Release
         if: github.event_name == 'workflow_dispatch'
         run: |
-          gh release create numbra-release numbra-release.apk \
-            --title "Numbra Release v1.0" \
-            --notes "Релизная сборка Numbra — подписанный APK (alias: numbra)." \
-            --latest
+          if gh release view numbra-release; then
+            gh release upload numbra-release numbra-release.apk --clobber
+            gh release edit numbra-release --title "Numbra Release v1.1" --latest
+          else
+            gh release create numbra-release numbra-release.apk \
+              --title "Numbra Release v1.1" \
+              --notes "Релизная сборка Numbra — подписанный APK (alias: numbra)." \
+              --latest
+          fi
         env:
           GH_TOKEN: ${{ github.token }}
