@@ -246,6 +246,10 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;ba
     <svg id="g5svg" viewBox="0 0 240 240" width="240" height="240" style="touch-action:none;"></svg>
   </div>
   <div style="display:flex;gap:10px;justify-content:center;font-size:.65rem;" id="g5sums"></div>
+  <div style="display:flex;gap:8px;justify-content:center;">
+    <button class="btn btn-gray" style="font-size:.6rem;padding:8px 12px;" onclick="g5Reset()">&#8635; СБРОС</button>
+    <button class="btn btn-y" style="font-size:.6rem;padding:8px 12px;" onclick="mgUseHint()">&#128161; ПОДСКАЗКА <span id="g5hcnt"></span></button>
+  </div>
   <button class="btn btn-g" id="g5cf" onclick="g5Confirm()">&#10003; ПРОВЕРИТЬ</button>
   <div class="fb" id="g5fb"></div>
 </div>
@@ -694,6 +698,7 @@ function g5Build(){
   document.getElementById('g5S').textContent=g5.score;
   document.getElementById('g5G').textContent='\u2699'+g5.gears;
   document.getElementById('g5fb').textContent='';
+  g5HintUpd();
   document.getElementById('g5Task').innerHTML='Проведи <b style="color:var(--y)">'+g5.numLines+' лини'+(g5.numLines===1?'ю':'и')+' разлома через центр</b> — суммы частей должны быть: <b style="color:var(--y)">'+lvl.hint+'</b>';
   g5Render();
 }
@@ -741,6 +746,16 @@ function g5Sums(){
   for(var i=0;i<parts.length;i++){var ok=t.indexOf(parts[i])>=0;
     html+='<div style="background:var(--panel);border:1px solid '+(ok?'var(--g)':'var(--border)')+';border-radius:6px;padding:5px 12px;">'+String.fromCharCode(65+i)+': <b style="color:'+(ok?'var(--g)':'var(--y)')+'">'+parts[i]+'</b></div>';}
   document.getElementById('g5sums').innerHTML=html;
+}
+function g5Reset(){
+  if(g5.locked)return;
+  g5.lines=[];g5Render();
+  var fb=document.getElementById('g5fb');if(fb){fb.textContent='';}
+  toast('Линии сброшены');
+}
+function g5HintUpd(){
+  var c=document.getElementById('g5hcnt');if(!c)return;
+  c.textContent=personalOn()?'\u221E':'x'+(getItems().hint||0);
 }
 function g5Confirm(){
   if(g5.locked)return;
@@ -1173,6 +1188,7 @@ function mgUseHint(){
     }
   }catch(err){alert('Нет активного раунда');return;}
   if(!pers){it.hint--;localStorage.setItem('cag_items',JSON.stringify(it));}
+  g5HintUpd();
   mgHintRefresh();
 }
 </script>
