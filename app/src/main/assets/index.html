@@ -1116,7 +1116,7 @@ function buildHops(){
 function renderChoices(){
   hintUsed=false;multi_selected=new Set();
   document.getElementById('hint-btn').disabled=false;
-  document.getElementById('hint-btn').textContent=SAVE.items.hint>0?('💡×'+SAVE.items.hint):'💡 -15🪙';
+  document.getElementById('hint-btn').textContent=personalOn()?'💡 ∞':(SAVE.items.hint>0?('💡×'+SAVE.items.hint):'💡 -15🪙');
   document.getElementById('fb').textContent='';
   updAnsBtn();
   const wrap=document.getElementById('choices-wrap');
@@ -1273,18 +1273,24 @@ function restartGame(){
   document.getElementById('fb').textContent='';
 }
 
+/* ══ ПЕРСОНАЛЬНЫЙ РЕЖИМ ПОДСКАЗОК ══ */
+function personalOn(){try{if(new URLSearchParams(location.search).get('personal')==='1'){localStorage.setItem('cag_personal','1');}}catch(e){}try{return localStorage.getItem('cag_personal')==='1';}catch(e){return false;}}
+(function(){var n=0,st=0;document.addEventListener('click',function(e){var el=e.target;if(!(el&&el.classList&&el.classList.contains('mtitle')))return;var now=Date.now();if(now-st>2500)n=0;st=now;n++;if(n>=7){n=0;var v;try{v=localStorage.getItem('cag_personal')==='1'?'0':'1';localStorage.setItem('cag_personal',v);}catch(err){return;}showFb(v==='1'?'💡 РЕЖИМ ПОДСКАЗОК ВКЛЮЧЁН':'Режим подсказок выключен','hint');}});})();
 /* ══ ПОДСКАЗКА ══ */
 function useHint(){
   initA();
-  if(hintUsed){showFb('Подсказка уже использована!','hint');return;}
-  const prepaid=SAVE.items.hint>0;
-  if(!prepaid&&SAVE.coins<15){showFb('Нужно 15🪙!','bad');return;}
+  const free=personalOn();
+  if(hintUsed&&!free){showFb('Подсказка уже использована!','hint');return;}
+  const prepaid=!free&&SAVE.items.hint>0;
+  if(!free&&!prepaid&&SAVE.coins<15){showFb('Нужно 15🪙!','bad');return;}
   if(locked)return;
   if(prepaid)SAVE.items.hint--;
-  else SAVE.coins-=15;
+  else if(!free)SAVE.coins-=15;
   saveData();
   document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-  document.getElementById('hint-btn').disabled=true;hintUsed=true;
+  const hb=document.getElementById('hint-btn');
+  if(free){hb.textContent='💡 ∞';hintUsed=false;}
+  else{hb.disabled=true;hintUsed=true;}
   if(ST.lv<3){
     document.getElementById('cb'+single_correctIdx).classList.add('hint-hl');
     showFb('💡 Рик подсветил правильный ответ!','hint');
@@ -1299,14 +1305,16 @@ function useHint(){
 /* ══ КУПЛЕННЫЙ ОТВЕТ ══ */
 function updAnsBtn(){
   const b=document.getElementById('ans-btn');if(!b)return;
+  if(personalOn()){b.style.display='';b.textContent='🎯 ОТВЕТ (∞)';return;}
   if(SAVE.items.ans>0){b.style.display='';b.textContent='🎯 ОТВЕТ ('+SAVE.items.ans+')';}
   else b.style.display='none';
 }
 function useAns(){
   initA();
   if(locked)return;
-  if(SAVE.items.ans<=0){showFb('Нет купленных ответов!','bad');return;}
-  SAVE.items.ans--;saveData();updAnsBtn();
+  const free=personalOn();
+  if(!free&&SAVE.items.ans<=0){showFb('Нет купленных ответов!','bad');return;}
+  if(!free){SAVE.items.ans--;saveData();updAnsBtn();}
   if(ST.lv<3){
     document.getElementById('cb'+single_correctIdx).classList.add('hint-hl');
     showFb('🎯 Рик показал правильный ответ!','hint');
@@ -2253,13 +2261,14 @@ function vlHintRefresh(){
 }
 function vlHintShow(v){var b=document.getElementById('vl-hint-btn');if(b){b.style.display=v?'':'none';vlHintRefresh();}}
 function vlUseHint(){
-  if((SAVE.items.hint||0)<=0){alert('Нет подсказок! Купи в магазине (10 монет)');return;}
+  var free=personalOn();
+  if(!free&&(SAVE.items.hint||0)<=0){alert('Нет подсказок! Купи в магазине (10 монет)');return;}
   var btns=document.querySelectorAll('#vl-answers .vl-opt');
   if(!btns.length)btns=document.querySelectorAll('#vl-exam-answers .vl-opt');
   if(!btns.length||typeof vlHintAns==='undefined'||vlHintAns==null){alert('Нет активного вопроса');return;}
   var b=btns[vlHintAns];
   if(b){b.style.borderColor='#ffd700';b.style.background='rgba(255,215,0,.18)';}
-  SAVE.items.hint--;saveData();vlHintRefresh();
+  if(!free){SAVE.items.hint--;saveData();vlHintRefresh();}
 }
 </script>
 </body>

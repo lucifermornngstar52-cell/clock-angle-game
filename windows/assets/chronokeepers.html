@@ -1609,15 +1609,17 @@ function ckHintRefresh(){
   b.style.display=(currentQ||ckFinalAns!=null)?'':'none';
   var c=document.getElementById('ck-hint-cnt');if(c)c.textContent=(ckGetItems().hint||0);
 }
+function personalOn(){try{if(new URLSearchParams(location.search).get('personal')==='1'){localStorage.setItem('cag_personal','1');}}catch(e){}try{return localStorage.getItem('cag_personal')==='1';}catch(e){return false;}}
 function ckUseHint(){
+  var free=personalOn();
   var it=ckGetItems();
-  if((it.hint||0)<=0){alert('Нет подсказок! Купи в магазине Numbra (10 монет)');return;}
+  if(!free&&(it.hint||0)<=0){alert('Нет подсказок! Купи в магазине Numbra (10 монет)');return;}
   var btns=null,idx=null;
   if(currentQ&&document.getElementById('qAnswers').children.length){btns=document.querySelectorAll('#qAnswers .ans-btn');idx=currentQ.correct;}
   else if(ckFinalAns!=null&&document.getElementById('finalAnswers').children.length){btns=document.querySelectorAll('#finalAnswers .ans-btn');idx=ckFinalAns;}
   if(idx==null||!btns||!btns[idx]){alert('Нет активного вопроса');return;}
   btns[idx].classList.add('correct');
-  it.hint--;localStorage.setItem('cag_items',JSON.stringify(it));
+  if(!free){it.hint--;localStorage.setItem('cag_items',JSON.stringify(it));}
   ckHintRefresh();
 }
 </script>

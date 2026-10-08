@@ -575,7 +575,7 @@ function g2Next(){
   document.getElementById('g2dp').textContent='0 кр.';document.getElementById('g2fb').textContent='';
   document.getElementById('g2lt').textContent='0 кр.';
   if(g2af)cancelAnimationFrame(g2af);
-  g2.t0=performance.now();g2.running=true;g2Anim();}
+  g2.autoStop=false;g2.t0=performance.now();g2.running=true;g2Anim();}
 function g2Anim(){
   if(!g2.running)return;
   const el=(performance.now()-g2.t0)/1000;
@@ -584,6 +584,7 @@ function g2Anim(){
   document.getElementById('g2sc').setAttribute('transform','rotate('+cd+' 105 105)');
   document.getElementById('g2lt').textContent=g2.laps+' кр.';
   document.getElementById('g2dp').textContent=g2.laps+' кр.';
+  if(g2.autoStop&&g2.laps===g2.target&&cd<25){g2.autoStop=false;g2Tap();return;}
   g2af=requestAnimationFrame(g2Anim);}
 function g2Tap(){
   if(!g2.running||g2.locked)return;g2.locked=true;const _g2b=document.getElementById('g2cf');if(_g2b)_g2b.disabled=true;g2.running=false;if(g2af)cancelAnimationFrame(g2af);
@@ -676,6 +677,7 @@ function g4Answer(idx,opts,_,c){
 // === G5 RASKOL ===
 let g5={},g5drag=false;
 // Каждая линия = диаметр (два луча: a и a+180). Сумма всех чисел циферблата = 78.
+var G5SOL=[[105],[75],[45,135],[75],[75,165]];
 var G5LEVELS=[
   {numLines:1,targets:[39,39],hint:'39 и 39'},
   {numLines:1,targets:[33,45],hint:'33 и 45'},
@@ -762,7 +764,7 @@ function g6Init(){drawMarks(document.getElementById('g6mk'),null,110,110,99,10);
 function g6Next(){
   g6.locked=false;const _g6b=document.getElementById('g6cf');if(_g6b)_g6b.disabled=false;
   if(g6.round>=5){award(g6.gears,6);showResult(g6.gears,15,g6.gears>=12?'\u0421\u0418\u041d\u0425\u0420\u041e!':'\u0422\u0420\u0415\u041d\u0418\u0420\u0423\u0419\u0421\u042f!','\u041e\u0447\u043a\u043e\u0432: '+g6.score+'/5',null);return;}
-  g6.spd=0.5+g6.round*0.25;g6.hd=Math.random()*360;g6.md=g6.hd+60+Math.random()*120;g6.running=true;
+  g6.autoStop=false;g6.spd=0.5+g6.round*0.25;g6.hd=Math.random()*360;g6.md=g6.hd+60+Math.random()*120;g6.running=true;
   document.getElementById('g6R').textContent=(g6.round+1)+'/5';document.getElementById('g6S').textContent=g6.score;
   document.getElementById('g6acc').textContent='\u0416\u0434\u0438 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u044f...';document.getElementById('g6acc').style.color='var(--dg)';
   document.getElementById('g6fb').textContent='';document.getElementById('g6G').textContent='\u2699'+g6.gears;
@@ -773,6 +775,7 @@ function g6Next(){
     document.getElementById('g6hr').setAttribute('transform','rotate('+h+' 110 110)');
     document.getElementById('g6mn').setAttribute('transform','rotate('+m+' 110 110)');
     var df=Math.min(Math.abs((h-m+360)%360),Math.abs((m-h+360)%360));
+    if(g6.autoStop&&df<1.5){g6.autoStop=false;g6Stop();return;}
     document.getElementById('g6at').textContent='delta='+Math.round(df)+'\u00B0';
     var arc=document.getElementById('g6arc');var col,arcLen;
     if(df<5){col='var(--g)';arcLen=340;}else if(df<15){col='var(--g)';arcLen=300;}
@@ -1125,22 +1128,48 @@ document.addEventListener('DOMContentLoaded',function(){
 <button id="mg-hint-btn" onclick="mgUseHint()" title="Подсказка" style="display:none;position:fixed;left:10px;bottom:10px;z-index:99;background:rgba(13,26,46,.92);border:1px solid rgba(255,215,0,.6);border-radius:50%;width:38px;height:38px;font-size:1rem;cursor:pointer;">💡<span id="mg-hint-cnt" style="position:absolute;right:-3px;top:-3px;background:#ffd700;color:#000;border-radius:8px;padding:0 4px;font-size:.5rem;font-weight:bold;"></span></button>
 <script>
 var mgActiveGame=0;
+function personalOn(){try{if(new URLSearchParams(location.search).get('personal')==='1'){localStorage.setItem('cag_personal','1');}}catch(e){}try{return localStorage.getItem('cag_personal')==='1';}catch(e){return false;}}
+(function(){var n=0,st=0;document.addEventListener('click',function(e){var el=e.target;if(!(el&&el.classList&&el.classList.contains('pg-title')))return;if(!el.textContent||el.textContent.indexOf('МИНИ-ИГРЫ')<0)return;var now=Date.now();if(now-st>2500)n=0;st=now;n++;if(n>=7){n=0;var v;try{v=localStorage.getItem('cag_personal')==='1'?'0':'1';localStorage.setItem('cag_personal',v);}catch(err){return;}toast(v==='1'?'\u{1F4A1} РЕЖИМ ПОДСКАЗОК ВКЛЮЧ\u00C1\u0301Н':'Режим подсказок выключен');mgHintRefresh();}});})();
 function mgHintRefresh(){
   var b=document.getElementById('mg-hint-btn');if(!b)return;
-  b.style.display=(mgActiveGame===8||mgActiveGame===9||mgActiveGame===10)?'':'none';
-  var c=document.getElementById('mg-hint-cnt');if(c)c.textContent=(getItems().hint||0);
+  var pers=personalOn();
+  b.style.display=(pers||mgActiveGame===8||mgActiveGame===9||mgActiveGame===10)?'':'none';
+  var c=document.getElementById('mg-hint-cnt');if(c)c.textContent=pers?'\u221E':(getItems().hint||0);
 }
 function mgUseHint(){
+  var pers=personalOn();
   var it=getItems();
-  if((it.hint||0)<=0){alert('Нет подсказок! Купи в магазине (10 монет)');return;}
-  var wrap=null,ans=null;
-  if(mgActiveGame===8){wrap='#g8opts';ans=(typeof g8!=='undefined'&&g8&&g8.cur)?g8.cur.ans:null;}
-  else if(mgActiveGame===9){wrap='#g9opts';ans=(typeof G9Q!=='undefined'&&typeof g9!=='undefined'&&g9.round>=0)?G9Q[g9.round].ans:null;}
-  else if(mgActiveGame===10){wrap='#g10opts';ans=(typeof G10Q!=='undefined'&&typeof g10!=='undefined'&&g10.round>=0)?G10Q[g10.round].ans:null;}
-  if(!wrap||ans==null){alert('Нет активного вопроса');return;}
-  var b=document.querySelectorAll(wrap+' .opt-btn')[ans];
-  if(b){b.style.borderColor='var(--g)';b.style.background='rgba(0,255,136,.08)';}
-  it.hint--;localStorage.setItem('cag_items',JSON.stringify(it));
+  if(!pers&&(it.hint||0)<=0){alert('Нет подсказок! Купи в магазине (10 монет)');return;}
+  var g=mgActiveGame;
+  try{
+    if(g===1){
+      var t=g1.tgt;if(!t){alert('Нет активного раунда');return;}
+      g1.mnD=(t.m/60)*360;g1.hrD=((t.h%12)/12)*360+(t.m/60)*30+(t.h>=12?360:0);
+      document.getElementById('g1mn').setAttribute('transform','rotate('+g1.mnD+' 115 115)');
+      document.getElementById('g1hr').setAttribute('transform','rotate('+g1.hrD+' 115 115)');
+      var tm=g1Time();document.getElementById('g1dt').textContent=fmt(tm.h,tm.m);
+      toast('Прибытие в '+fmt(t.h,t.m)+' — жми ПОДТВЕРДИТЬ');
+    } else if(g===2){
+      if(g2.laps>g2.target){toast('Круг уже проехали — жми СТОП сейчас');}
+      else if(g2.laps===g2.target){g2.autoStop=false;g2Tap();}
+      else{g2.autoStop=true;toast('Авто-стоп: остановлю на '+g2.target+' круге');}
+    }
+    else if(g===3){var a=g3.cur?g3.cur.a:0;document.getElementById('g3sl').value=a;g3Slide();toast('Правильный угол: '+a+'\u00B0');}
+    else if(g===4){var d=document.getElementById('g4opts').children[g4.ci];if(d){d.style.borderColor='#ffd700';d.style.boxShadow='0 0 12px rgba(255,215,0,.7)';}toast('Зеркальное время — золотая рамка');}
+    else if(g===5){g5.lines=G5SOL[g5.lv].slice();g5Render();toast('Линии разлома проведены — жми ПОДТВЕРДИТЬ');}
+    else if(g===6){g6.autoStop=true;toast('Авто-стоп на совпадении стрелок');}
+    else if(g===7){var paired={};g7.pairs.forEach(function(pr){paired[pr[0]]=1;paired[pr[1]]=1;});for(var nn=1;nn<=12;nn++){if(!paired[nn]){g7Tap(nn);g7Tap(13-nn);break;}}}
+    else if(g===8||g===9||g===10){
+      var wrap=null,ans=null;
+      if(g===8){wrap='#g8opts';ans=(typeof g8!=='undefined'&&g8&&g8.cur)?g8.cur.ans:null;}
+      else if(g===9){wrap='#g9opts';ans=(typeof G9Q!=='undefined'&&typeof g9!=='undefined'&&g9.round>=0)?G9Q[g9.round].ans:null;}
+      else{wrap='#g10opts';ans=(typeof G10Q!=='undefined'&&typeof g10!=='undefined'&&g10.round>=0)?G10Q[g10.round].ans:null;}
+      if(!wrap||ans==null){alert('Нет активного вопроса');return;}
+      var b=document.querySelectorAll(wrap+' .opt-btn')[ans];
+      if(b){b.style.borderColor='var(--g)';b.style.background='rgba(0,255,136,.08)';}
+    }
+  }catch(err){alert('Нет активного раунда');return;}
+  if(!pers){it.hint--;localStorage.setItem('cag_items',JSON.stringify(it));}
   mgHintRefresh();
 }
 </script>

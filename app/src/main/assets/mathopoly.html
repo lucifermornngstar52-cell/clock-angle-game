@@ -903,3 +903,10 @@ async function doAuth(){
 function isAuthorized(){return !!localStorage.getItem("game_email");}
 function skipAuth(){var s=document.getElementById("sAuth");if(s)s.classList.add("hidden");showS("lobby");}
 </script>
+<button id="mo-hint-btn" onclick="moUseHint()" title="Подсказка" style="display:none;position:fixed;right:10px;bottom:10px;z-index:99;background:rgba(13,26,46,.92);border:1px solid rgba(255,215,0,.6);border-radius:50%;width:38px;height:38px;font-size:1rem;cursor:pointer;">💡</button>
+<script>
+function personalOn(){try{if(new URLSearchParams(location.search).get('personal')==='1'){localStorage.setItem('cag_personal','1');}}catch(e){}try{return localStorage.getItem('cag_personal')==='1';}catch(e){return false;}}
+function moHintRefresh(){var b=document.getElementById('mo-hint-btn');if(!b)return;var m=document.getElementById('qmodal');b.style.display=(personalOn()&&m&&!m.classList.contains('hidden'))?'':'none';}
+function moUseHint(){if(!GS||!GS.q){return;}var res=document.getElementById('qres');if(!res)return;res.className='q-res';res.classList.remove('hidden');res.style.color='#ffd700';res.textContent='💡 Ответ: '+(GS.q.answer||'');}
+setInterval(moHintRefresh,400);
+</script>
