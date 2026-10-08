@@ -1955,7 +1955,7 @@ async function doAuth(){
   var n=document.getElementById('authName').value.trim(),em=document.getElementById('authEmail').value.trim();
   if(!em){alert('Введите email');return;}if(!n)n=em.split('@')[0];
   try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:em,p_name:n})}).then(r=>r.json());
-  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));showS('main-menu');if(typeof loadStats==='function')loadStats();maybeShowStory();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
+  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));if(typeof r.user.coins==='number'&&r.user.coins>(SAVE.coins||0)){SAVE.coins=r.user.coins;saveData();}showS('main-menu');if(typeof loadStats==='function')loadStats();maybeShowStory();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
 }
 function skipAuth(){localStorage.setItem('game_email','guest');showS('main-menu');maybeShowStory();}
 function loadStats(){updMenuCoins();}

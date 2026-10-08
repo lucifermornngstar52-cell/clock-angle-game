@@ -22,6 +22,11 @@ async function supabaseAuth(email, fullName) {
     if (data.ok) {
       localStorage.setItem('game_email', email);
       localStorage.setItem('game_user', JSON.stringify(data.user));
+      // синк монет с сервера, если там больше
+      if (data.user && typeof data.user.coins === 'number') {
+        const loc = parseInt(localStorage.getItem('cag_coins') || '0') || 0;
+        if (data.user.coins > loc) localStorage.setItem('cag_coins', String(data.user.coins));
+      }
     }
     return data;
   } catch (e) {
