@@ -1295,6 +1295,8 @@ function advance(){
 }
 function levelDone(){
   sfx('up');ST.hops=HOP_AFTER[ST.lv];buildHops();
+  addTournamentPoints(10);
+  if(ST.lv>=3){registerVictoryRpc();supabaseTournamentScore(0,1);}
   SAVE.lvCount[ST.lv]++;saveData();checkAchievements();
   if(ST.lv>=3){
     const d=WIN_YEARS[Math.floor(Math.random()*WIN_YEARS.length)];
@@ -1818,6 +1820,7 @@ function vlExamAnswer(idx){
 }
 
 function vlShowWin(){
+  registerVictoryRpc();supabaseTournamentScore(0,1);addTournamentPoints(10);
   // Сохраняем прогресс
   SAVE.vlWins++;
   if(vlState.sand > SAVE.vlBestSand) SAVE.vlBestSand = vlState.sand;
@@ -2124,6 +2127,20 @@ async function syncVictory(gears){
   try{await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail()})});}catch(e){}
   try{await addGearsToAccount(gears);}catch(e){}
   try{supabaseTournamentScore(gears,1);}catch(e){}
+}
+async function addTournamentPoints(pts){
+  if(!pts||!isAuthorized()||getEmail()==='guest')return;
+  try{
+    var HG={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+    var tr=await fetch(SUPABASE_URL+'/rest/v1/tournament?user_email=eq.'+encodeURIComponent(getEmail())+'&select=score,gears',{headers:HG}).then(function(r){return r.json();});
+    var sc=(tr&&tr.length&&tr[0].score)||0;
+    var gg=(tr&&tr.length&&tr[0].gears)||0;
+    await fetch(SUPABASE_URL+'/rest/v1/rpc/update_tournament_score',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail(),p_score:sc+pts,p_gears:gg})});
+  }catch(e){}
+}
+async function registerVictoryRpc(){
+  if(!isAuthorized()||getEmail()==='guest')return;
+  try{await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail()})});}catch(e){}
 }
 async function supabaseTournamentScore(g,w){
   if(!isAuthorized()||getEmail()==='guest')return;
