@@ -413,6 +413,10 @@ async function mgFlushGearSync(){
     var w=Math.max((u&&u.length&&u[0].total_wins)||0,(lbr&&lbr.length&&lbr[0].total_wins)||0);
     await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(em),{method:'PATCH',headers:H,body:JSON.stringify({total_gears:ug+d})});
     await fetch(SUPABASE_URL+'/rest/v1/leaderboard?user_email=eq.'+encodeURIComponent(em),{method:'PATCH',headers:H,body:JSON.stringify({total_gears:ug+d,score:ug+d+w*10})});
+    var trow=await fetch(SUPABASE_URL+'/rest/v1/tournament?user_email=eq.'+encodeURIComponent(em)+'&select=score,gears',{headers:HG}).then(function(r){return r.json();});
+    var ts=(trow&&trow.length&&trow[0].score)||0;
+    var tg=(trow&&trow.length&&trow[0].gears)||0;
+    await fetch(SUPABASE_URL+'/rest/v1/rpc/update_tournament_score',{method:'POST',headers:H,body:JSON.stringify({p_mail:em,p_score:ts+d,p_gears:tg+d})});
     localStorage.setItem('mg_gears_synced',String(total));
   }catch(e){}
 }
