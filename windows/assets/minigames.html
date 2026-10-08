@@ -482,6 +482,7 @@ function startGame(id){stopAll();mgActiveGame=id;mgHintRefresh();switch(id){case
 // ═══ G1 АВТОБУС ═══
 const G1T=[{dep:{h:8,m:0},tr:45,lbl:'Школьный рейс'},{dep:{h:14,m:30},tr:80,lbl:'Городской маршрут'},{dep:{h:9,m:15},tr:35,lbl:'Маршрутка'},{dep:{h:22,m:40},tr:50,lbl:'Ночной автобус'},{dep:{h:7,m:50},tr:25,lbl:'Утренний рейс'}];
 let g1={};
+function g1Time(){var m=((Math.round(g1.mnD/6)%60)+60)%60;var h=((Math.round((g1.hrD-0.5*m)/30)%24)+24)%24;return{h:h,m:m};}
 function g1Init(){
   drawMarks(document.getElementById('g1mk'),document.getElementById('g1nm'),115,115,108,11);
   g1={round:0,score:0,gears:0,hrD:0,mnD:0};
@@ -516,14 +517,11 @@ function g1Init(){
       g1.mnD+=dm;
       g1._lastA=a;
       mnEl.setAttribute('transform','rotate('+g1.mnD+' 115 115)');
-      g1.hrD=g1.mnD/12;
+      g1.hrD+=dm/12;
       hrEl.setAttribute('transform','rotate('+g1.hrD+' 115 115)');
     }
-    var m=Math.round(g1.mnD/6)%60;
-    if(m<0)m+=60;
-    var h24=Math.round(g1.hrD/30)%24;
-    if(h24<0)h24+=24;
-    document.getElementById('g1dt').textContent=fmt(h24,m);}
+    var tm=g1Time();
+    document.getElementById('g1dt').textContent=fmt(tm.h,tm.m);}
   document.addEventListener('touchmove',mv,{passive:false});
   document.addEventListener('mousemove',mv);
   document.addEventListener('touchend',function(){drag=null;});
@@ -546,7 +544,7 @@ function g1Next(){
   document.getElementById('g1dt').textContent='00:00';}
 function g1Confirm(){
   if(g1.locked)return;g1.locked=true;const _g1b=document.getElementById('g1cf');if(_g1b)_g1b.disabled=true;
-  const m=((Math.round(g1.mnD/6)%60)+60)%60,h=((Math.round(g1.hrD/30)%24)+24)%24;
+  const g1t=g1Time();const m=g1t.m,h=g1t.h;
   const th=((g1.tgt.h%24)+24)%24,tm=g1.tgt.m;
   const dh=Math.abs(h-th),dm=Math.abs(m-tm);
   const fb=document.getElementById('g1fb');
@@ -571,7 +569,7 @@ function g2Init(){
 function g2Next(){
   g2.locked=false;const _g2b=document.getElementById('g2cf');if(_g2b)_g2b.disabled=false;
   if(g2.round>=5){award(g2.totalG,2);showResult(g2.totalG,15,'\u23F1 РЕФЛЕКСЫ!','Жетонов: '+g2.totalG+'/15',null);return;}
-  var G2TASKS=[15,75,30,60,45];g2.target=G2TASKS[g2.round]||5;g2.speed=2+g2.round*0.65;g2.running=false;
+  var G2TASKS=[15,30,45,60,40];g2.target=G2TASKS[g2.round]||5;g2.speed=2+g2.round*0.65;g2.running=false;
   document.getElementById('g2R').textContent=(g2.round+1)+'/5';
   document.getElementById('g2Ac').textContent='-';document.getElementById('g2Laps').textContent=g2.target;
   document.getElementById('g2dp').textContent='0 кр.';document.getElementById('g2fb').textContent='';
@@ -603,7 +601,7 @@ function g2Tap(){
   g2.round++;reg(setTimeout(g2Next,2100));}
 
 // ═══ G3 УГОЛ ═══
-const G3T=[{h:15,m:30,a:75},{h:16,m:10,a:65},{h:12,m:15,a:90},{h:8,m:0,a:120},{h:6,m:0,a:180},{h:3,m:0,a:90},{h:20,m:20,a:130},{h:18,m:0,a:180},{h:14,m:50,a:145},{h:12,m:30,a:165}];
+const G3T=[{h:15,m:30,a:75},{h:16,m:10,a:65},{h:12,m:20,a:110},{h:8,m:0,a:120},{h:6,m:0,a:180},{h:3,m:0,a:90},{h:20,m:20,a:130},{h:18,m:0,a:180},{h:14,m:50,a:145},{h:12,m:30,a:165}];
 let g3={};
 function g3Init(){drawMarks(document.getElementById('g3mk'),null,100,100,93,10);g3={round:0,score:0,gears:0};g3Next();showS('sG3');}
 function g3Next(){
@@ -660,7 +658,7 @@ function g4Next(){
     const div=document.createElement('div');div.style.cssText='background:var(--panel);border:2px solid var(--border);border-radius:10px;padding:8px;cursor:pointer;text-align:center;';
     const sv=document.createElementNS('http://www.w3.org/2000/svg','svg');sv.setAttribute('viewBox','0 0 140 140');sv.setAttribute('width','100');sv.setAttribute('height','100');
     g4MiniClock(sv,o.d.hd,o.d.md);div.appendChild(sv);
-    const lb=document.createElement('div');var mh=Math.round(o.d.md/6)%60;var mhh=Math.round(o.d.hd/30)%12;
+    const lb=document.createElement('div');var mh=Math.round(o.d.md/6)%60;var mhh=Math.round((o.d.hd-0.5*mh)/30)%12;if(mhh<0)mhh+=12;
     var tStr=fmt(mhh||12,mh);
     lb.style.cssText='font-size:.5rem;color:var(--dg);margin-top:3px;line-height:1.5;';lb.innerHTML=String.fromCharCode(65+i)+'<br><span style="color:var(--c1);font-family:Orbitron,monospace;">'+tStr+'</span>';div.appendChild(lb);
     div.onclick=()=>g4Answer(i,opts,div,c);c.appendChild(div);});}
@@ -921,7 +919,7 @@ const G10Q=[
   {q:"Ошибка 1 мкс в GPS = ошибка на местности:",opts:["1 мм","30 см","300 м","3 км"],ans:2,exp:"Свет за 1 мкс = 300 м"},
   {q:"Через 7 суток без коррекции накопится:",opts:["38 мкс","150 мкс","266 мкс","700 мкс"],ans:2,exp:"38 x 7 = 266 мкс = 80 км ошибки"},
   {q:"Какой эффект ЗАМЕДЛЯЕТ часы спутника?",opts:["Сила тяжести","Скорость - Спец.ТО","Космическое излучение","Солнечный ветер"],ans:1,exp:"Скорость 14000 км/ч -> Спец.ТО -> часы замедляются на 7 мкс/сут"},
-  {q:"Без коррекции GPS уйдёт на 10 км за:",opts:["Несколько часов","1 сутки","1 неделю","1 месяц"],ans:0,exp:"38 мкс/сут = 11 км/сут -> за несколько часов набегают км"},
+  {q:"Без коррекции GPS уйдёт на 10 км за:",opts:["Несколько часов","1 сутки","1 неделю","1 месяц"],ans:1,exp:"38 мкс/сут ≈ 11.4 км/сут → 10 км набегают за ~21 час, т.е. примерно за сутки"},
 ];
 let g10={};
 function g10Init(){
