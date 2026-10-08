@@ -1626,5 +1626,6 @@ function ckUseHint(){
   ckHintRefresh();
 }
 </script>
+<script>setInterval(function(){try{localStorage.setItem("cag_playtime",(parseInt(localStorage.getItem("cag_playtime")||"0")+10));}catch(e){}},10000);</script>
 </body>
 </html>

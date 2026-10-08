@@ -910,3 +910,4 @@ function moHintRefresh(){var b=document.getElementById('mo-hint-btn');if(!b)retu
 function moUseHint(){if(!GS||!GS.q){return;}var res=document.getElementById('qres');if(!res)return;res.className='q-res';res.classList.remove('hidden');res.style.color='#ffd700';res.textContent='💡 Ответ: '+(GS.q.answer||'');}
 setInterval(moHintRefresh,400);
 </script>
+<script>setInterval(function(){try{localStorage.setItem("cag_playtime",(parseInt(localStorage.getItem("cag_playtime")||"0")+10));}catch(e){}},10000);</script>
