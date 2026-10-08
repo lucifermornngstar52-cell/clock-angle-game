@@ -70,14 +70,22 @@
     document.getElementById('profile-modal').style.display='flex';
     upd();
     try{
-      var r=await fetch(SUPA+'/rest/v1/leaderboard?user_email=eq.'+encodeURIComponent(e)+'&select=score',{headers:H()}).then(function(r){return r.json();});
-      if(r&&r.length&&typeof r[0].score==='number'){
+      var r=await fetch(SUPA+'/rest/v1/leaderboard?user_email=eq.'+encodeURIComponent(e)+'&select=score,total_gears,total_wins',{headers:H()}).then(function(r){return r.json();});
+      var urow=await fetch(SUPA+'/rest/v1/users?email=eq.'+encodeURIComponent(e)+'&select=total_gears,total_wins',{headers:H()}).then(function(r){return r.json();});
+      if(r&&r.length&&urow&&urow.length){
+        var ug=urow[0].total_gears||0;
+        var wins=Math.max(r[0].total_wins||0,urow[0].total_wins||0);
+        var gears=Math.max(r[0].total_gears||0,ug);
+        var score=gears+wins*10;
+        if((r[0].total_gears||0)<ug||(r[0].score||0)!==score){
+          try{await fetch(SUPA+'/rest/v1/leaderboard?user_email=eq.'+encodeURIComponent(e),{method:'PATCH',headers:{'apikey':SKEY,'Authorization':'Bearer '+SKEY,'Content-Type':'application/json'},body:JSON.stringify({total_gears:gears,total_wins:wins,score:score})});}catch(e2){}
+        }
         var sl=document.getElementById('pr-stats');
         if(sl)sl.innerHTML='<div style="display:flex;flex-direction:column;gap:6px;">'
           +row('💰 Монеты',coins)
-          +row('⚙ Шестерни',u.total_gears||0)
-          +row('🏅 Победы',u.total_wins||0)
-          +row('⭐ Очки',r[0].score)
+          +row('⚙ Шестерни',gears)
+          +row('🏅 Победы',wins)
+          +row('⭐ Очки',score)
           +row('⏱ В игре',fmt(sec))
           +'</div>';
       }
