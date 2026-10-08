@@ -817,6 +817,7 @@ function maybeShowStory(){
 function checkIntro(){
   updAccBtn();
   if(isAuthorized()){
+    loadAchFromAccount();
     showS('main-menu');
     if(typeof loadStats==='function')loadStats();
     maybeShowStory();
@@ -852,9 +853,31 @@ const ACHIEVEMENTS=[
   {id:'vl10', icon:'👑', name:'Властелин Времени',              desc:'Пройди «Властелины Времени» 10 раз', cond:s=>s.vlWins>=10},
   {id:'vl50', icon:'💎', name:'Легенда циферблата',             desc:'Пройди «Властелины Времени» 50 раз', cond:s=>s.vlWins>=50},
 ];
+function saveAchToAccount(id){
+  if(!isAuthorized()||getEmail()==='guest')return;
+  try{
+    fetch(SUPABASE_URL+'/rest/v1/rpc/save_progress',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_minigame:'ДОСТИЖЕНИЕ: '+id,p_score:1,p_gears:0,p_completed:true})}).catch(function(){});
+  }catch(e){}
+}
+async function loadAchFromAccount(){
+  if(!isAuthorized()||getEmail()==='guest')return;
+  try{
+    var rows=await fetch(SUPABASE_URL+'/rest/v1/game_progress?user_email=eq.'+encodeURIComponent(getEmail())+'&minigame=like.'+encodeURIComponent('ДОСТИЖЕНИЕ')+'*&select=minigame',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(function(r){return r.json();});
+    var ch=false;
+    var serverIds=[];
+    (rows||[]).forEach(function(r){
+      var id=(r.minigame||'').replace('ДОСТИЖЕНИЕ: ','').trim();
+      if(id)serverIds.push(id);
+      if(id&&ACHIEVEMENTS.some(function(a){return a.id===id;})&&!SAVE.ach.includes(id)){SAVE.ach.push(id);ch=true;}
+    });
+    if(ch)saveData();
+    // локальные достижения, которых нет на сервере — заливаем
+    SAVE.ach.forEach(function(id){if(serverIds.indexOf(id)<0)saveAchToAccount(id);});
+  }catch(e){}
+}
 function checkAchievements(){
   ACHIEVEMENTS.forEach(a=>{
-    if(!SAVE.ach.includes(a.id)&&a.cond(SAVE)){SAVE.ach.push(a.id);saveData();showAchToast(a.icon+' '+a.name);}
+    if(!SAVE.ach.includes(a.id)&&a.cond(SAVE)){SAVE.ach.push(a.id);saveData();saveAchToAccount(a.id);showAchToast(a.icon+' '+a.name);}
   });
 }
 let toastT=null;
@@ -1956,7 +1979,7 @@ async function doAuth(){
   var n=document.getElementById('authName').value.trim(),em=document.getElementById('authEmail').value.trim();
   if(!em){alert('Введите email');return;}if(!n)n=em.split('@')[0];
   try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:em,p_name:n})}).then(r=>r.json());
-  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));if(typeof r.user.coins==='number'&&r.user.coins>(SAVE.coins||0)){SAVE.coins=r.user.coins;saveData();}showS('main-menu');if(typeof loadStats==='function')loadStats();updAccBtn();maybeShowStory();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
+  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));if(typeof r.user.coins==='number'&&r.user.coins>(SAVE.coins||0)){SAVE.coins=r.user.coins;saveData();}showS('main-menu');if(typeof loadStats==='function')loadStats();updAccBtn();loadAchFromAccount();maybeShowStory();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
 }
 function skipAuth(){localStorage.setItem('game_email','guest');updAccBtn();showS('main-menu');maybeShowStory();}
 /* ══ ПРОФИЛЬ АККАУНТА ══ */
@@ -1983,7 +2006,7 @@ function prStatsHtml(sc,sec,achDone,achAll){
 async function openProfile(){
   var u=getUser()||{},em=getEmail();
   document.getElementById('pr-name').textContent=u.full_name||em;
-  document.getElementById('pr-email').textContent=em;
+  document.getElementById('pr-email').textContent='📧 '+em;
   document.getElementById('pr-rank').textContent=u.current_rank?('\u{1F396} '+u.current_rank):'';
   var sec=parseInt(localStorage.getItem('cag_playtime')||'0')||0;
   var achDone=SAVE.ach.length,achAll=ACHIEVEMENTS.length;
@@ -2001,6 +2024,23 @@ async function openProfile(){
     }
   }catch(e){}
 }
+function hkExitBtnsInit(){
+  var gameScreens=['game-screen','vl-game','hk-game'];
+  ['vl-menu','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','hk-result'].forEach(function(id){
+    var sc=document.getElementById(id);if(!sc)return;
+    if(sc.querySelector('.hk-exit-btn'))return;
+    var b=document.createElement('button');
+    b.className='hk-exit-btn';b.textContent='\u{1F3E0} МЕНЮ';
+    var top=(gameScreens.indexOf(id)>=0)?'42px':'10px';
+    b.setAttribute('style','position:fixed;top:'+top+';left:10px;z-index:120;background:rgba(13,26,46,.9);border:1px solid rgba(255,215,0,.5);border-radius:14px;padding:6px 10px;color:#ffd700;font-family:Orbitron,monospace;font-size:.55rem;cursor:pointer;');
+    b.onclick=function(){
+      if(gameScreens.indexOf(id)>=0){if(!confirm('Выйти на главный экран? Прогресс текущей игры будет потерян.'))return;}
+      goMenu();
+    };
+    sc.appendChild(b);
+  });
+}
+hkExitBtnsInit();
 function accLogout(){
   try{localStorage.removeItem('game_email');localStorage.removeItem('game_user');}catch(e){}
   closeProfile();updAccBtn();showS('sAuth');
@@ -2308,7 +2348,7 @@ function hkBotMove(){
   <div style="background:#0d1a2e;border:1px solid rgba(0,245,255,.4);border-radius:14px;padding:18px;max-width:340px;width:100%;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Orbitron',monospace;color:#cde;">
     <div style="text-align:center;color:#00f5ff;letter-spacing:3px;font-size:.8rem;">// ПРОФИЛЬ //</div>
     <div id="pr-name" style="text-align:center;color:#fff;font-size:1rem;margin:8px 0 2px;"></div>
-    <div id="pr-email" style="text-align:center;color:#556;font-size:.55rem;margin-bottom:8px;word-break:break-all;"></div>
+    <div id="pr-email" style="text-align:center;color:#9ab;font-size:.7rem;margin-bottom:8px;word-break:break-all;">📧 </div>
     <div id="pr-rank" style="text-align:center;color:#ffd700;font-size:.6rem;margin-bottom:12px;"></div>
     <div id="pr-stats"></div>
     <div style="margin:12px 0 6px;color:#00f5ff;font-size:.6rem;letter-spacing:2px;">ДОСТИЖЕНИЯ <span id="pr-achcnt" style="color:#ffd700;"></span></div>

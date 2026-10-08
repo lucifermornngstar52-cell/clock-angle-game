@@ -870,6 +870,7 @@ function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 document.getElementById('qinp').addEventListener('keydown',e=>{if(e.key==='Enter')submitAns();});
 showS('lobby');
 </script>
+<script src="acc_profile.js"></script>
 </body>
 </html>
 <script>
@@ -892,6 +893,7 @@ async function doAuth(){
       err.textContent='';
       var s=document.getElementById('sAuth');
       if(s)s.classList.add('hidden');
+      if(window.accProfileUpd)accProfileUpd();
       showS('lobby');
     }else{
       err.textContent='Ошибка: '+(r.error||'попробуйте снова');

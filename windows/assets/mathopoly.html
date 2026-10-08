@@ -870,6 +870,7 @@ function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 document.getElementById('qinp').addEventListener('keydown',e=>{if(e.key==='Enter')submitAns();});
 showS('lobby');
 </script>
+<script src="acc_profile.js"></script>
 </body>
 </html>
 <script>
@@ -892,6 +893,7 @@ async function doAuth(){
       err.textContent='';
       var s=document.getElementById('sAuth');
       if(s)s.classList.add('hidden');
+      if(window.accProfileUpd)accProfileUpd();
       showS('lobby');
     }else{
       err.textContent='Ошибка: '+(r.error||'попробуйте снова');
@@ -910,3 +912,4 @@ function moHintRefresh(){var b=document.getElementById('mo-hint-btn');if(!b)retu
 function moUseHint(){if(!GS||!GS.q){return;}var res=document.getElementById('qres');if(!res)return;res.className='q-res';res.classList.remove('hidden');res.style.color='#ffd700';res.textContent='💡 Ответ: '+(GS.q.answer||'');}
 setInterval(moHintRefresh,400);
 </script>
+<script>setInterval(function(){try{localStorage.setItem("cag_playtime",(parseInt(localStorage.getItem("cag_playtime")||"0")+10));}catch(e){}},10000);</script>

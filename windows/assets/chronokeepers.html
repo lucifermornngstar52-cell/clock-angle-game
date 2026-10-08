@@ -1494,6 +1494,7 @@ async function doAuth(){
   if(r.ok){
     err.textContent='';
     document.getElementById('sAuth').classList.add('hidden');
+    if(window.accProfileUpd)accProfileUpd();
     showScreen('sLobby');
   }else{
     err.textContent='Ошибка: '+(r.error||'попробуйте снова');
@@ -1537,47 +1538,128 @@ let hkMmPoll = null;
 function hkMmEmail(){ return (typeof getEmail==='function' && getEmail()) || (localStorage.getItem('game_email')||''); }
 
 async function startAutoMatch(){
-  if(!hkMmEmail()){
-    setStatus('lobbyStatus','Сначала войдите в аккаунт','err');
-    return;
-  }
-  myName = document.getElementById('nameInp').value.trim().toUpperCase() || 'ИГРОК';
-  document.getElementById('hkMmIdle').style.display = 'none';
-  document.getElementById('hkMmSearching').style.display = 'block';
+  var em=localStorage.getItem('game_email')||'';
+  if(!em||em==='guest'){setStatus('lobbyStatus','Сначала войдите в аккаунт','err');return;}
+  myName=document.getElementById('nameInp').value.trim().toUpperCase()||'ИГРОК';
+  document.getElementById('hkMmIdle').style.display='none';
+  document.getElementById('hkMmSearching').style.display='block';
   try{
-    const r = await fetch(SUPABASE_URL+'/rest/v1/rpc/hk_join_matchmaking',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_email:hkMmEmail(), p_name:myName})
-    }).then(r=>r.json());
-    handleMmResult(r);
-  }catch(e){
-    setStatus('lobbyStatus','Ошибка сети','err');
-    hkMmReset();
-  }
+    await hkMmClearMine();
+    var matchId='m'+Date.now();
+    var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+    // 1) ищем свежего ждущего соперника (не старше 3 минут)
+    var waiting=await fetch(SUPABASE_URL+'/rest/v1/matchmaking?status=eq.waiting&user_email=neq.'+encodeURIComponent(em)+'&created_at=gte.'+new Date(Date.now()-3*60000).toISOString()+'&order=created_at.asc&limit=1',{headers:H}).then(function(r){return r.json();});
+    if(waiting&&waiting.length){
+      var opp=waiting[0];
+      await fetch(SUPABASE_URL+'/rest/v1/matchmaking?id=eq.'+opp.id,{method:'PATCH',headers:H,body:JSON.stringify({status:'matched',match_id:matchId,opponent_email:em})});
+      await fetch(SUPABASE_URL+'/rest/v1/matchmaking',{method:'POST',headers:H,body:JSON.stringify({user_email:em,display_name:myName,status:'matched',match_id:matchId,opponent_email:opp.user_email,created_at:new Date().toISOString()})});
+      handleMmResult({ok:true,status:'matched',role:'guest',room_code:matchId,opponent_name:(opp.display_name||'СОПЕРНИК')});
+      return;
+    }
+    // 2) сами встаём в очередь
+    await fetch(SUPABASE_URL+'/rest/v1/matchmaking',{method:'POST',headers:H,body:JSON.stringify({user_email:em,display_name:myName,status:'waiting',match_id:matchId,created_at:new Date().toISOString()})});
+    setStatus('lobbyStatus','Ищем соперника... Разослали приглашения игрокам в сети','ok');
+    // 3) приглашаем всех, кто недавно заходил в игру
+    try{
+      var online=await fetch(SUPABASE_URL+'/rest/v1/users?last_login=gte.'+new Date(Date.now()-15*60000).toISOString()+'&email=neq.'+encodeURIComponent(em)+'&select=email,full_name&limit=10',{headers:H}).then(function(r){return r.json();});
+      (online||[]).forEach(function(u){
+        fetch(SUPABASE_URL+'/rest/v1/matchmaking',{method:'POST',headers:H,body:JSON.stringify({user_email:u.email,display_name:u.full_name||u.email.split('@')[0],status:'invited',match_id:matchId,opponent_email:em,created_at:new Date().toISOString()})}).catch(function(){});
+      });
+    }catch(e){}
+    handleMmResult({ok:true,status:'waiting'});
+  }catch(e){ setStatus('lobbyStatus','Ошибка сети','err'); hkMmReset(); }
 }
 
+async function hkMmClearMine(){
+  var em=localStorage.getItem('game_email')||'';if(!em)return;
+  var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+  try{await fetch(SUPABASE_URL+'/rest/v1/matchmaking?user_email=eq.'+encodeURIComponent(em),{method:'DELETE',headers:H});}catch(e){}
+  try{await fetch(SUPABASE_URL+'/rest/v1/matchmaking?opponent_email=eq.'+encodeURIComponent(em)+'&status=eq.invited',{method:'DELETE',headers:H});}catch(e){}
+}
+
+async function hkOppName(email){
+  try{
+    var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+    var u=await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(email)+'&select=full_name&limit=1',{headers:H}).then(function(r){return r.json();});
+    if(u&&u.length&&u[0].full_name)return u[0].full_name;
+  }catch(e){}
+  return (email||'').split('@')[0]||'СОПЕРНИК';
+}
 async function pollAutoMatch(){
   try{
-    const r = await fetch(SUPABASE_URL+'/rest/v1/rpc/hk_check_matchmaking',{
-      method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_email:hkMmEmail()})
-    }).then(r=>r.json());
-    handleMmResult(r);
+    var em=localStorage.getItem('game_email')||'';if(!em)return;
+    var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+    var rows=await fetch(SUPABASE_URL+'/rest/v1/matchmaking?user_email=eq.'+encodeURIComponent(em)+'&status=eq.matched&order=created_at.desc&limit=1',{headers:H}).then(function(r){return r.json();});
+    if(rows&&rows.length){
+      var nm=await hkOppName(rows[0].opponent_email);
+      handleMmResult({ok:true,status:'matched',role:'host',room_code:rows[0].match_id,opponent_name:nm});
+    }
   }catch(e){}
+}
+
+function hkInviteHide(){var b=document.getElementById('hkInviteBox');if(b)b.remove();}
+function hkInviteShow(inv){
+  hkInviteHide();
+  var d=document.createElement('div');
+  d.id='hkInviteBox';d.dataset.mid=inv.match_id;
+  d.style.cssText='margin-top:10px;padding:10px;border:1px solid #ffd700;border-radius:10px;text-align:center;font-size:.65rem;';
+  d.innerHTML='<div style="color:#ffd700;font-weight:bold;">'+(inv.inviterName||'Игрок')+' приглашает на бой!</div>'
+    +'<div style="display:flex;gap:8px;margin-top:8px;">'
+    +'<button class="btn btn-gold" style="flex:1;font-size:.6rem;padding:8px;" onclick="acceptInvite(\''+inv.match_id+'\',\''+inv.opponent_email+'\')">ПРИНЯТЬ</button>'
+    +'<button class="btn btn-cyan" style="flex:1;font-size:.6rem;padding:8px;" onclick="declineInvite()">ОТКАЗАТЬ</button></div>';
+  var card=document.querySelector('#sLobby .card');
+  if(card)card.appendChild(d);else document.body.appendChild(d);
+}
+async function hkInvitePollTick(){
+  try{
+    var lobby=document.getElementById('sLobby');
+    if(!lobby||lobby.classList.contains('hidden'))return;
+    var em=localStorage.getItem('game_email')||'';
+    if(!em||em==='guest')return;
+    if(hkMmPoll)return;
+    var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+    var inv=await fetch(SUPABASE_URL+'/rest/v1/matchmaking?user_email=eq.'+encodeURIComponent(em)+'&status=eq.invited&created_at=gte.'+new Date(Date.now()-90000).toISOString()+'&order=created_at.desc&limit=1',{headers:H}).then(function(r){return r.json();});
+    var box=document.getElementById('hkInviteBox');
+    if(inv&&inv.length){ if(!box||box.dataset.mid!==inv[0].match_id){ inv[0].inviterName=await hkOppName(inv[0].opponent_email); hkInviteShow(inv[0]); } }
+    else if(box)hkInviteHide();
+  }catch(e){}
+}
+async function acceptInvite(mid,inviterEmail){
+  var em=localStorage.getItem('game_email')||'';if(!em)return;
+  myName=document.getElementById('nameInp').value.trim().toUpperCase()||'ИГРОК';
+  var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+  try{await fetch(SUPABASE_URL+'/rest/v1/matchmaking?user_email=eq.'+encodeURIComponent(em)+'&status=eq.invited',{method:'DELETE',headers:H});}catch(e){}
+  var rows=await fetch(SUPABASE_URL+'/rest/v1/matchmaking?match_id=eq.'+encodeURIComponent(mid)+'&status=eq.waiting',{headers:H}).then(function(r){return r.json();});
+  if(!rows||!rows.length){
+    hkInviteHide();
+    setStatus('lobbyStatus','Приглашение уже недействительно','err');
+    return;
+  }
+  var inviter=rows[0];
+  await fetch(SUPABASE_URL+'/rest/v1/matchmaking?id=eq.'+inviter.id,{method:'PATCH',headers:H,body:JSON.stringify({status:'matched',opponent_email:em})});
+  await fetch(SUPABASE_URL+'/rest/v1/matchmaking',{method:'POST',headers:H,body:JSON.stringify({user_email:em,display_name:myName,status:'matched',match_id:mid,opponent_email:inviter.user_email,created_at:new Date().toISOString()})});
+  hkInviteHide();
+  handleMmResult({ok:true,status:'matched',role:'guest',room_code:mid,opponent_name:(inviter.display_name||'СОПЕРНИК')});
+}
+async function declineInvite(){
+  var em=localStorage.getItem('game_email')||'';if(!em)return;
+  var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY};
+  try{await fetch(SUPABASE_URL+'/rest/v1/matchmaking?user_email=eq.'+encodeURIComponent(em)+'&status=eq.invited',{method:'DELETE',headers:H});}catch(e){}
+  hkInviteHide();
 }
 
 function handleMmResult(r){
   if(r.ok && r.status==='matched'){
     if(hkMmPoll){clearInterval(hkMmPoll);hkMmPoll=null;}
     opName = r.opponent_name || 'Соперник';
-    document.getElementById('hkMmSearching').style.display = 'none';
-    document.getElementById('hkMmIdle').style.display = 'block';
+    document.getElementById('hkMmSearching').style.display='none';
+    document.getElementById('hkMmIdle').style.display='block';
+    hkInviteHide();
     if(r.role === 'host'){
       createRoom(r.room_code);
     } else {
-      joinRoom(r.room_code);
+      setStatus('lobbyStatus','Соперник найден! Подключение...','ok');
+      setTimeout(function(){ joinRoom(r.room_code); }, 2500);
     }
   } else if(r.ok && r.status==='waiting'){
     if(!hkMmPoll) hkMmPoll = setInterval(pollAutoMatch, 2000);
@@ -1589,18 +1671,11 @@ function handleMmResult(r){
 
 function cancelAutoMatch(){
   if(hkMmPoll){clearInterval(hkMmPoll);hkMmPoll=null;}
-  fetch(SUPABASE_URL+'/rest/v1/rpc/hk_cancel_matchmaking',{
-    method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({p_email:hkMmEmail()})
-  }).catch(function(){});
+  hkMmClearMine();
+  hkInviteHide();
   hkMmReset();
 }
-
-function hkMmReset(){
-  document.getElementById('hkMmSearching').style.display = 'none';
-  document.getElementById('hkMmIdle').style.display = 'block';
-}
+setInterval(hkInvitePollTick, 5000);
 
 </script>
 <button id="ck-hint-btn" onclick="ckUseHint()" title="Подсказка" style="display:none;position:fixed;left:10px;bottom:10px;z-index:99;background:rgba(13,26,46,.92);border:1px solid rgba(255,215,0,.6);border-radius:50%;width:38px;height:38px;font-size:1rem;cursor:pointer;">💡<span id="ck-hint-cnt" style="position:absolute;right:-3px;top:-3px;background:#ffd700;color:#000;border-radius:8px;padding:0 4px;font-size:.5rem;font-weight:bold;"></span></button>
@@ -1627,5 +1702,6 @@ function ckUseHint(){
 }
 </script>
 <script>setInterval(function(){try{localStorage.setItem("cag_playtime",(parseInt(localStorage.getItem("cag_playtime")||"0")+10));}catch(e){}},10000);</script>
+<script src="acc_profile.js"></script>
 </body>
 </html>

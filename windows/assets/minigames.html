@@ -1057,7 +1057,7 @@ async function doAuth(){
   var n=document.getElementById('authName').value.trim(),em=document.getElementById('authEmail').value.trim();
   if(!em){alert('Введите email');return;}if(!n)n=em.split('@')[0];
   try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:em,p_name:n})}).then(r=>r.json());
-  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));backToMenu();}else alert('Ошибка');}catch(e){alert('Сеть');}
+  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));if(window.accProfileUpd)accProfileUpd();backToMenu();}else alert('Ошибка');}catch(e){alert('Сеть');}
 }
 function skipAuth(){localStorage.setItem('game_email','guest');backToMenu();}
 function goHome(){window.location.href='index.html';}
@@ -1177,5 +1177,6 @@ function mgUseHint(){
 }
 </script>
 <script>setInterval(function(){try{localStorage.setItem("cag_playtime",(parseInt(localStorage.getItem("cag_playtime")||"0")+10));}catch(e){}},10000);</script>
+<script src="acc_profile.js"></script>
 </body>
 </html>
