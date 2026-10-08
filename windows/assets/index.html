@@ -22,9 +22,6 @@
   .screen{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
     align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
   .screen.hidden{display:none!important;}
-  #rc{position:fixed;top:10px;left:12px;z-index:100;font-family:'Orbitron',monospace;
-    font-size:.85rem;color:var(--g);text-shadow:0 0 8px var(--g);
-    background:rgba(0,0,0,.6);border:1px solid var(--border);padding:3px 10px;border-radius:6px;letter-spacing:2px;}
 
   /* ══ ИНТРО ══ */
   #intro-screen{gap:0;justify-content:center;padding:24px 20px;}
@@ -216,7 +213,6 @@
 <!-- Mathopoly удалён -->
 
 <canvas id="mc"></canvas>
-<div id="rc">00:00:00</div>
 <div id="ach-toast"></div>
 
 <!-- ══ ИНТРО ══ -->
@@ -347,6 +343,26 @@
 #vl-answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .vl-opt{padding:10px 6px;background:rgba(255,255,255,.04);border:1px solid #1f3050;color:#aabbcc;border-radius:8px;font-size:.75rem;font-family:'Orbitron',monospace;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;}
 .vl-opt:active{transform:scale(.97);}
+/* КАРТЫ МИССИЙ */
+.vl-sector{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:18px 0 10px;padding:9px 12px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:1px;}
+.vl-sector.green{background:rgba(151,206,76,.1);border:1px solid rgba(151,206,76,.45);color:#97ce4c;}
+.vl-sector.yellow{background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.4);color:#ffd700;}
+.vl-sector.red{background:rgba(255,68,85,.08);border:1px solid rgba(255,68,85,.4);color:#ff4455;}
+.vl-sector.paradox{background:rgba(255,0,170,.08);border:1px solid rgba(255,0,170,.4);color:#ff00aa;}
+.vl-card{position:relative;background:rgba(255,255,255,.03);border:1px solid #1f3050;border-radius:12px;padding:14px 14px 12px;margin-bottom:10px;}
+.vl-pts{position:absolute;top:-9px;right:12px;padding:2px 9px;border-radius:10px;font-size:.55rem;font-family:'Orbitron',monospace;background:#0a0f20;}
+.vl-pts.green{border:1px solid #97ce4c;color:#97ce4c;}
+.vl-pts.yellow{border:1px solid #ffd700;color:#ffd700;}
+.vl-pts.red{border:1px solid #ff4455;color:#ff4455;}
+.vl-pts.paradox{border:1px solid #ff00aa;color:#ff00aa;}
+.vl-q{margin-top:3px;color:#cde;font-size:.7rem;line-height:1.55;}
+.vl-ans-btn{margin-top:10px;background:none;border:1px dashed #445;border-radius:8px;padding:8px 10px;width:100%;color:#8aa;font-family:'Orbitron',monospace;font-size:.58rem;letter-spacing:1px;cursor:pointer;transition:all .2s;}
+.vl-ans-btn:active{transform:scale(.97);border-color:var(--c1,#00f5ff);color:var(--c1,#00f5ff);}
+.vl-answer{display:none;margin-top:10px;padding:10px 11px;border-radius:8px;font-size:.63rem;line-height:1.5;color:#fff;}
+.vl-answer.green{background:rgba(151,206,76,.12);border:1px solid rgba(151,206,76,.45);}
+.vl-answer.yellow{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.4);}
+.vl-answer.red{background:rgba(255,68,85,.1);border:1px solid rgba(255,68,85,.4);}
+.vl-answer.paradox{background:rgba(255,0,170,.1);border:1px solid rgba(255,0,170,.4);}
 .vl-opt.correct{background:rgba(0,255,136,.15);border-color:#97ce4c;color:#97ce4c;}
 .vl-opt.wrong{background:rgba(255,68,85,.15);border-color:#ff4455;color:#ff4455;}
 #vl-explanation{display:none;margin-top:10px;padding:10px 12px;background:rgba(0,0,0,.3);border-radius:8px;font-size:.75rem;color:#aabbcc;line-height:1.5;border-left:3px solid #ffd700;}
@@ -770,8 +786,7 @@ const pick=a=>a[Math.random()*a.length|0];
 })();
 
 /* ══ РЕАЛЬНЫЕ ЧАСЫ ══ */
-setInterval(()=>{const n=new Date(),p=v=>String(v).padStart(2,'0');
-  document.getElementById('rc').textContent=p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());},1000);
+
 
 /* ══ АДАПТИВНЫЙ РАЗМЕР ЧАСОВ ══ */
 function fitClock(){
@@ -905,9 +920,21 @@ function openAch(){
   document.getElementById('ach-popup').classList.remove('hidden');
 }
 function closeAch(){document.getElementById('ach-popup').classList.add('hidden');}
+function vlReveal(btn){
+  if(!btn)return;
+  var card=btn.closest('.vl-card');
+  var ans=card?card.querySelector('.vl-answer'):null;
+  if(!ans)return;
+  var show=ans.style.display!=='block';
+  ans.style.display=show?'block':'none';
+  btn.textContent=show?'[ СКРЫТЬ ОТВЕТ ]':'[ ПОКАЗАТЬ ОТВЕТ ]';
+}
 
 /* ══ АУДИО — Классическая мелодия (Пахельбель Канон) ══ */
 let AC,MG,SG;let mv=.4,sv=.7;
+try{var _mva=localStorage.getItem('cag_mv');if(_mva!==null)mv=_mva/100;var _sva=localStorage.getItem('cag_sv');if(_sva!==null)sv=_sva/100;}catch(e){}
+function setMV(v){mv=v/100;if(MG)MG.gain.value=mv*.25;var l=document.getElementById('vml');if(l)l.textContent=v+'%';try{localStorage.setItem('cag_mv',v);}catch(e){}}
+function setSV(v){sv=v/100;if(SG)SG.gain.value=sv;var l=document.getElementById('vsl');if(l)l.textContent=v+'%';try{localStorage.setItem('cag_sv',v);}catch(e){}}
 let bgMelody=null,bgBass=null;
 function initA(){
   if(AC)return;
@@ -983,7 +1010,14 @@ function sfx(t){
     gg.gain.linearRampToValueAtTime(0,AC.currentTime+i*0.12+0.25);
     oo.start(AC.currentTime+i*0.12);oo.stop(AC.currentTime+i*0.12+0.25);});}
 }
-function openSound(){document.getElementById('sound-popup').classList.remove('hidden');}
+function openSound(){
+  try{
+    var a=localStorage.getItem('cag_mv'),b=localStorage.getItem('cag_sv');
+    if(a!==null){document.getElementById('vm').value=a;document.getElementById('vml').textContent=a+'%';}
+    if(b!==null){document.getElementById('vs').value=b;document.getElementById('vsl').textContent=b+'%';}
+  }catch(e){}
+  document.getElementById('sound-popup').classList.remove('hidden');
+}
 function closeSound(){document.getElementById('sound-popup').classList.add('hidden');}
 
 /* ══ УРОВНИ ══ */

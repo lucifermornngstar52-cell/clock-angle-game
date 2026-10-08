@@ -1104,7 +1104,6 @@ async function doAuth(){
   if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));if(window.accProfileUpd)accProfileUpd();mgQueueGearSync();backToMenu();}else alert('Ошибка');}catch(e){alert('Сеть');}
 }
 function skipAuth(){localStorage.setItem('game_email','guest');backToMenu();}
-function goHome(){window.location.href='index.html';}
 async function loadStats(){if(!isAuthorized()||getEmail()==='guest')return;}
 async function syncProgress(g,s,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/save_progress',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_game:g,p_score:s,p_wins:w})});}catch(e){}}
 async function syncVictory(g){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_gears:g})});supabaseTournamentScore(g,1);}catch(e){}}
