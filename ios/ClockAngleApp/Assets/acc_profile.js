@@ -93,8 +93,5 @@
   if(document.readyState==='complete'){upd();}
   else{window.addEventListener('load',function(){upd();});}
   // чип живёт постоянно: следим, чтобы не пропадал
-  setInterval(function(){
-    var b=document.getElementById('acc-btn');
-    if(b){var on=authorized();if(b.style.display==='none'&&on)b.style.display='';}
-  },5000);
+  setInterval(function(){upd();},3000);
 })();

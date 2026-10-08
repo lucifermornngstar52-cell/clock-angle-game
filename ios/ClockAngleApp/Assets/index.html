@@ -4,9 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Numbra</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Numbra">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-  :root{--g:#00ff41;--dg:#008f11;--bg:#0a0a0a;--panel:rgba(0,18,0,0.93);--border:rgba(0,255,65,0.25);}
+  :root{--g:#97ce4c;--dg:#4a7027;--bg:#070b23;--panel:rgba(9,14,44,0.93);--border:rgba(151,206,76,0.25);}
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{width:100%;height:100%;background:var(--bg);color:var(--g);font-family:'Share Tech Mono',monospace;overflow:hidden;}
   #mc{position:fixed;inset:0;z-index:0;opacity:.13;pointer-events:none;}
@@ -23,21 +29,21 @@
   /* ══ ИНТРО ══ */
   #intro-screen{gap:0;justify-content:center;padding:24px 20px;}
   .intro-frame{background:rgba(0,12,0,.97);border:1px solid var(--g);border-radius:10px;
-    padding:22px 18px;max-width:380px;width:100%;box-shadow:0 0 30px rgba(0,255,65,.15);}
+    padding:22px 18px;max-width:380px;width:100%;box-shadow:0 0 30px rgba(151,206,76,.15);}
   .intro-badge{font-size:.58rem;color:var(--dg);letter-spacing:3px;text-align:center;margin-bottom:12px;}
   .intro-title{font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:900;color:var(--g);
     text-shadow:0 0 12px var(--g);text-align:center;letter-spacing:2px;margin-bottom:14px;line-height:1.4;}
-  .intro-text{font-size:.76rem;color:rgba(0,255,65,.8);line-height:1.85;
+  .intro-text{font-size:.76rem;color:rgba(151,206,76,.8);line-height:1.85;
     border-left:2px solid var(--dg);padding-left:12px;margin-bottom:18px;}
   .intro-text span{color:var(--g);font-weight:bold;}
   .intro-cursor{display:inline-block;width:8px;height:13px;background:var(--g);
     animation:blink .7s infinite;vertical-align:middle;margin-left:2px;}
   @keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
-  .intro-btn{font-family:'Orbitron',monospace;font-size:.83rem;background:rgba(0,255,65,.1);
+  .intro-btn{font-family:'Orbitron',monospace;font-size:.83rem;background:rgba(151,206,76,.1);
     border:1px solid var(--g);color:var(--g);padding:12px 0;cursor:pointer;
     letter-spacing:2px;width:100%;text-align:center;border-radius:6px;
     text-shadow:0 0 8px var(--g);transition:all .2s;}
-  .intro-btn:active{background:rgba(0,255,65,.25);}
+  .intro-btn:active{background:rgba(151,206,76,.25);}
 
   /* ══ ГЛАВНОЕ МЕНЮ ══ */
   #main-menu{gap:12px;}
@@ -53,7 +59,7 @@
     border:1px solid var(--g);color:var(--g);padding:11px 0;cursor:pointer;
     letter-spacing:2px;text-transform:uppercase;width:100%;max-width:300px;
     text-align:center;transition:all .2s;border-radius:4px;}
-  .btn:active{background:rgba(0,255,65,.15);}
+  .btn:active{background:rgba(151,206,76,.15);}
   .btn.dis{opacity:.35;pointer-events:none;border-color:var(--dg);color:var(--dg);}
   .btn-gold{border-color:#ffd700;color:#ffd700;text-shadow:0 0 8px #ffd700;}
   .btn-gold:active{background:rgba(255,215,0,.12);}
@@ -89,20 +95,20 @@
 
   /* Часы — адаптивный размер */
   .clock-wrap{flex-shrink:0;margin:2px 0;}
-  .clock-wrap svg{filter:drop-shadow(0 0 8px rgba(0,255,65,.4));}
+  .clock-wrap svg{filter:drop-shadow(0 0 8px rgba(151,206,76,.4));}
 
   /* Варианты */
   .choices-grid{display:grid;gap:5px;width:100%;flex-shrink:0;}
   .choices-grid.g4{grid-template-columns:1fr 1fr;margin-top:4px;}
   .choices-grid.g8{grid-template-columns:1fr 1fr;margin-top:3px;}
-  .choice-btn{background:rgba(0,18,0,.9);border:1px solid var(--border);border-radius:5px;min-height:38px;
+  .choice-btn{background:rgba(9,14,44,.9);border:1px solid var(--border);border-radius:5px;min-height:38px;
     color:var(--g);font-family:'Orbitron',monospace;
     cursor:pointer;text-align:center;letter-spacing:1px;transition:all .12s;
     padding:10px 4px;font-size:.86rem;}
   .choices-grid.g8 .choice-btn{padding:7px 4px;font-size:.76rem;}
   .choice-btn:active{transform:scale(.96);}
   .choice-btn.selected{border-color:#0ff;background:rgba(0,255,255,.12);color:#0ff;box-shadow:0 0 8px rgba(0,255,255,.4);}
-  .choice-btn.correct{border-color:#00ff41!important;background:rgba(0,255,65,.22)!important;box-shadow:0 0 12px rgba(0,255,65,.6)!important;color:#fff!important;}
+  .choice-btn.correct{border-color:#97ce4c!important;background:rgba(151,206,76,.22)!important;box-shadow:0 0 12px rgba(151,206,76,.6)!important;color:#fff!important;}
   .choice-btn.wrong{border-color:#ff3131!important;background:rgba(255,49,49,.15)!important;box-shadow:0 0 10px rgba(255,49,49,.4)!important;color:#ff3131!important;}
   .choice-btn.missed{border-color:rgba(255,200,0,.7)!important;background:rgba(255,200,0,.08)!important;color:rgba(255,200,0,.9)!important;}
   .choice-btn.hint-hl{border-color:#ffd700!important;background:rgba(255,215,0,.18)!important;color:#ffd700!important;animation:glow .5s ease 3;}
@@ -112,17 +118,17 @@
   #confirm-btn{
     width:100%;margin-top:5px;flex-shrink:0;
     font-family:'Orbitron',monospace;font-size:.8rem;
-    background:rgba(0,255,65,.12);border:2px solid var(--g);border-radius:6px;
+    background:rgba(151,206,76,.12);border:2px solid var(--g);border-radius:6px;
     color:var(--g);padding:10px 0;cursor:pointer;letter-spacing:2px;
     text-shadow:0 0 6px var(--g);transition:all .2s;
     display:none;
   }
   #confirm-btn.visible{display:block;}
-  #confirm-btn:active{background:rgba(0,255,65,.28);}
+  #confirm-btn:active{background:rgba(151,206,76,.28);}
 
   .fb{font-family:'Orbitron',monospace;font-size:.7rem;text-align:center;
     min-height:14px;margin-top:2px;letter-spacing:1px;flex-shrink:0;}
-  .fb.ok{color:#00ff41;text-shadow:0 0 8px #00ff41;}
+  .fb.ok{color:#97ce4c;text-shadow:0 0 8px #97ce4c;}
   .fb.bad{color:#ff3131;text-shadow:0 0 8px #ff3131;}
   .fb.hint{color:#ffd700;text-shadow:0 0 8px #ffd700;}
 
@@ -134,7 +140,7 @@
     display:flex;align-items:center;justify-content:center;
     font-family:'Orbitron',monospace;font-size:.55rem;color:var(--dg);
     background:rgba(0,10,0,.6);transition:all .3s;}
-  .hop.done{border-color:var(--g);background:rgba(0,255,65,.12);color:var(--g);box-shadow:0 0 5px rgba(0,255,65,.3);}
+  .hop.done{border-color:var(--g);background:rgba(151,206,76,.12);color:var(--g);box-shadow:0 0 5px rgba(151,206,76,.3);}
   .hop.act{border-color:#0ff;background:rgba(0,255,255,.13);color:#0ff;box-shadow:0 0 8px rgba(0,255,255,.4);animation:pulse .9s infinite;}
 
   .bot-row{display:flex;gap:5px;width:100%;margin-top:3px;flex-shrink:0;}
@@ -143,9 +149,10 @@
     font-size:.62rem;padding:7px 4px;cursor:pointer;}
   .hbtn:active{background:rgba(255,200,0,.1);}
   .hbtn:disabled{opacity:.4;pointer-events:none;}
+  #hint-btn,#ans-btn{font-size:.55rem!important;padding:4px 8px!important;flex:none;}
   .mbtn{flex:.5;background:transparent;border:1px solid var(--border);border-radius:5px;
     color:var(--dg);font-family:'Share Tech Mono',monospace;font-size:.62rem;padding:7px 4px;cursor:pointer;}
-  .mbtn:active{background:rgba(0,255,65,.07);}
+  .mbtn:active{background:rgba(151,206,76,.07);}
 
   /* ══ РЕЗУЛЬТАТЫ / ГЕЙМОВЕР / ПОБЕДА ══ */
   #result-screen,#gameover-screen,#win-screen{gap:13px;}
@@ -158,7 +165,7 @@
   .win-title{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:900;color:#ffd700;
     text-shadow:0 0 16px #ffd700;text-align:center;letter-spacing:2px;margin-bottom:12px;
     line-height:1.4;animation:flicker 2s infinite;}
-  .win-text{font-size:.73rem;color:rgba(0,255,65,.85);line-height:1.9;
+  .win-text{font-size:.73rem;color:rgba(151,206,76,.85);line-height:1.9;
     border-left:2px solid rgba(255,215,0,.4);padding-left:10px;margin-bottom:14px;}
   .win-text .yr{color:#ffd700;font-family:'Orbitron',monospace;font-size:.88rem;text-shadow:0 0 10px #ffd700;}
   .win-stats{font-size:.7rem;color:var(--dg);text-align:center;margin-bottom:14px;line-height:1.7;}
@@ -176,7 +183,7 @@
   .popup-close{align-self:flex-end;background:transparent;border:1px solid var(--border);
     border-radius:5px;color:var(--dg);font-family:'Share Tech Mono',monospace;
     font-size:.72rem;padding:5px 12px;cursor:pointer;}
-  .popup-close:active{background:rgba(0,255,65,.1);}
+  .popup-close:active{background:rgba(151,206,76,.1);}
   .vrow{display:flex;align-items:center;gap:10px;width:100%;}
   .vrow label{font-size:.7rem;color:var(--dg);min-width:58px;}
   input[type=range]{-webkit-appearance:none;flex:1;height:3px;background:var(--dg);border-radius:2px;outline:none;}
@@ -185,7 +192,7 @@
   .vv{font-size:.7rem;min-width:32px;text-align:right;}
   .ach-item{display:flex;align-items:center;gap:10px;padding:8px 10px;
     background:rgba(0,10,0,.7);border:1px solid var(--border);border-radius:6px;}
-  .ach-item.unlocked{border-color:var(--g);background:rgba(0,255,65,.08);}
+  .ach-item.unlocked{border-color:var(--g);background:rgba(151,206,76,.08);}
   .ach-icon{font-size:1.1rem;min-width:26px;text-align:center;}
   .ach-info{flex:1;}
   .ach-name{font-size:.7rem;color:var(--dg);}
@@ -227,7 +234,7 @@
 </div>
 
 <!-- TOURNAMENT SCREEN -->
-<div class="screen hidden" id="sTournament" style="overflow-y:auto;padding:20px;padding-bottom:40px;">
+<div class="screen hidden" id="sTournament" style="overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;align-items:stretch;padding:20px;padding-bottom:40px;">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
     <button onclick="showS('main-menu')" style="background:none;border:none;color:#556;font-size:1rem;cursor:pointer;">←</button>
     <div style="font-family:Orbitron,monospace;font-size:1rem;color:#00f5ff;">ТУРНИР</div>
@@ -236,21 +243,23 @@
 </div>
 
 <!-- SHOP SCREEN -->
-<div class="screen hidden" id="sShop" style="overflow-y:auto;padding:20px;padding-bottom:40px;">
+<div class="screen hidden" id="sShop" style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;padding-bottom:40px;">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
     <button onclick="showS('main-menu')" style="background:none;border:none;color:#556;font-size:1rem;cursor:pointer;">←</button>
     <div style="font-family:Orbitron,monospace;font-size:1rem;color:#00f5ff;">МАГАЗИН</div>
     <div style="margin-left:auto;font-size:.8rem;color:#ffd700;" id="shopCoins">0 монет</div>
   </div>
   <div id="shopItems" style="max-width:420px;margin:0 auto;"></div>
+  <div style="max-width:420px;margin:22px auto 6px;font-family:Orbitron,monospace;font-size:.8rem;color:#97ce4c;text-align:center;">БОНУСЫ ЗА ПОДПИСКУ (+100🪙)</div>
+  <div id="subItems" style="max-width:420px;margin:0 auto;"></div>
   <div style="max-width:420px;margin:14px auto 0;">
-    <button onclick="claimDaily()" style="width:100%;background:linear-gradient(135deg,#00ff88,#00cc66);color:#000;border:none;border-radius:10px;padding:14px;font-size:.75rem;font-weight:bold;cursor:pointer;font-family:inherit;margin-bottom:10px;">ЕЖЕДНЕВНЫЙ БОНУС (+5)</button>
+    <button onclick="claimDaily()" style="width:100%;background:linear-gradient(135deg,#97ce4c,#00cc66);color:#000;border:none;border-radius:10px;padding:14px;font-size:.75rem;font-weight:bold;cursor:pointer;font-family:inherit;margin-bottom:10px;">ЕЖЕДНЕВНЫЙ БОНУС (+5)</button>
     <button onclick="watchAd()" style="width:100%;background:#1a1a2e;border:1px solid #00f5ff;color:#00f5ff;border-radius:10px;padding:14px;font-size:.75rem;cursor:pointer;font-family:inherit;">РЕКЛАМА (+3)</button>
   </div>
 </div>
 
 <!-- LEADERBOARD SCREEN -->
-<div class="screen hidden" id="sLB" style="overflow-y:auto;padding:20px;padding-bottom:40px;">
+<div class="screen hidden" id="sLB" style="overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;align-items:stretch;padding:20px;padding-bottom:40px;">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
     <button onclick="showS('main-menu')" style="background:none;border:none;color:#556;font-size:1rem;cursor:pointer;">←</button>
     <div style="font-family:Orbitron,monospace;font-size:1rem;color:#00f5ff;">ЛИДЕРЫ</div>
@@ -260,22 +269,24 @@
 
 <div class="screen hidden" id="intro-screen">
   <div class="intro-frame">
-    <div class="intro-badge">// СЕКРЕТНЫЙ ФАЙЛ — УРОВЕНЬ ДОСТУПА: МАКСИМАЛЬНЫЙ //</div>
-    <div class="intro-title">⏱ МАШИНА ВРЕМЕНИ<br>ОБНАРУЖЕНА</div>
+    <img src="rm.png" style="width:68%;max-width:200px;border-radius:10px;border:1px solid #97ce4c;margin:0 auto 12px;display:block;">
+      <div class="intro-badge">// ЗАПИСЬ ИЗ ИЗМЕРЕНИЯ C-137 — СЕКРЕТНО //</div>
+    <div class="intro-title">🌀 МАШИНА ВРЕМЕНИ<br>ОБНАРУЖЕНА</div>
     <div class="intro-text">
-      Вы — <span>помощник учёного</span>. Пока профессор отлучился, вы обнаружили в его лаборатории странную машину с мерцающим циферблатом.<br><br>
-      Система заблокирована. Чтобы <span>получить доступ</span> — нужно решить серию задач на определение углов между стрелками часов.<br><br>
-      Четыре уровня, четыре эпохи. <span>История ждёт вас.</span><br><br>
-      Удачи, хакер.<span class="intro-cursor"></span>
+      Ты — <span>Морти</span>. Рик отлучился в другое измерение за соусом и оставил тебя в лаборатории одного. Ну, почти одного: тут гудит машина времени с мерцающим циферблатом.<br><br>
+      Система заперта. Чтобы <span>открыть портал</span> — реши серию задач на углы между стрелками часов.<br><br>
+      Четыре уровня, четыре измерения. <span>Не паникуй, Морти.</span><br><br>
+      Паника — враг точных вычислений.<span class="intro-cursor"></span>
     </div>
-    <button class="intro-btn" onclick="closeIntroAndStart()">[ НАЧАТЬ ВЗЛОМ ]</button>
+    <button class="intro-btn" onclick="closeIntroAndStart()">[ ОТКРЫТЬ ПОРТАЛ ]</button>
   </div>
 </div>
 
 <!-- ══ ГЛАВНОЕ МЕНЮ ══ -->
 <div class="screen hidden" id="main-menu">
   <div class="mtitle">NUMBRA</div>
-  <div class="msub">// CLOCK ANGLE CRACKER //</div>
+  <div class="msub">// МУЛЬТИВСЕЛЕННАЯ УГЛОВ //</div>
+    <img src="rick_face.png" style="width:30%;max-width:110px;border-radius:50%;border:2px solid #97ce4c;margin:10px auto;display:block;box-shadow:0 0 18px rgba(151,206,76,.5);">
   <div class="menu-coins" id="menu-coins">💰 0 монет</div>
   <button class="btn" onclick="showS('game-menu')">[ 🎮 ИГРАТЬ ]</button>
   <button class="btn" onclick="openAch()">[ 🏆 ДОСТИЖЕНИЯ ]</button>
@@ -292,7 +303,7 @@
   <div class="gmenu-title">🎮 ВЫБОР ИГРЫ</div>
   <div class="gmenu-sub">// ВЫБЕРИ ПО КЛАССУ //</div>
 
-  <div class="other-label" style="color:#00ff88;">── 0–11 КЛАСС ──</div>
+  <div class="other-label" style="color:#97ce4c;">── 0–11 КЛАСС ──</div>
   <button class="btn btn-gold" onclick="showS('vl-menu')" style="border-color:#ffd700;color:#ffd700;">[ 👑 ВЛАСТЕЛИНЫ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">ВИКТОРИНА · СЕКТОРА СЛОЖНОСТИ</span></button>
   <button class="btn btn-gold" onclick="window.location.href='chronokeepers.html'" style="border-color:#7b2fff;color:#7b2fffb3;">[ ⏳ ХРАНИТЕЛИ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">МУЛЬТИПЛЕЕР · КАРТЫ ВРЕМЕНИ</span></button>
 
@@ -329,7 +340,7 @@
 #vl-answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .vl-opt{padding:10px 6px;background:rgba(255,255,255,.04);border:1px solid #1f3050;color:#aabbcc;border-radius:8px;font-size:.75rem;font-family:'Orbitron',monospace;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;}
 .vl-opt:active{transform:scale(.97);}
-.vl-opt.correct{background:rgba(0,255,136,.15);border-color:#00ff88;color:#00ff88;}
+.vl-opt.correct{background:rgba(0,255,136,.15);border-color:#97ce4c;color:#97ce4c;}
 .vl-opt.wrong{background:rgba(255,68,85,.15);border-color:#ff4455;color:#ff4455;}
 #vl-explanation{display:none;margin-top:10px;padding:10px 12px;background:rgba(0,0,0,.3);border-radius:8px;font-size:.75rem;color:#aabbcc;line-height:1.5;border-left:3px solid #ffd700;}
 #vl-dice-area{display:none;text-align:center;padding:10px 0 4px;}
@@ -353,7 +364,7 @@
     </div>
     <div class="vl-hud-cell">
       <div class="vl-hud-lbl">КЛЕТКА</div>
-      <div class="vl-hud-val" style="color:#00ff88;"><span id="vl-h-pos">0</span>/49</div>
+      <div class="vl-hud-val" style="color:#97ce4c;"><span id="vl-h-pos">0</span>/49</div>
     </div>
     <div class="vl-hud-cell">
       <div class="vl-hud-lbl">ДО ФИНИША</div>
@@ -412,18 +423,18 @@
   <div style="color:#aabbcc;font-size:.78rem;line-height:1.8;font-family:inherit;">
     <div style="color:#ffd700;font-size:.72rem;margin:8px 0 3px;">🎯 ЦЕЛЬ</div>
     Первым дойти до 49-й клетки и пройти <b style="color:#ffd700">Финальный Экзамен</b>. Кто наберёт больше жетонов <b>⏳</b> — тот Властелин Времени!
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 КАК ИГРАТЬ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🎲 КАК ИГРАТЬ</div>
     1. Нажми <b>«Начать ход»</b> — получишь карточку с вопросом<br>
     2. Выбери правильный ответ<br>
-    3. <b style="color:#00ff88">Верно</b> → получаешь жетоны + бросаешь кубик + двигаешься вперёд<br>
+    3. <b style="color:#97ce4c">Верно</b> → получаешь жетоны + бросаешь кубик + двигаешься вперёд<br>
     4. <b style="color:#ff4455">Неверно</b> → стоишь на месте, видишь объяснение
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🟢🟡🔴 КЛЕТКИ</div>
-    <b style="color:#00ff88">🟢 Зелёные (1–20)</b> — лёгкие вопросы, +1 ⏳<br>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🟢🟡🔴 КЛЕТКИ</div>
+    <b style="color:#97ce4c">🟢 Зелёные (1–20)</b> — лёгкие вопросы, +1 ⏳<br>
     <b style="color:#ffd700">🟡 Жёлтые (21–40)</b> — средние вопросы, +2 ⏳<br>
     <b style="color:#ff4455">🔴 Красные (41–48)</b> — сложные вопросы, +3 ⏳<br>
     <b style="color:#bb88ff">⚡ Парадокс (10,20,30,40)</b> — бонус или штраф<br>
     <b style="color:#ffd700">👑 Клетка 49</b> — Финальный Экзамен из 5 вопросов!
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🏆 ФИНАЛ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🏆 ФИНАЛ</div>
     На клетке 49 — ответь на 5 вопросов подряд. За каждый верный +3 ⏳. Пройди экзамен — и ты Властелин Времени!
   </div>
   <button class="btn" style="margin-top:16px;border-color:var(--dg);color:var(--dg);" onclick="showS('vl-menu')">[ ← НАЗАД ]</button>
@@ -434,8 +445,8 @@
   <div class="gmenu-title" style="font-size:.75rem;line-height:1.3;">⚗️ ХРАНИТЕЛИ ВРЕМЕНИ<br><span style="font-size:.55rem;color:#88aabb;letter-spacing:1px;">QUANTUM SHIFT</span></div>
   <div class="gmenu-sub">// РЕАКТОР ВЗОРВАЛСЯ · СТАБИЛИЗИРУЙ ВРЕМЯ //</div>
   <div id="hk-matchmaking" style="display:none;flex-direction:column;align-items:center;gap:12px;padding:20px;">
-    <div id="hk-mm-status" style="font-size:.7rem;color:#00ff88;">Поиск соперника...</div>
-    <div id="hk-mm-spinner" style="width:40px;height:40px;border:3px solid #1a2a4a;border-top:3px solid #00ff88;border-radius:50%;animation:spin 1s linear infinite;"></div>
+    <div id="hk-mm-status" style="font-size:.7rem;color:#97ce4c;">Поиск соперника...</div>
+    <div id="hk-mm-spinner" style="width:40px;height:40px;border:3px solid #1a2a4a;border-top:3px solid #97ce4c;border-radius:50%;animation:spin 1s linear infinite;"></div>
     <button class="btn" style="border-color:#ff4455;color:#ff4455;font-size:.6rem;padding:8px;" onclick="cancelMatchmaking()">[ ОТМЕНИТЬ ]</button>
   </div>
   <div id="hk-menu-buttons">
@@ -556,7 +567,7 @@
 <div class="screen hidden" id="hk-game">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#0a0f20;border-bottom:1px solid #1a2a4a;">
     <span style="font-size:.65rem;color:#556;font-family:'Orbitron',monospace;letter-spacing:1px;">КВАНТОВЫЙ СДВИГ</span><span id="hk-opponent" style="font-size:.6rem;color:#ffd700;margin-left:8px;"></span>
-    <span style="font-size:.82rem;color:#00ff88;">💎 <b id="hk-crystals">0</b> кристалла</span>
+    <span style="font-size:.82rem;color:#97ce4c;">💎 <b id="hk-crystals">0</b> кристалла</span>
     <button onclick="showS('hk-menu')" style="background:none;border:1px solid #334;color:#556;padding:3px 9px;border-radius:4px;font-family:'Orbitron',monospace;font-size:.6rem;cursor:pointer;">✕</button>
   </div>
   <div style="overflow-y:auto;padding:10px 12px 20px;">
@@ -569,13 +580,13 @@
       <div id="hk-cd-pts" style="position:absolute;top:12px;right:12px;font-size:.72rem;padding:3px 9px;border-radius:20px;display:none;font-weight:700;"></div>
       <div id="hk-cd-q" style="font-size:.86rem;color:#ddeeff;line-height:1.5;margin:8px 0 14px;padding-right:44px;">Нажми «Следующая миссия» чтобы начать!</div>
       <button id="hk-cd-reveal" onclick="hkGameReveal()" style="display:none;width:100%;padding:10px;background:rgba(255,255,255,.05);border:1px solid #2a3a5a;color:#88aabb;border-radius:7px;font-family:'Orbitron',monospace;font-size:.7rem;cursor:pointer;">[ 👁 ОТКРЫТЬ ОТВЕТ ]</button>
-      <div id="hk-cd-ans" style="display:none;padding:10px;background:rgba(0,0,0,.3);border-radius:7px;font-size:.78rem;color:#cce8ff;line-height:1.5;margin-top:8px;border-left:3px solid #00ff88;"></div>
+      <div id="hk-cd-ans" style="display:none;padding:10px;background:rgba(0,0,0,.3);border-radius:7px;font-size:.78rem;color:#cce8ff;line-height:1.5;margin-top:8px;border-left:3px solid #97ce4c;"></div>
       <div id="hk-cd-btns" style="display:none;gap:8px;margin-top:10px;">
         <button onclick="hkGameNext(false)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #ff4455;background:rgba(255,68,85,.1);color:#ff4455;width:48%">✗ НЕВЕРНО<br>+0 💎</button>
-        <button onclick="hkGameNext(true)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #00ff88;background:rgba(0,255,136,.1);color:#00ff88;width:48%" id="hk-right-btn">✓ ВЕРНО<br><span id="hk-pts-lbl">+1 💎</span></button>
+        <button onclick="hkGameNext(true)" style="flex:1;padding:10px 4px;border-radius:8px;font-family:'Orbitron',monospace;font-size:.62rem;cursor:pointer;border:1px solid #97ce4c;background:rgba(0,255,136,.1);color:#97ce4c;width:48%" id="hk-right-btn">✓ ВЕРНО<br><span id="hk-pts-lbl">+1 💎</span></button>
       </div>
     </div>
-    <button id="hk-deal-btn" onclick="hkGameDeal()" style="width:100%;padding:13px;background:rgba(0,255,136,.08);border:1px solid #00ff88;color:#00ff88;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ ⚗️ СЛЕДУЮЩАЯ МИССИЯ ]</button>
+    <button id="hk-deal-btn" onclick="hkGameDeal()" style="width:100%;padding:13px;background:rgba(0,255,136,.08);border:1px solid #97ce4c;color:#97ce4c;border-radius:8px;font-family:'Orbitron',monospace;font-size:.72rem;cursor:pointer;">[ ⚗️ СЛЕДУЮЩАЯ МИССИЯ ]</button>
     <div id="hk-win-msg" style="display:none;text-align:center;padding:20px 12px;font-size:.9rem;color:#ffd700;">
       🏆 ХРОНОМЕТР СИНХРОНИЗИРОВАН!<br>
       <span style="font-size:.7rem;color:#aabbcc;">Ты собрал 5 Хроно-кристаллов и стабилизировал время.<br>Реактор перезапущен. Мир спасён. ⚗️</span><br>
@@ -589,27 +600,27 @@
 <div class="screen hidden" id="hk-rules" style="overflow-y:auto;padding:14px 16px 60px;">
   <div class="gmenu-title" style="font-size:.8rem;padding:10px 0 6px;">📜 ПРАВИЛА</div>
   <div style="color:#aabbcc;font-size:.78rem;line-height:1.8;font-family:inherit;">
-    <div style="color:#00ff88;font-size:.72rem;margin:8px 0 3px;">⚗️ СЕТТИНГ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:8px 0 3px;">⚗️ СЕТТИНГ</div>
     Вы — учёные-хрононавты. Временной реактор взорвался. Мир застрял в петлях. Цель — починить Хронометры и стабилизировать время раньше соперников.
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎯 ЦЕЛЬ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🎯 ЦЕЛЬ</div>
     Первым собрать <b style="color:#ffd700">5 Хроно-кристаллов 💎</b> за правильные ответы — или синхронизировать Хронометр с Эталоном (<b>00:00</b>).
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🎲 СТАРТ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🎲 СТАРТ</div>
     Каждый игрок начинает с <b>поломанными часами</b> — случайное время (04:15, 18:40...). Нужно привести их к 00:00, решая задачи.
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">⏱🗓🌌 УРОВНИ</div>
-    <b style="color:#00ff88">Секундомер</b> — часы и минуты в пределах суток, +1 💎<br>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">⏱🗓🌌 УРОВНИ</div>
+    <b style="color:#97ce4c">Секундомер</b> — часы и минуты в пределах суток, +1 💎<br>
     <b style="color:#ffd700">Календарь</b> — дни, недели, часовые пояса, +2 💎<br>
     <b style="color:#ff4455">Парадокс</b> — время вспять, нестандартные правила, +3 💎<br>
     <b style="color:#bb88ff">🃏 Хроно-магия</b> — мешают соперникам или помогают себе
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🃏 КАРТЫ ХРОНО-МАГИИ</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🃏 КАРТЫ ХРОНО-МАГИИ</div>
     <b>⏪ Временная петля</b> — соперник −45 мин и решает заново<br>
     <b>😵 Джетлаг</b> — соперник решает задачу вслепую (без часов)<br>
     <b>⏩ Перевод стрелок</b> — кражу минут у лидера себе
 
-    <div style="color:#00ff88;font-size:.72rem;margin:12px 0 3px;">🏆 ПОБЕДА</div>
+    <div style="color:#97ce4c;font-size:.72rem;margin:12px 0 3px;">🏆 ПОБЕДА</div>
     Первым собрать 5 💎 — или синхронизировать хронометр с 00:00. Остальные могут доиграть до конца колоды для финального счёта.
 
     <div style="margin-top:18px;padding:12px;background:rgba(0,255,136,.06);border-radius:8px;border:1px solid rgba(0,255,136,.2);text-align:center;font-size:.72rem;color:#88ddaa;line-height:1.7;">
@@ -641,14 +652,14 @@
   <!-- Часы -->
   <div class="clock-wrap" id="clock-wrap">
     <svg id="clk" viewBox="-90 -90 180 180">
-      <circle r="88" fill="rgba(0,10,0,.95)" stroke="#00ff41" stroke-width="2"/>
-      <circle r="83" fill="none" stroke="rgba(0,255,65,.1)" stroke-width="1"/>
+      <circle r="88" fill="rgba(0,10,0,.95)" stroke="#97ce4c" stroke-width="2"/>
+      <circle r="83" fill="none" stroke="rgba(151,206,76,.1)" stroke-width="1"/>
       <g id="ticks"></g><g id="nums"></g>
       <path id="arc" fill="rgba(255,255,0,.07)" stroke="rgba(255,255,0,.5)" stroke-width="1.5" d=""/>
       <line id="hh" x1="0" y1="0" x2="0" y2="-46" stroke="#ff6b35" stroke-width="6" stroke-linecap="round" filter="drop-shadow(0 0 6px #ff6b35)"/>
-      <line id="mh" x1="0" y1="0" x2="0" y2="-65" stroke="#00ff88" stroke-width="5" stroke-linecap="round" filter="drop-shadow(0 0 6px #00ff88)"/>
+      <line id="mh" x1="0" y1="0" x2="0" y2="-65" stroke="#97ce4c" stroke-width="5" stroke-linecap="round" filter="drop-shadow(0 0 6px #97ce4c)"/>
       <line id="sh" x1="0" y1="5" x2="0" y2="-72" stroke="#00ddff" stroke-width="3" stroke-linecap="round" filter="drop-shadow(0 0 5px #00ddff)"/>
-      <circle r="4" fill="#00ff41" stroke="#000" stroke-width="1.5"/>
+      <circle r="4" fill="#97ce4c" stroke="#000" stroke-width="1.5"/>
     </svg>
   </div>
   <!-- Варианты -->
@@ -665,6 +676,7 @@
   <!-- Нижние кнопки -->
   <div class="bot-row">
     <button class="hbtn" id="hint-btn" onclick="useHint()">💡 ПОДСКАЗКА (-15🪙)</button>
+    <button class="hbtn" id="ans-btn" onclick="useAns()" style="display:none">🎯 ОТВЕТ (1)</button>
     <button class="mbtn" onclick="openSound()">🔊</button>
     <button class="mbtn" onclick="goMenu()">← МЕНЮ</button>
   </div>
@@ -674,13 +686,14 @@
 <div class="screen hidden" id="result-screen">
   <div class="rtitle" id="rt"></div>
   <div class="rinfo" id="ri"></div>
-  <button class="btn" id="next-btn" onclick="nextLevel()">[ СЛЕДУЮЩИЙ УРОВЕНЬ ]</button>
+  <button class="btn" id="next-btn" onclick="nextLevel()">[ СЛЕДУЮЩЕЕ ИЗМЕРЕНИЕ ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
 </div>
 
 <!-- ══ ГЕЙМОВЕР ══ -->
 <div class="screen hidden" id="gameover-screen">
-  <div class="rtitle" style="color:#ff3131;text-shadow:0 0 18px #ff3131;">ВЗЛОМ ПРОВАЛЕН</div>
+  <img src="jerry.png" style="width:55%;max-width:190px;margin:0 auto 10px;display:block;">
+  <div class="rtitle" style="color:#ff3131;text-shadow:0 0 18px #ff3131;">ПОРТАЛ СХЛОПНУЛСЯ</div>
   <div class="rinfo" id="gi"></div>
   <button class="btn" onclick="restartGame()">[ ПОПРОБОВАТЬ СНОВА ]</button>
   <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="goMenu()">[ МЕНЮ ]</button>
@@ -689,8 +702,9 @@
 <!-- ══ ПОБЕДА ══ -->
 <div class="screen hidden" id="win-screen">
   <div class="win-frame">
-    <div class="win-badge">// ВЗЛОМ ЗАВЕРШЁН — ДОСТУП ПОЛУЧЕН //</div>
-    <div class="win-title">🚀 МАШИНА ВРЕМЕНИ<br>ЗАПУЩЕНА!</div>
+    <img src="rick_duo.png" style="width:55%;max-width:190px;margin:0 auto 10px;display:block;">
+    <div class="win-badge">// ПОРТАЛ ОТКРЫТ — ДОСТУП ПОЛУЧЕН //</div>
+    <div class="win-title">🌀 ПОРТАЛ ОТКРЫТ!<br>МАШИНА ВРЕМЕНИ ЗАПУЩЕНА!</div>
     <div class="win-text" id="win-text"></div>
     <div class="win-stats" id="win-stats"></div>
     <button class="btn" style="width:100%;margin-bottom:8px;" onclick="restartGame()">[ НОВОЕ ПУТЕШЕСТВИЕ ]</button>
@@ -719,23 +733,30 @@
 <!-- ══ ДОСТИЖЕНИЯ ══ -->
 <div class="popup-overlay hidden" id="ach-popup">
   <div class="popup">
+    <img src="rick_buff.png" style="width:45%;max-width:150px;margin:0 auto 8px;display:block;">
     <div class="popup-title">🏆 ДОСТИЖЕНИЯ</div>
     <div id="ach-list"></div>
     <button class="popup-close" onclick="closeAch()">ЗАКРЫТЬ</button>
   </div>
 </div>
 
+<script src="qb.js"></script>
 <script>
-/* ══ МАТРИЦА ══ */
+/* ══ РЕПЛИКИ РИКА ══ */
+const RICK_OK=['✓ ГЕНИАЛЬНО, МОРТИ!','✓ НАУКА ПОБЕДИЛА!','✓ РИК БЫ ГОРДИЛСЯ!','✓ ПОРТАЛ СТАБИЛЕН!','✓ ВОТ ЭТО Я ПОНИМАЮ, НАУКА!'];
+const RICK_NO=['✗ НЕВЕРНО, МОРТИ!','✗ НЕВЕРНО, НО НЕ ПАНИКУЙ!','✗ РИК ТАК НЕ ОШИБАЕТСЯ!','✗ ПОРТАЛ ЗАШИПЕЛ!','✗ МОРТИ, ТЫ СНОВА ПАНИКУЕШЬ!'];
+const pick=a=>a[Math.random()*a.length|0];
+
+/* ══ ПОРТАЛЬНЫЙ ШУМ ══ */
 (()=>{
   const c=document.getElementById('mc'),x=c.getContext('2d');
   const rz=()=>{c.width=innerWidth;c.height=innerHeight;};rz();addEventListener('resize',rz);
-  const ch='アイウエオ01αβ∑∏∞#@$%&(){}<>?\\|'.split('');let dr=[];
+  const ch='∑∏∞ΔΩψ≈⧖×÷αβθ01<C137>'.split('');let dr=[];
   const cols=()=>Math.floor(c.width/13);
   setInterval(()=>{
     if(dr.length!==cols())dr=Array.from({length:cols()},()=>Math.random()*c.height/13|0);
     x.fillStyle='rgba(10,10,10,.08)';x.fillRect(0,0,c.width,c.height);
-    x.fillStyle='#00ff41';x.font='11px Share Tech Mono';
+    x.fillStyle='#97ce4c';x.font='11px Share Tech Mono';
     dr.forEach((y,i)=>{x.fillText(ch[Math.random()*ch.length|0],i*13,y*13);
       if(y*13>c.height&&Math.random()>.975)dr[i]=0;dr[i]++;});
   },55);
@@ -759,9 +780,11 @@ function fitClock(){
 }
 
 /* ══ СОХРАНЕНИЕ ══ */
-const SAVE={coins:0,ach:[],lvCount:[0,0,0,0],ckWins:0,vlWins:0,vlBestSand:0};
+const SAVE={coins:0,ach:[],lvCount:[0,0,0,0],ckWins:0,vlWins:0,vlBestSand:0,items:{hint:0,ans:0,shield:0},subs:{vt:0,vg:0,lt:0,lg:0}};
 function saveData(){
   localStorage.setItem('cag_coins',SAVE.coins);
+  localStorage.setItem('cag_items',JSON.stringify(SAVE.items));
+  localStorage.setItem('cag_subs',JSON.stringify(SAVE.subs));
   localStorage.setItem('cag_ach',JSON.stringify(SAVE.ach));
   localStorage.setItem('cag_lv_cnt',JSON.stringify(SAVE.lvCount));
   localStorage.setItem('cag_ck_wins',SAVE.ckWins);
@@ -770,6 +793,8 @@ function saveData(){
 }
 function loadData(){
   SAVE.coins=parseInt(localStorage.getItem('cag_coins')||'0');
+  try{SAVE.items=JSON.parse(localStorage.getItem('cag_items')||'{"hint":0,"ans":0,"shield":0}');}catch(e){SAVE.items={hint:0,ans:0,shield:0};}
+  try{SAVE.subs=JSON.parse(localStorage.getItem('cag_subs')||'{"vt":0,"vg":0,"lt":0,"lg":0}');}catch(e){SAVE.subs={vt:0,vg:0,lt:0,lg:0};}
   try{SAVE.ach=JSON.parse(localStorage.getItem('cag_ach')||'[]');}catch(e){SAVE.ach=[];}
   try{SAVE.lvCount=JSON.parse(localStorage.getItem('cag_lv_cnt')||'[0,0,0,0]');}catch(e){SAVE.lvCount=[0,0,0,0];}
   SAVE.ckWins=parseInt(localStorage.getItem('cag_ck_wins')||'0');
@@ -780,10 +805,22 @@ loadData();
 // стартовый бонус 500 монет отключён
 
 /* ══ ИНТРО ══ */
+function maybeShowStory(){
+  // Welcome story — exactly once upon the first app launch
+  if(!localStorage.getItem('numbra_story_seen')){
+    localStorage.setItem('numbra_story_seen','1');
+    showS('intro-screen');
+    return true;
+  }
+  return false;
+}
 function checkIntro(){
+  updAccBtn();
   if(isAuthorized()){
+    loadAchFromAccount();
     showS('main-menu');
     if(typeof loadStats==='function')loadStats();
+    maybeShowStory();
   }else{
     showS('sAuth');
   }
@@ -816,9 +853,31 @@ const ACHIEVEMENTS=[
   {id:'vl10', icon:'👑', name:'Властелин Времени',              desc:'Пройди «Властелины Времени» 10 раз', cond:s=>s.vlWins>=10},
   {id:'vl50', icon:'💎', name:'Легенда циферблата',             desc:'Пройди «Властелины Времени» 50 раз', cond:s=>s.vlWins>=50},
 ];
+function saveAchToAccount(id){
+  if(!isAuthorized()||getEmail()==='guest')return;
+  try{
+    fetch(SUPABASE_URL+'/rest/v1/rpc/save_progress',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_minigame:'ДОСТИЖЕНИЕ: '+id,p_score:1,p_gears:0,p_completed:true})}).catch(function(){});
+  }catch(e){}
+}
+async function loadAchFromAccount(){
+  if(!isAuthorized()||getEmail()==='guest')return;
+  try{
+    var rows=await fetch(SUPABASE_URL+'/rest/v1/game_progress?user_email=eq.'+encodeURIComponent(getEmail())+'&minigame=like.'+encodeURIComponent('ДОСТИЖЕНИЕ')+'*&select=minigame',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(function(r){return r.json();});
+    var ch=false;
+    var serverIds=[];
+    (rows||[]).forEach(function(r){
+      var id=(r.minigame||'').replace('ДОСТИЖЕНИЕ: ','').trim();
+      if(id)serverIds.push(id);
+      if(id&&ACHIEVEMENTS.some(function(a){return a.id===id;})&&!SAVE.ach.includes(id)){SAVE.ach.push(id);ch=true;}
+    });
+    if(ch)saveData();
+    // локальные достижения, которых нет на сервере — заливаем
+    SAVE.ach.forEach(function(id){if(serverIds.indexOf(id)<0)saveAchToAccount(id);});
+  }catch(e){}
+}
 function checkAchievements(){
   ACHIEVEMENTS.forEach(a=>{
-    if(!SAVE.ach.includes(a.id)&&a.cond(SAVE)){SAVE.ach.push(a.id);saveData();showAchToast(a.icon+' '+a.name);}
+    if(!SAVE.ach.includes(a.id)&&a.cond(SAVE)){SAVE.ach.push(a.id);saveData();saveAchToAccount(a.id);showAchToast(a.icon+' '+a.name);}
   });
 }
 let toastT=null;
@@ -947,6 +1006,17 @@ let multi_correctVals=[], multi_opts=[], multi_selected=new Set();
 
 /* ══ МАТЕМАТИКА ══ */
 function rndTime(){return{h:Math.floor(Math.random()*12),m:Math.floor(Math.random()*60),s:Math.floor(Math.random()*60)};}
+/* 5 unique questions per level: no repeated clock times within a level run */
+let usedTimes=new Set();
+function uniqueTime(){
+  const B=QBANK['lv'+(ST.lv+1)]||[];
+  let idx,t,tries=0;
+  do{ idx=Math.floor(Math.random()*B.length); tries++;
+      const e=B[idx]; t={h:e[0],m:e[1],s:e[2]};
+  }while(usedTimes.has(idx)&&tries<500);
+  usedTimes.add(idx);
+  return t;
+}
 function calcAngles(t){
   return{s:t.s*6, m:t.m*6+t.s*0.1, h:(t.h%12)*30+t.m*0.5+t.s/120};
 }
@@ -1001,11 +1071,11 @@ function drawTicks(){
     const line=document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute('x1',Math.sin(rad)*r1v);line.setAttribute('y1',-Math.cos(rad)*r1v);
     line.setAttribute('x2',Math.sin(rad)*r2v);line.setAttribute('y2',-Math.cos(rad)*r2v);
-    line.setAttribute('stroke',maj?'#00ff88':'rgba(0,255,136,.5)');line.setAttribute('stroke-width',maj?'2.5':'1.5');
+    line.setAttribute('stroke',maj?'#97ce4c':'rgba(0,255,136,.5)');line.setAttribute('stroke-width',maj?'2.5':'1.5');
     tg.appendChild(line);
     if(maj){const num=i/5||12,nr=61,t=document.createElementNS('http://www.w3.org/2000/svg','text');
       t.setAttribute('x',Math.sin(rad)*nr);t.setAttribute('y',-Math.cos(rad)*nr+3.5);
-      t.setAttribute('text-anchor','middle');t.setAttribute('fill','rgba(0,255,65,.55)');
+      t.setAttribute('text-anchor','middle');t.setAttribute('fill','rgba(151,206,76,.55)');
       t.setAttribute('font-size','7.5');t.setAttribute('font-family','Orbitron,monospace');
       t.textContent=num;ng.appendChild(t);}
   }
@@ -1070,7 +1140,9 @@ function buildHops(){
 function renderChoices(){
   hintUsed=false;multi_selected=new Set();
   document.getElementById('hint-btn').disabled=false;
+  document.getElementById('hint-btn').textContent=personalOn()?'💡 ∞':(SAVE.items.hint>0?('💡×'+SAVE.items.hint):'💡 -15🪙');
   document.getElementById('fb').textContent='';
+  updAnsBtn();
   const wrap=document.getElementById('choices-wrap');
   wrap.innerHTML='';
   const confirmBtn=document.getElementById('confirm-btn');
@@ -1114,14 +1186,15 @@ function pickSingle(idx){
   if(!ok){
     document.getElementById('cb'+single_correctIdx).classList.add('correct');
     for(let i=0;i<4;i++)document.getElementById('cb'+i).disabled=true;
+    if(SAVE.items.shield>0){SAVE.items.shield--;saveData();sfx('ok');showFb('🛡 Щит спас жизнь! Рик одобряет.','hint');setTimeout(advance,1200);return;}
     ST.lives--;
     document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
-    sfx('no');showFb('✗ НЕВЕРНО!','bad');
+    sfx('no');showFb(pick(RICK_NO),'bad');
     if(ST.lives<=0)setTimeout(gameOver,1100);else setTimeout(advance,1200);
   }else{
     sfx('ok');SAVE.coins+=LVS[ST.lv].cp;saveData();
     document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
+    showFb(pick(RICK_OK)+' +'+LVS[ST.lv].cp+'🪙','ok');
     setTimeout(advance,900);
   }
 }
@@ -1135,7 +1208,7 @@ function toggleMulti(idx){
 }
 function confirmMulti(){
   if(locked)return;
-  if(multi_selected.size===0){showFb('Выбери хотя бы один ответ!','hint');return;}
+  if(multi_selected.size===0){showFb('Морти, выбери хотя бы один ответ!','hint');return;}
   initA();locked=true;
   const cSet=new Set(multi_correctVals);
   const selVals=new Set([...multi_selected].map(i=>multi_opts[i]));
@@ -1151,17 +1224,19 @@ function confirmMulti(){
   if(perfect){
     sfx('ok');SAVE.coins+=LVS[ST.lv].cp;saveData();
     document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-    showFb('✓ ВЕРНО! +'+LVS[ST.lv].cp+'🪙','ok');
+    showFb(pick(RICK_OK)+' +'+LVS[ST.lv].cp+'🪙','ok');
     setTimeout(advance,1000);
   }else{
-    sfx('no');ST.lives--;
+    sfx('no');
+    if(SAVE.items.shield>0){SAVE.items.shield--;saveData();sfx('ok');showFb('🛡 Щит спас жизнь! Рик одобряет.','hint');setTimeout(advance,1400);return;}
+    ST.lives--;
     document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
     const missed=[...cSet].filter(v=>!selVals.has(v)).length;
     const extra=[...selVals].filter(v=>!cSet.has(v)).length;
-    let msg='✗ НЕВЕРНО!';
-    if(missed&&extra)msg='✗ Пропущенные и лишние!';
-    else if(missed)msg='✗ Не все правильные!';
-    else if(extra)msg='✗ Есть лишние!';
+    let msg=pick(RICK_NO);
+    if(missed&&extra)msg='✗ И пропустил, и лишку, Морти!';
+    else if(missed)msg='✗ Не все, Морти! Не все!';
+    else if(extra)msg='✗ Лишний ответ, Морти!';
     showFb(msg,'bad');
     if(ST.lives<=0)setTimeout(gameOver,1200);else setTimeout(advance,1400);
   }
@@ -1172,7 +1247,7 @@ function advance(){
   locked=false;document.getElementById('fb').textContent='';
   ST.qi++;
   if(ST.qi>=LVS[ST.lv].qc){levelDone();return;}
-  ST.time=rndTime();
+  ST.time=uniqueTime();
   const hs=ST.lv===0?0:HOP_AFTER[ST.lv-1],he=HOP_AFTER[ST.lv];
   ST.hops=Math.min(he,hs+Math.floor(ST.qi/LVS[ST.lv].qc*(he-hs)));
   buildHops();renderChoices();
@@ -1183,20 +1258,20 @@ function levelDone(){
   if(ST.lv>=3){
     const d=WIN_YEARS[Math.floor(Math.random()*WIN_YEARS.length)];
     document.getElementById('win-text').innerHTML=
-      `Система взломана. Координаты установлены.<br><br>
+      `Рик будет гордиться. Наверное. Координаты установлены.<br><br>
        Вы перенеслись в <span class="yr">${d.y} год ${d.era}</span><br>
        📍 ${d.place} — ${d.desc}.<br><br>
-       Оглядитесь. История открыта перед вами. 😏`;
+       Не паникуй и оглядись: история открыта перед тобой, Морти. *уэрп*`;
     document.getElementById('win-stats').innerHTML=`Монет: <b>${SAVE.coins}🪙</b> &nbsp;|&nbsp; Жизней: <b>${ST.lives}</b>`;
     showS('win-screen');updMenuCoins();return;
   }
   showS('result-screen');
-  document.getElementById('rt').textContent=LVS[ST.lv].title+' ВЗЛОМАН!';
+  document.getElementById('rt').textContent=LVS[ST.lv].title+' — ПОРТАЛ ОТКРЫТ!';
   document.getElementById('ri').innerHTML='Монет: <b>'+SAVE.coins+'🪙</b> &nbsp;|&nbsp; Жизней: <b>'+ST.lives+'</b>';
   updMenuCoins();
 }
 function nextLevel(){
-  ST.lv++;ST.qi=0;ST.time=rndTime();locked=false;
+  ST.lv++;ST.qi=0;usedTimes=new Set();ST.time=uniqueTime();locked=false;
   showS('game-screen');buildHops();renderChoices();
   document.getElementById('fb').textContent='';
 }
@@ -1208,35 +1283,68 @@ function gameOver(){
 
 /* ══ СТАРТ / РЕСТАРТ ══ */
 function startGame(){
-  initA();locked=false;
-  ST={lv:0,qi:0,lives:3,hops:0,time:rndTime()};
+  initA();locked=false;usedTimes=new Set();
+  ST={lv:0,qi:0,lives:3,hops:0,time:{h:0,m:0,s:0}};
+  ST.time=uniqueTime();
   showS('game-screen');drawTicks();buildHops();renderChoices();
   document.getElementById('fb').textContent='';
 }
 function restartGame(){
-  initA();locked=false;
-  ST={lv:0,qi:0,lives:3,hops:0,time:rndTime()};
+  initA();locked=false;usedTimes=new Set();
+  ST={lv:0,qi:0,lives:3,hops:0,time:{h:0,m:0,s:0}};
+  ST.time=uniqueTime();
   showS('game-screen');buildHops();renderChoices();
   document.getElementById('fb').textContent='';
 }
 
+/* ══ ПЕРСОНАЛЬНЫЙ РЕЖИМ ПОДСКАЗОК ══ */
+function personalOn(){try{if(new URLSearchParams(location.search).get('personal')==='1'){localStorage.setItem('cag_personal','1');}}catch(e){}try{return localStorage.getItem('cag_personal')==='1';}catch(e){return false;}}
+(function(){var n=0,st=0;document.addEventListener('click',function(e){var el=e.target;if(!(el&&el.classList&&el.classList.contains('mtitle')))return;var now=Date.now();if(now-st>2500)n=0;st=now;n++;if(n>=7){n=0;var v;try{v=localStorage.getItem('cag_personal')==='1'?'0':'1';localStorage.setItem('cag_personal',v);}catch(err){return;}showFb(v==='1'?'💡 РЕЖИМ ПОДСКАЗОК ВКЛЮЧЁН':'Режим подсказок выключен','hint');}});})();
 /* ══ ПОДСКАЗКА ══ */
 function useHint(){
   initA();
-  if(hintUsed){showFb('Подсказка уже использована!','hint');return;}
-  if(SAVE.coins<15){showFb('Нужно 15🪙!','bad');return;}
+  const free=personalOn();
+  if(hintUsed&&!free){showFb('Подсказка уже использована!','hint');return;}
+  const prepaid=!free&&SAVE.items.hint>0;
+  if(!free&&!prepaid&&SAVE.coins<15){showFb('Нужно 15🪙!','bad');return;}
   if(locked)return;
-  SAVE.coins-=15;saveData();
+  if(prepaid)SAVE.items.hint--;
+  else if(!free)SAVE.coins-=15;
+  saveData();
   document.getElementById('h-c').textContent=SAVE.coins+'🪙';
-  document.getElementById('hint-btn').disabled=true;hintUsed=true;
+  const hb=document.getElementById('hint-btn');
+  if(free){hb.textContent='💡 ∞';hintUsed=false;}
+  else{hb.disabled=true;hintUsed=true;}
   if(ST.lv<3){
     document.getElementById('cb'+single_correctIdx).classList.add('hint-hl');
-    showFb('💡 Правильный ответ выделен!','hint');
+    showFb('💡 Рик подсветил правильный ответ!','hint');
   }else{
     const ci=multi_opts.reduce((acc,v,i)=>{if(multi_correctVals.includes(v))acc.push(i);return acc;},[]);
     const ri=ci[Math.floor(Math.random()*ci.length)];
     document.getElementById('cb'+ri).classList.add('hint-hl');
-    showFb('💡 Один из правильных выделен!','hint');
+    showFb('💡 Рик подсветил один из них!','hint');
+  }
+}
+
+/* ══ КУПЛЕННЫЙ ОТВЕТ ══ */
+function updAnsBtn(){
+  const b=document.getElementById('ans-btn');if(!b)return;
+  if(personalOn()){b.style.display='';b.textContent='🎯 ОТВЕТ (∞)';return;}
+  if(SAVE.items.ans>0){b.style.display='';b.textContent='🎯 ОТВЕТ ('+SAVE.items.ans+')';}
+  else b.style.display='none';
+}
+function useAns(){
+  initA();
+  if(locked)return;
+  const free=personalOn();
+  if(!free&&SAVE.items.ans<=0){showFb('Нет купленных ответов!','bad');return;}
+  if(!free){SAVE.items.ans--;saveData();updAnsBtn();}
+  if(ST.lv<3){
+    document.getElementById('cb'+single_correctIdx).classList.add('hint-hl');
+    showFb('🎯 Рик показал правильный ответ!','hint');
+  }else{
+    for(let i=0;i<8;i++){const btn=document.getElementById('cb'+i);if(btn&&multi_correctVals.includes(multi_opts[i]))btn.classList.add('hint-hl');}
+    showFb('🎯 Рик показал все правильные!','hint');
   }
 }
 
@@ -1443,7 +1551,7 @@ function vlShowStartCard(){
   const pos = vlState.pos;
   const nextType = VL_CELL_TYPE(pos + 1);
   const typeInfo = {
-    green:  {badge:'🟢 ЗЕЛЁНЫЙ СЕКТОР — лёгкий (+1⏳)', color:'#00ff88', bg:'rgba(0,255,136,.12)',
+    green:  {badge:'🟢 ЗЕЛЁНЫЙ СЕКТОР — лёгкий (+1⏳)', color:'#97ce4c', bg:'rgba(0,255,136,.12)',
              hint:'Следующая клетка: простые задачи на время'},
     yellow: {badge:'🟡 ЖЁЛТЫЙ СЕКТОР — средний (+2⏳)', color:'#ffd700', bg:'rgba(255,215,0,.12)',
              hint:'Следующая клетка: задачи посложнее'},
@@ -1517,7 +1625,7 @@ function vlAskQuestion(){
 }
 
 function vlRenderQuestion(q,type,isExam){
-  const colors={green:'#00ff88',yellow:'#ffd700',red:'#ff4455',exam:'#bb88ff'};
+  const colors={green:'#97ce4c',yellow:'#ffd700',red:'#ff4455',exam:'#bb88ff'};
   const labels={green:'🟢 ЛЁГКОЕ +1⏳',yellow:'🟡 СРЕДНЕЕ +2⏳',red:'🔴 СЛОЖНОЕ +3⏳',exam:'👑 ЭКЗАМЕН +3⏳'};
   const c=colors[type]||'#aaa';
   const badge=document.getElementById('vl-q-badge');
@@ -1536,9 +1644,11 @@ function vlRenderQuestion(q,type,isExam){
     ans.appendChild(b);
   });
   document.getElementById('vl-action-btn').style.display='none';
+  vlHintAns=q.ans;vlHintShow(true);
 }
 
 function vlCheckAnswer(idx,type){
+  vlHintShow(false);
   const q=vlState.currentQ;
   const btns=document.querySelectorAll('#vl-answers .vl-opt');
   btns.forEach(b=>b.disabled=true);
@@ -1549,7 +1659,7 @@ function vlCheckAnswer(idx,type){
     vlUpdateHUD();
     document.getElementById('vl-explanation').innerHTML='✅ Верно! <span style="color:#ffd700">+'+pts+'⏳</span>';
     document.getElementById('vl-explanation').style.display='block';
-    document.getElementById('vl-explanation').style.borderColor='#00ff88';
+    document.getElementById('vl-explanation').style.borderColor='#97ce4c';
     setTimeout(()=>{
       document.getElementById('vl-dice-num').textContent='🎲';
       document.getElementById('vl-dice-result').textContent='';
@@ -1646,9 +1756,11 @@ function vlNextExamQ(){
     b.onclick=()=>vlExamAnswer(i);
     ans.appendChild(b);
   });
+  vlHintAns=q.ans;vlHintShow(true);
 }
 
 function vlExamAnswer(idx){
+  vlHintShow(false);
   const q=vlState.examPool[vlState.examQ];
   const btns=document.querySelectorAll('#vl-exam-answers .vl-opt');
   btns.forEach(b=>b.disabled=true);
@@ -1690,7 +1802,7 @@ function vlShowWin(){
     '<div style="font-size:.72rem;color:#bb88ff;margin-bottom:4px;">Текущий титул: <b>'+rank+'</b></div>'+
     '<div style="font-size:.7rem;color:#667;margin-bottom:14px;">Побед: <b style="color:#ffd700">'+SAVE.vlWins+'</b> · Рекорд жетонов: <b style="color:#ffd700">'+SAVE.vlBestSand+'⏳</b></div>'+
     '⏳ Жетонов собрано: <b style="color:#ffd700">'+vlState.sand+'</b><br>'+
-    '✅ Правильных ответов в экзамене: <b style="color:#00ff88">'+vlState.examCorrect+'/5</b>';
+    '✅ Правильных ответов в экзамене: <b style="color:#97ce4c">'+vlState.examCorrect+'/5</b>';
 }
 
 /* ИГРОВОЕ ПОЛЕ */
@@ -1769,7 +1881,7 @@ const HK_CARDS = [
   {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'😵 Джетлаг! Следующий соперник решает задачу без часов — только в уме.', a:'Спецкарта: переверни хронометр соперника. Ошибся — теряет ход'},
   {cat:'paradox', pts:0, sector:'🃏 ХРОНО-МАГИЯ', q:'⏩ Перевод стрелок! Укради от 15 до 60 минут у лидера.', a:'Спецкарта: бери минуты у того кто ближе к победе'},
 ];
-const HK_COLOR = {green:'#00ff88',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
+const HK_COLOR = {green:'#97ce4c',yellow:'#ffd700',red:'#ff4455',paradox:'#bb88ff'};
 let hkCrystals = 0, hkDeck = [], hkCurrent = null;
 let hkUsedCards = new Set();
 let hkIsBot = false, hkMatchId = null, hkMyScore = 0, hkMatchSeed = 0;
@@ -1867,20 +1979,149 @@ async function doAuth(){
   var n=document.getElementById('authName').value.trim(),em=document.getElementById('authEmail').value.trim();
   if(!em){alert('Введите email');return;}if(!n)n=em.split('@')[0];
   try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/auth_user',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:em,p_name:n})}).then(r=>r.json());
-  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));showS('main-menu');if(typeof loadStats==='function')loadStats();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
+  if(r.ok){localStorage.setItem('game_email',em);localStorage.setItem('game_user',JSON.stringify(r.user));if(typeof r.user.coins==='number'&&r.user.coins>(SAVE.coins||0)){SAVE.coins=r.user.coins;saveData();}showS('main-menu');if(typeof loadStats==='function')loadStats();updAccBtn();loadAchFromAccount();maybeShowStory();}else alert('Ошибка');}catch(e){alert('Сеть: '+e.message);}
 }
-function skipAuth(){localStorage.setItem('game_email','guest');showS('main-menu');}
-async function loadStats(){if(!isAuthorized()||getEmail()==='guest')return;try{var r=await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(getEmail())+'&select=coins',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r[0]){var el=document.getElementById('menu-coins');if(el)el.textContent=(r[0].coins||0)+' монет';}}catch(e){}}
+function skipAuth(){localStorage.setItem('game_email','guest');updAccBtn();showS('main-menu');maybeShowStory();}
+/* ══ ПРОФИЛЬ АККАУНТА ══ */
+setInterval(function(){try{localStorage.setItem('cag_playtime',(parseInt(localStorage.getItem('cag_playtime')||'0')+10));}catch(e){}},10000);
+function fmtPlaytime(sec){var h=Math.floor(sec/3600),m=Math.floor(sec%3600/60);return (h?h+' ч ':'')+m+' мин';}
+function updAccBtn(){
+  var b=document.getElementById('acc-btn');if(!b)return;
+  var on=isAuthorized()&&getEmail()!=='guest';
+  b.style.display=on?'':'none';
+  if(on){var u=getUser();var nm=(u&&(u.full_name||u.email))||getEmail();var n=document.getElementById('acc-name');if(n)n.textContent=nm;}
+}
+function closeProfile(){var m=document.getElementById('profile-modal');if(m)m.style.display='none';}
+function prRow(l,v){return '<div style="background:#101d33;border:1px solid #223;border-radius:8px;padding:8px;display:flex;justify-content:space-between;font-size:.65rem;"><span style="color:#556;">'+l+'</span><span style="color:#ffd700;">'+v+'</span></div>';}
+function prStatsHtml(sc,sec,achDone,achAll){
+  return '<div style="display:flex;flex-direction:column;gap:6px;">'
+    +prRow('\u{1F4B0} Монеты',SAVE.coins)
+    +prRow('\u2699 Шестерни',(getUser()||{}).total_gears||0)
+    +prRow('\u{1F3C5} Победы',(getUser()||{}).total_wins||0)
+    +prRow('\u2B50 Очки',sc)
+    +prRow('\u23F1 В игре',fmtPlaytime(sec))
+    +prRow('\u{1F3C6} Достижения',achDone+' / '+achAll)
+    +'</div>';
+}
+async function openProfile(){
+  var u=getUser()||{},em=getEmail();
+  document.getElementById('pr-name').textContent=u.full_name||em;
+  document.getElementById('pr-email').textContent='📧 '+em;
+  document.getElementById('pr-rank').textContent=u.current_rank?('\u{1F396} '+u.current_rank):'';
+  var sec=parseInt(localStorage.getItem('cag_playtime')||'0')||0;
+  var achDone=SAVE.ach.length,achAll=ACHIEVEMENTS.length;
+  document.getElementById('pr-stats').innerHTML=prStatsHtml('-',sec,achDone,achAll);
+  document.getElementById('pr-achcnt').textContent=achDone+' / '+achAll;
+  var icons=ACHIEVEMENTS.filter(function(a){return SAVE.ach.includes(a.id);}).map(function(a){return a.icon;}).join(' ');
+  document.getElementById('pr-ach').textContent=icons||'пока нет';
+  var m=document.getElementById('profile-modal');m.style.display='flex';
+  updAccBtn();
+  try{
+    var r=await fetch(SUPABASE_URL+'/rest/v1/leaderboard?user_email=eq.'+encodeURIComponent(em)+'&select=score',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(function(r){return r.json();});
+    if(r&&r.length&&typeof r[0].score==='number'){
+      var sl=document.getElementById('pr-stats');
+      if(sl)sl.innerHTML=prStatsHtml(r[0].score,sec,achDone,achAll);
+    }
+  }catch(e){}
+}
+function hkExitBtnsInit(){
+  var gameScreens=['game-screen','vl-game','hk-game'];
+  ['vl-menu','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','hk-result','sShop','sTournament','sLB'].forEach(function(id){
+    var sc=document.getElementById(id);if(!sc)return;
+    if(sc.querySelector('.hk-exit-btn'))return;
+    var b=document.createElement('button');
+    b.className='hk-exit-btn';b.textContent='\u{1F3E0} МЕНЮ';
+    var top=(gameScreens.indexOf(id)>=0)?'42px':'10px';
+    b.setAttribute('style','position:fixed;top:'+top+';left:10px;z-index:120;background:rgba(13,26,46,.9);border:1px solid rgba(255,215,0,.5);border-radius:14px;padding:6px 10px;color:#ffd700;font-family:Orbitron,monospace;font-size:.55rem;cursor:pointer;');
+    b.onclick=function(){
+      if(gameScreens.indexOf(id)>=0){if(!confirm('Выйти на главный экран? Прогресс текущей игры будет потерян.'))return;}
+      goMenu();
+    };
+    sc.appendChild(b);
+  });
+}
+hkExitBtnsInit();
+function accBtnWatchdog(){
+  var b=document.getElementById('acc-btn');
+  if(!b){
+    document.body.insertAdjacentHTML('beforeend','<button id="acc-btn" onclick="openProfile()" style="display:none;position:fixed;top:10px;right:10px;z-index:150;background:rgba(13,26,46,.9);border:1px solid rgba(0,245,255,.5);border-radius:20px;padding:6px 12px;color:#0ff;font-family:Orbitron,monospace;font-size:.6rem;cursor:pointer;max-width:45vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">\u{1F464} <span id="acc-name">Игрок</span></button>');
+  }
+  updAccBtn();
+}
+setInterval(accBtnWatchdog, 3000);
+function accLogout(){
+  try{localStorage.removeItem('game_email');localStorage.removeItem('game_user');}catch(e){}
+  closeProfile();updAccBtn();showS('sAuth');
+}
+function loadStats(){updMenuCoins();}
 async function syncProgress(g,s,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/save_progress',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_game:g,p_score:s,p_wins:w})});}catch(e){}}
 async function syncVictory(gears){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/register_victory',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_email:getEmail(),p_gears:gears})});supabaseTournamentScore(gears,1);}catch(e){}}
 async function supabaseTournamentScore(g,w){if(!isAuthorized()||getEmail()==='guest')return;try{await fetch(SUPABASE_URL+'/rest/v1/rpc/update_tournament_score',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail(),p_score:g+w*10,p_gears:g})});}catch(e){}}
-async function showTournament(){showS('sTournament');var l=document.getElementById('tList');l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Загрузка...</div>';try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_tournament',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_limit:20})}).then(r=>r.json());if(r.ok&&r.leaderboard&&r.leaderboard.length>0){l.innerHTML=r.leaderboard.map(function(p,i){var m=i===0?'1':i===1?'2':i===2?'3':(i+1);return '<div style="display:flex;align-items:center;gap:10px;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+p.display_name+'</div><div style="font-size:.55rem;color:#556;">'+p.gears+' / '+p.wins+'</div></div><div style="color:#ffd700;">'+p.score+'</div></div>';}).join('');}else l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Пока нет игроков</div>';}catch(e){l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Ошибка</div>';}}
-async function showShop(){showS('sShop');var c=await getCoins();document.getElementById('shopCoins').textContent=c+' монет';var items=[{id:'hint15',name:'+15 мин',cost:10},{id:'hint30',name:'+30 мин',cost:18},{id:'showans',name:'Ответ',cost:20},{id:'shield',name:'Щит',cost:30}];document.getElementById('shopItems').innerHTML=items.map(function(it){return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:14px;margin-bottom:10px;"><div style="flex:1;font-size:.75rem;color:#fff;">'+it.name+'</div><button onclick="buyItem(\''+it.id+'\','+it.cost+')" style="background:#00f5ff;color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:.7rem;font-weight:bold;cursor:pointer;">'+it.cost+'</button></div>';}).join('');}
-async function getCoins(){if(!isAuthorized()||getEmail()==='guest')return 0;try{var r=await fetch(SUPABASE_URL+'/rest/v1/users?email=eq.'+encodeURIComponent(getEmail())+'&select=coins',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r[0])return r[0].coins||0;}catch(e){}return 0;}
-async function claimDaily(){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_daily_bonus',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail()})}).then(r=>r.json());if(r.ok){alert('+5 монет!');showShop();}else alert('Уже получено');}catch(e){alert('Ошибка');}}
-async function watchAd(){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/claim_ad_reward',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail()})}).then(r=>r.json());if(r.ok){alert('+3 монеты!');showShop();}else alert('Подождите 30с');}catch(e){alert('Ошибка');}}
-async function buyItem(id,cost){if(!isAuthorized()||getEmail()==='guest'){alert('Войдите');return;}try{var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/spend_coins',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_mail:getEmail(),p_amount:cost})}).then(r=>r.json());if(r.ok){alert('Куплено! Остаток: '+r.remaining);showShop();}else alert('Недостаточно');}catch(e){alert('Ошибка');}}
-async function showLeaderboard(){showS('sLB');var l=document.getElementById('lbList');l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Загрузка...</div>';try{var r=await fetch(SUPABASE_URL+'/rest/v1/leaderboard?order=score.desc&limit=20',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r.length>0){l.innerHTML=r.map(function(p,i){var m=i===0?'1':i===1?'2':i===2?'3':(i+1);return '<div style="display:flex;align-items:center;gap:10px;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+(p.display_name||p.full_name||'Игрок')+'</div><div style="font-size:.55rem;color:#556;">'+(p.total_gears||0)+' / '+(p.total_wins||0)+'</div></div><div style="color:#ffd700;">'+(p.score||0)+'</div></div>';}).join('');}else l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Пока нет игроков</div>';}catch(e){l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Ошибка</div>';}}
+async function showTournament(){showS('sTournament');var l=document.getElementById('tList');l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Загрузка...</div>';try{var pr=fetchPlayersCount();var r=await fetch(SUPABASE_URL+'/rest/v1/rpc/get_tournament',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({p_limit:20})}).then(r=>r.json());if(r.ok&&r.leaderboard&&r.leaderboard.length>0){var rows=r.leaderboard.map(function(p,i){var m=i===0?'1':i===1?'2':i===2?'3':(i+1);return '<div style="display:flex;align-items:center;gap:10px;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+p.display_name+'</div><div style="font-size:.55rem;color:#556;">'+p.gears+' / '+p.wins+'</div></div><div style="color:#ffd700;">'+p.score+'</div></div>';}).join('');var tc=await pr;l.innerHTML=lbCountHtml(tc)+rows;}else{var tc2=await pr;l.innerHTML=lbCountHtml(tc2)+'<div style="text-align:center;color:#556;padding:20px;">Пока нет игроков</div>';}}catch(e){l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Ошибка</div>';}}
+const SUB_LINKS=[
+  {id:'vt',name:'TikTok @vestaa33',url:'https://www.tiktok.com/@vestaa33'},
+  {id:'vg',name:'Telegram @Vestikst',url:'https://t.me/Vestikst'},
+  {id:'lt',name:'TikTok @lizabet7934',url:'https://www.tiktok.com/@lizabet7934'},
+  {id:'lg',name:'Telegram @lyrikst',url:'https://t.me/lyrikst'}
+];
+function renderSubs(){
+  document.getElementById('subItems').innerHTML=SUB_LINKS.map(function(sl){
+    var done=SAVE.subs[sl.id];
+    return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:14px;margin-bottom:10px;"><div style="flex:1;font-size:.75rem;color:#fff;">'+sl.name+'<div style="font-size:.55rem;color:#556;">'+(done?'✅ бонус получен':'подпишись и получи 100 монет')+'</div></div>'+(done?'<div style="font-size:.7rem;color:#97ce4c;">✅</div>':'<button onclick="claimSub(\''+sl.id+'\')" style="background:#97ce4c;color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:.7rem;font-weight:bold;cursor:pointer;">+100🪙</button>')+'</div>';
+  }).join('');
+}
+function claimSub(id){
+  initA();
+  var sl=null;
+  for(var i=0;i<SUB_LINKS.length;i++)if(SUB_LINKS[i].id===id)sl=SUB_LINKS[i];
+  if(!sl)return;
+  if(SAVE.subs[id]){alert('Бонус за эту подписку уже получен!');return;}
+  var w=window.open(sl.url,'_blank');
+  if(!w)window.location.href=sl.url;
+  if(confirm('Ты подписался на '+sl.name+'? Забрать 100 монет?')){
+    SAVE.subs[id]=1;SAVE.coins+=100;saveData();updMenuCoins();showShop();
+    alert('+100 монет! Спасибо за подписку!');
+  }
+}
+function showShop(){
+  showS('sShop');
+  document.getElementById('shopCoins').textContent=SAVE.coins+' монет';
+  var inv=[
+    {id:'hint15',name:'💡 Подсказка',cost:10,own:SAVE.items.hint},
+    {id:'hint30',name:'💡 Подсказка ×2',cost:18,own:SAVE.items.hint},
+    {id:'showans',name:'🎯 Показать ответ',cost:20,own:SAVE.items.ans},
+    {id:'shield',name:'🛡 Щит (спасает жизнь)',cost:30,own:SAVE.items.shield}
+  ];
+  document.getElementById('shopItems').innerHTML=inv.map(function(it){return '<div style="display:flex;gap:10px;align-items:center;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:14px;margin-bottom:10px;"><div style="flex:1;font-size:.75rem;color:#fff;">'+it.name+'<div style="font-size:.55rem;color:#556;">куплено: '+it.own+'</div></div><button onclick="buyItem(\''+it.id+'\','+it.cost+')" style="background:#00f5ff;color:#000;border:none;border-radius:8px;padding:8px 14px;font-size:.7rem;font-weight:bold;cursor:pointer;">'+it.cost+'🪙</button></div>';}).join('');
+  renderSubs();
+}
+function getCoins(){return SAVE.coins;}
+function claimDaily(){
+  var today=new Date().toISOString().slice(0,10);
+  if((localStorage.getItem('cag_daily')||'')===today){alert('Ежедневный бонус уже получен!');return;}
+  localStorage.setItem('cag_daily',today);
+  SAVE.coins+=5;saveData();showShop();updMenuCoins();alert('+5 монет!');
+}
+function watchAd(){
+  var now=Date.now(),last=parseInt(localStorage.getItem('cag_ad')||'0');
+  if(now-last<30000){alert('Подождите 30 секунд!');return;}
+  localStorage.setItem('cag_ad',now);
+  SAVE.coins+=3;saveData();showShop();updMenuCoins();alert('+3 монеты!');
+}
+function buyItem(id,cost){
+  initA();
+  if(SAVE.coins<cost){alert('Недостаточно монет!');return;}
+  SAVE.coins-=cost;
+  if(id==='hint15')SAVE.items.hint+=1;
+  else if(id==='hint30')SAVE.items.hint+=2;
+  else if(id==='showans')SAVE.items.ans+=1;
+  else if(id==='shield')SAVE.items.shield+=1;
+  saveData();showShop();updMenuCoins();
+}
+async function fetchPlayersCount(){try{var r=await fetch(SUPABASE_URL+'/rest/v1/users?select=id',{method:'HEAD',headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'count=exact'}});var cr=r.headers.get('content-range');if(cr){var n=parseInt(cr.split('/')[1]);if(!isNaN(n))return n;}}catch(e){}return null;}
+function lbCountHtml(n){return n==null?'':'<div style="text-align:center;color:#ffd700;font-size:.6rem;letter-spacing:2px;margin-bottom:12px;">\u{1F3AE} ВСЕГО ИГРОКОВ: '+n+'</div>';
+}
+async function showLeaderboard(){showS('sLB');var l=document.getElementById('lbList');l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Загрузка...</div>';try{var pr=fetchPlayersCount();var r=await fetch(SUPABASE_URL+'/rest/v1/leaderboard?order=score.desc&limit=20',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}}).then(r=>r.json());if(r&&r.length>0){var rows=r.map(function(p,i){var m=i===0?'1':i===1?'2':i===2?'3':(i+1);return '<div style="display:flex;align-items:center;gap:10px;background:#1a1a2e;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:8px;"><div style="width:30px;text-align:center;">'+m+'</div><div style="flex:1;"><div style="font-size:.75rem;color:#fff;">'+(p.display_name||p.full_name||'Игрок')+'</div><div style="font-size:.55rem;color:#556;">'+(p.total_gears||0)+' / '+(p.total_wins||0)+'</div></div><div style="color:#ffd700;">'+(p.score||0)+'</div></div>';}).join('');var tc=await pr;l.innerHTML=lbCountHtml(tc)+rows;}else{var tc2=await pr;l.innerHTML=lbCountHtml(tc2)+'<div style="text-align:center;color:#556;padding:20px;">Пока нет игроков</div>';}}catch(e){l.innerHTML='<div style="text-align:center;color:#556;padding:20px;">Ошибка</div>';}}
 
 
 
@@ -2074,13 +2315,13 @@ function showMatchResult(result){
   if(tie){
     html = '<div style="font-size:2rem;">🤝</div><div style="font-size:.9rem;color:#ffd700;margin:12px 0;">Ничья!</div>';
   } else if(won){
-    html = '<div style="font-size:2rem;">🏆</div><div style="font-size:.9rem;color:#00ff88;margin:12px 0;">Победа!</div>';
+    html = '<div style="font-size:2rem;">🏆</div><div style="font-size:.9rem;color:#97ce4c;margin:12px 0;">Победа!</div>';
     if(typeof syncVictory === 'function') syncVictory(hkMyScore);
   } else {
     html = '<div style="font-size:2rem;">💪</div><div style="font-size:.9rem;color:#ff4455;margin:12px 0;">Поражение</div>';
   }
   html += '<div style="display:flex;gap:20px;justify-content:center;margin:20px 0;">';
-  html += '<div style="text-align:center;"><div style="font-size:.6rem;color:#556;">ВЫ</div><div style="font-size:1.5rem;color:#00ff88;">'+result.my_score+'💎</div></div>';
+  html += '<div style="text-align:center;"><div style="font-size:.6rem;color:#556;">ВЫ</div><div style="font-size:1.5rem;color:#97ce4c;">'+result.my_score+'💎</div></div>';
   html += '<div style="text-align:center;"><div style="font-size:.6rem;color:#556;">'+(result.opponent_name||'Соперник')+'</div><div style="font-size:1.5rem;color:#ff4455;">'+result.opponent_score+'💎</div></div>';
   html += '</div>';
   
@@ -2110,5 +2351,39 @@ function hkBotMove(){
 </script>
 <!-- vlastelini-overlay удалён: теперь используются screen-ы -->
 
+<button id="acc-btn" onclick="openProfile()" style="display:none;position:fixed;top:10px;right:10px;z-index:150;background:rgba(13,26,46,.9);border:1px solid rgba(0,245,255,.5);border-radius:20px;padding:6px 12px;color:#0ff;font-family:'Orbitron',monospace;font-size:.6rem;cursor:pointer;max-width:45vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">👤 <span id="acc-name">Игрок</span></button>
+<div id="profile-modal" onclick="if(event.target===this)closeProfile()" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#0d1a2e;border:1px solid rgba(0,245,255,.4);border-radius:14px;padding:18px;max-width:340px;width:100%;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Orbitron',monospace;color:#cde;">
+    <div style="text-align:center;color:#00f5ff;letter-spacing:3px;font-size:.8rem;">// ПРОФИЛЬ //</div>
+    <div id="pr-name" style="text-align:center;color:#fff;font-size:1rem;margin:8px 0 2px;"></div>
+    <div id="pr-email" style="text-align:center;color:#9ab;font-size:.7rem;margin-bottom:8px;word-break:break-all;">📧 </div>
+    <div id="pr-rank" style="text-align:center;color:#ffd700;font-size:.6rem;margin-bottom:12px;"></div>
+    <div id="pr-stats"></div>
+    <div style="margin:12px 0 6px;color:#00f5ff;font-size:.6rem;letter-spacing:2px;">ДОСТИЖЕНИЯ <span id="pr-achcnt" style="color:#ffd700;"></span></div>
+    <div id="pr-ach" style="font-size:1.15rem;line-height:1.7;text-align:center;letter-spacing:2px;"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button onclick="accLogout()" style="flex:1;background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.6);border-radius:8px;padding:9px;color:#ff6b6b;font-size:.6rem;cursor:pointer;font-family:inherit;">ВЫЙТИ ИЗ АККАУНТА</button>
+      <button onclick="closeProfile()" style="flex:1;background:rgba(0,245,255,.1);border:1px solid rgba(0,245,255,.5);border-radius:8px;padding:9px;color:#0ff;font-size:.6rem;cursor:pointer;font-family:inherit;">ЗАКРЫТЬ</button>
+    </div>
+  </div>
+</div>
+<button id="vl-hint-btn" onclick="vlUseHint()" title="Подсказка" style="display:none;position:fixed;left:10px;bottom:10px;z-index:99;background:rgba(13,26,46,.92);border:1px solid rgba(255,215,0,.6);border-radius:50%;width:38px;height:38px;font-size:1rem;cursor:pointer;">💡<span id="vl-hint-cnt" style="position:absolute;right:-3px;top:-3px;background:#ffd700;color:#000;border-radius:8px;padding:0 4px;font-size:.5rem;font-weight:bold;"></span></button>
+<script>
+function vlHintRefresh(){
+  var b=document.getElementById('vl-hint-btn');if(!b)return;
+  var c=document.getElementById('vl-hint-cnt');if(c)c.textContent=(SAVE.items.hint||0);
+}
+function vlHintShow(v){var b=document.getElementById('vl-hint-btn');if(b){b.style.display=v?'':'none';vlHintRefresh();}}
+function vlUseHint(){
+  var free=personalOn();
+  if(!free&&(SAVE.items.hint||0)<=0){alert('Нет подсказок! Купи в магазине (10 монет)');return;}
+  var btns=document.querySelectorAll('#vl-answers .vl-opt');
+  if(!btns.length)btns=document.querySelectorAll('#vl-exam-answers .vl-opt');
+  if(!btns.length||typeof vlHintAns==='undefined'||vlHintAns==null){alert('Нет активного вопроса');return;}
+  var b=btns[vlHintAns];
+  if(b){b.style.borderColor='#ffd700';b.style.background='rgba(255,215,0,.18)';}
+  if(!free){SAVE.items.hint--;saveData();vlHintRefresh();}
+}
+</script>
 </body>
 </html>

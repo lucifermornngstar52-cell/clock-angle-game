@@ -2026,7 +2026,7 @@ async function openProfile(){
 }
 function hkExitBtnsInit(){
   var gameScreens=['game-screen','vl-game','hk-game'];
-  ['vl-menu','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','hk-result'].forEach(function(id){
+  ['vl-menu','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','hk-result','sShop','sTournament','sLB'].forEach(function(id){
     var sc=document.getElementById(id);if(!sc)return;
     if(sc.querySelector('.hk-exit-btn'))return;
     var b=document.createElement('button');
@@ -2041,6 +2041,14 @@ function hkExitBtnsInit(){
   });
 }
 hkExitBtnsInit();
+function accBtnWatchdog(){
+  var b=document.getElementById('acc-btn');
+  if(!b){
+    document.body.insertAdjacentHTML('beforeend','<button id="acc-btn" onclick="openProfile()" style="display:none;position:fixed;top:10px;right:10px;z-index:150;background:rgba(13,26,46,.9);border:1px solid rgba(0,245,255,.5);border-radius:20px;padding:6px 12px;color:#0ff;font-family:Orbitron,monospace;font-size:.6rem;cursor:pointer;max-width:45vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">\u{1F464} <span id="acc-name">Игрок</span></button>');
+  }
+  updAccBtn();
+}
+setInterval(accBtnWatchdog, 3000);
 function accLogout(){
   try{localStorage.removeItem('game_email');localStorage.removeItem('game_user');}catch(e){}
   closeProfile();updAccBtn();showS('sAuth');
@@ -2343,7 +2351,7 @@ function hkBotMove(){
 </script>
 <!-- vlastelini-overlay удалён: теперь используются screen-ы -->
 
-<button id="acc-btn" onclick="openProfile()" style="display:none;position:fixed;top:10px;right:10px;z-index:150;background:rgba(13,26,46,.9);border:1px solid rgba(0,245,255,.5);border-radius:20px;padding:6px 12px;color:#0ff;font-family:'Orbitron',monospace;font-size:.6rem;cursor:pointer;max-width:45vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">\u{1F464} <span id="acc-name">Игрок</span></button>
+<button id="acc-btn" onclick="openProfile()" style="display:none;position:fixed;top:10px;right:10px;z-index:150;background:rgba(13,26,46,.9);border:1px solid rgba(0,245,255,.5);border-radius:20px;padding:6px 12px;color:#0ff;font-family:'Orbitron',monospace;font-size:.6rem;cursor:pointer;max-width:45vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">👤 <span id="acc-name">Игрок</span></button>
 <div id="profile-modal" onclick="if(event.target===this)closeProfile()" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:16px;">
   <div style="background:#0d1a2e;border:1px solid rgba(0,245,255,.4);border-radius:14px;padding:18px;max-width:340px;width:100%;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;font-family:'Orbitron',monospace;color:#cde;">
     <div style="text-align:center;color:#00f5ff;letter-spacing:3px;font-size:.8rem;">// ПРОФИЛЬ //</div>
