@@ -10,8 +10,8 @@ android {
         applicationId "com.clockgame.angleCracker"
         minSdk 21
         targetSdk 34
-        versionCode 17
-        versionName "1.16"
+        versionCode 18
+        versionName "1.17"
     }
 
     signingConfigs {
@@ -46,4 +46,5 @@ android {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.webkit:webkit:1.8.0'
+    implementation 'com.yandex.android:mobileads:7.18.7'
 }

@@ -256,7 +256,7 @@
   <div id="subItems" style="max-width:420px;margin:0 auto;"></div>
   <div style="max-width:420px;margin:14px auto 0;">
     <button onclick="claimDaily()" style="width:100%;background:linear-gradient(135deg,#97ce4c,#00cc66);color:#000;border:none;border-radius:10px;padding:14px;font-size:.75rem;font-weight:bold;cursor:pointer;font-family:inherit;margin-bottom:10px;">ЕЖЕДНЕВНЫЙ БОНУС (+5)</button>
-    <button onclick="watchAd()" style="width:100%;background:#1a1a2e;border:1px solid #00f5ff;color:#00f5ff;border-radius:10px;padding:14px;font-size:.75rem;cursor:pointer;font-family:inherit;">РЕКЛАМА (+3)</button>
+    <button id="adBtn" onclick="watchAd()" style="width:100%;max-width:420px;margin:14px auto 0;display:none;background:#1a1a2e;border:1px solid #ffd700;color:#ffd700;border-radius:10px;padding:14px;font-size:.75rem;cursor:pointer;font-family:inherit;">📺 СМОТРЕТЬ РЕКЛАМУ<br><span style="font-size:.9rem;">+50 🪙</span></button>
   </div>
 </div>
 
@@ -2236,11 +2236,32 @@ function claimDaily(){
   localStorage.setItem('cag_daily',today);
   SAVE.coins+=5;saveData();showShop();updMenuCoins();alert('+5 монет!');
 }
+var adBusy=false;
 function watchAd(){
-  var now=Date.now(),last=parseInt(localStorage.getItem('cag_ad')||'0');
-  if(now-last<30000){alert('Подождите 30 секунд!');return;}
-  localStorage.setItem('cag_ad',now);
-  SAVE.coins+=3;saveData();showShop();updMenuCoins();alert('+3 монеты!');
+  if(!window.NumbraAds)return;
+  if(adBusy)return;
+  if(!NumbraAds.isAvailable()){showFb('\u23F3 Реклама ещё загружается, попробуй чуть позже','hint');return;}
+  adBusy=true;
+  var b=document.getElementById('adBtn');if(b){b.style.opacity=.4;}
+  NumbraAds.show();
+}
+window.__adState=function(ready){
+  var b=document.getElementById('adBtn');
+  if(b&&window.NumbraAds)b.style.display='block';
+}
+window.onAdReward=function(){
+  adBusy=false;var b=document.getElementById('adBtn');if(b)b.style.opacity=1;
+  SAVE.coins+=50;saveData();showShop();updMenuCoins();
+  showFb('💰 +50 монет за просмотр!','ok');
+}
+window.__adFail=function(){
+  adBusy=false;var b=document.getElementById('adBtn');if(b)b.style.opacity=1;
+  showFb('Реклама недоступна, попробуй позже','hint');
+}
+function initAdsUI(){
+  if(window.NumbraAds){
+    var b=document.getElementById('adBtn');if(b)b.style.display='block';
+  }
 }
 function buyItem(id,cost){
   initA();
@@ -2519,5 +2540,6 @@ function vlUseHint(){
   if(!free){SAVE.items.hint--;saveData();vlHintRefresh();}
 }
 </script>
+<script>document.addEventListener("DOMContentLoaded",initAdsUI);</script>
 </body>
 </html>
