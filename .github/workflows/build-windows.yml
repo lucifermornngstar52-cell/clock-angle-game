@@ -27,6 +27,10 @@ jobs:
           cp app/src/main/assets/numbra_splash.jpg windows/assets/numbra_splash.jpg
           cp app/src/main/assets/numbra_gameover.jpg windows/assets/numbra_gameover.jpg
           cp app/src/main/assets/icon-192.png windows/assets/icon-192.png
+          cp app/src/main/assets/apple-touch-icon.png windows/assets/apple-touch-icon.png
+          cp app/src/main/assets/manifest.json windows/assets/manifest.json
+          cp app/src/main/assets/numbra_keeper.png windows/assets/numbra_keeper.png
+          cp app/src/main/assets/numbra_trophy.png windows/assets/numbra_trophy.png
           cp app/src/main/assets/qb.js windows/assets/qb.js
           cp app/src/main/assets/acc_profile.js windows/assets/acc_profile.js
 
