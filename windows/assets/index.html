@@ -271,13 +271,13 @@
 
 <div class="screen hidden" id="intro-screen">
   <div class="intro-frame">
-    <img src="rm.png" style="width:68%;max-width:200px;border-radius:10px;border:1px solid #97ce4c;margin:0 auto 12px;display:block;">
-      <div class="intro-badge">// ЗАПИСЬ ИЗ ИЗМЕРЕНИЯ C-137 — СЕКРЕТНО //</div>
+    <img src="numbra_splash.jpg" style="width:68%;max-width:200px;border-radius:10px;border:1px solid #00f5ff;margin:0 auto 12px;display:block;">
+      <div class="intro-badge">// АРХИВ ХРАНИТЕЛЕЙ ВРЕМЕНИ — СЕКРЕТНО //</div>
     <div class="intro-title">🌀 МАШИНА ВРЕМЕНИ<br>ОБНАРУЖЕНА</div>
     <div class="intro-text">
-      Ты — <span>Морти</span>. Рик отлучился в другое измерение за соусом и оставил тебя в лаборатории одного. Ну, почти одного: тут гудит машина времени с мерцающим циферблатом.<br><br>
+      Ты — <span>стажёр-Хранитель</span>. Старший Хранитель ушёл в смежный поток времени и оставил тебя в Лаборатории Хронометра одного. Ну, почти одного: тут гудит машина времени с мерцающим циферблатом.<br><br>
       Система заперта. Чтобы <span>открыть портал</span> — реши серию задач на углы между стрелками часов.<br><br>
-      Четыре уровня, четыре измерения. <span>Не паникуй, Морти.</span><br><br>
+      Четыре уровня, четыре измерения. <span>Спокойствие и точность.</span><br><br>
       Паника — враг точных вычислений.<span class="intro-cursor"></span>
     </div>
     <button class="intro-btn" onclick="closeIntroAndStart()">[ ОТКРЫТЬ ПОРТАЛ ]</button>
@@ -288,7 +288,7 @@
 <div class="screen hidden" id="main-menu">
   <div class="mtitle">NUMBRA</div>
   <div class="msub">// МУЛЬТИВСЕЛЕННАЯ УГЛОВ //</div>
-    <img src="rick_face.png" style="width:30%;max-width:110px;border-radius:50%;border:2px solid #97ce4c;margin:10px auto;display:block;box-shadow:0 0 18px rgba(151,206,76,.5);">
+    <img src="icon-192.png" style="width:30%;max-width:110px;border-radius:50%;border:2px solid #00f5ff;margin:10px auto;display:block;box-shadow:0 0 18px rgba(0,245,255,.5);">
   <div class="menu-coins" id="menu-coins">💰 0 монет</div>
   <button class="btn" onclick="showS('game-menu')">[ 🎮 ИГРАТЬ ]</button>
   <button class="btn" onclick="openAch()">[ 🏆 ДОСТИЖЕНИЯ ]</button>
@@ -715,7 +715,7 @@
 
 <!-- ══ ГЕЙМОВЕР ══ -->
 <div class="screen hidden" id="gameover-screen">
-  <img src="jerry.png" style="width:55%;max-width:190px;margin:0 auto 10px;display:block;">
+  <img src="numbra_gameover.jpg" style="width:55%;max-width:190px;margin:0 auto 10px;display:block;border-radius:10px;border:1px solid rgba(255,49,49,.5);">
   <div class="rtitle" style="color:#ff3131;text-shadow:0 0 18px #ff3131;">ПОРТАЛ СХЛОПНУЛСЯ</div>
   <div class="rinfo" id="gi"></div>
   <button class="btn" onclick="restartGame()">[ ПОПРОБОВАТЬ СНОВА ]</button>
@@ -725,7 +725,7 @@
 <!-- ══ ПОБЕДА ══ -->
 <div class="screen hidden" id="win-screen">
   <div class="win-frame">
-    <img src="rick_duo.png" style="width:55%;max-width:190px;margin:0 auto 10px;display:block;">
+    <img src="numbra_splash.jpg" style="width:55%;max-width:190px;margin:0 auto 10px;display:block;border-radius:10px;border:1px solid #97ce4c;">
     <div class="win-badge">// ПОРТАЛ ОТКРЫТ — ДОСТУП ПОЛУЧЕН //</div>
     <div class="win-title">🌀 ПОРТАЛ ОТКРЫТ!<br>МАШИНА ВРЕМЕНИ ЗАПУЩЕНА!</div>
     <div class="win-text" id="win-text"></div>
@@ -756,7 +756,7 @@
 <!-- ══ ДОСТИЖЕНИЯ ══ -->
 <div class="popup-overlay hidden" id="ach-popup">
   <div class="popup">
-    <img src="rick_buff.png" style="width:45%;max-width:150px;margin:0 auto 8px;display:block;">
+    <img src="icon-192.png" style="width:35%;max-width:110px;margin:0 auto 8px;display:block;border-radius:50%;border:2px solid #ffd700;">
     <div class="popup-title">🏆 ДОСТИЖЕНИЯ</div>
     <div id="ach-list"></div>
     <button class="popup-close" onclick="closeAch()">ЗАКРЫТЬ</button>
@@ -1227,7 +1227,7 @@ function pickSingle(idx){
   if(!ok){
     document.getElementById('cb'+single_correctIdx).classList.add('correct');
     for(let i=0;i<4;i++)document.getElementById('cb'+i).disabled=true;
-    if(SAVE.items.shield>0){SAVE.items.shield--;saveData();sfx('ok');showFb('🛡 Щит спас жизнь! Рик одобряет.','hint');setTimeout(advance,1200);return;}
+    if(SAVE.items.shield>0){SAVE.items.shield--;saveData();sfx('ok');showFb('🛡 Щит спас жизнь! Хронометр одобряет.','hint');setTimeout(advance,1200);return;}
     ST.lives--;
     document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
     sfx('no');showFb(pick(RICK_NO),'bad');
@@ -1249,7 +1249,7 @@ function toggleMulti(idx){
 }
 function confirmMulti(){
   if(locked)return;
-  if(multi_selected.size===0){showFb('Морти, выбери хотя бы один ответ!','hint');return;}
+  if(multi_selected.size===0){showFb('Выбери хотя бы один ответ!','hint');return;}
   initA();locked=true;
   const cSet=new Set(multi_correctVals);
   const selVals=new Set([...multi_selected].map(i=>multi_opts[i]));
@@ -1269,15 +1269,15 @@ function confirmMulti(){
     setTimeout(advance,1000);
   }else{
     sfx('no');
-    if(SAVE.items.shield>0){SAVE.items.shield--;saveData();sfx('ok');showFb('🛡 Щит спас жизнь! Рик одобряет.','hint');setTimeout(advance,1400);return;}
+    if(SAVE.items.shield>0){SAVE.items.shield--;saveData();sfx('ok');showFb('🛡 Щит спас жизнь! Хронометр одобряет.','hint');setTimeout(advance,1400);return;}
     ST.lives--;
     document.getElementById('h-l').textContent='❤️'.repeat(Math.max(0,ST.lives))+'🖤'.repeat(3-Math.max(0,ST.lives));
     const missed=[...cSet].filter(v=>!selVals.has(v)).length;
     const extra=[...selVals].filter(v=>!cSet.has(v)).length;
     let msg=pick(RICK_NO);
-    if(missed&&extra)msg='✗ И пропустил, и лишку, Морти!';
-    else if(missed)msg='✗ Не все, Морти! Не все!';
-    else if(extra)msg='✗ Лишний ответ, Морти!';
+    if(missed&&extra)msg='✗ И пропустил, и лишний ответ!';
+    else if(missed)msg='✗ Не все ответы верны!';
+    else if(extra)msg='✗ Лишний ответ!';
     showFb(msg,'bad');
     if(ST.lives<=0)setTimeout(gameOver,1200);else setTimeout(advance,1400);
   }
@@ -1301,10 +1301,10 @@ function levelDone(){
   if(ST.lv>=3){
     const d=WIN_YEARS[Math.floor(Math.random()*WIN_YEARS.length)];
     document.getElementById('win-text').innerHTML=
-      `Рик будет гордиться. Наверное. Координаты установлены.<br><br>
+      `Лаборатория Хронометра признаёт: координаты установлены.<br><br>
        Вы перенеслись в <span class="yr">${d.y} год ${d.era}</span><br>
        📍 ${d.place} — ${d.desc}.<br><br>
-       Не паникуй и оглядись: история открыта перед тобой, Морти. *уэрп*`;
+       Оглядись: история открыта перед тобой, стажёр. *вжух*`;
     document.getElementById('win-stats').innerHTML=`Монет: <b>${SAVE.coins}🪙</b> &nbsp;|&nbsp; Жизней: <b>${ST.lives}</b>`;
     showS('win-screen');updMenuCoins();return;
   }
@@ -1360,12 +1360,12 @@ function useHint(){
   else{hb.disabled=true;hintUsed=true;}
   if(ST.lv<3){
     document.getElementById('cb'+single_correctIdx).classList.add('hint-hl');
-    showFb('💡 Рик подсветил правильный ответ!','hint');
+    showFb('💡 Хронометр подсветил правильный ответ!','hint');
   }else{
     const ci=multi_opts.reduce((acc,v,i)=>{if(multi_correctVals.includes(v))acc.push(i);return acc;},[]);
     const ri=ci[Math.floor(Math.random()*ci.length)];
     document.getElementById('cb'+ri).classList.add('hint-hl');
-    showFb('💡 Рик подсветил один из них!','hint');
+    showFb('💡 Хронометр подсветил один из них!','hint');
   }
 }
 
@@ -1384,10 +1384,10 @@ function useAns(){
   if(!free){SAVE.items.ans--;saveData();updAnsBtn();}
   if(ST.lv<3){
     document.getElementById('cb'+single_correctIdx).classList.add('hint-hl');
-    showFb('🎯 Рик показал правильный ответ!','hint');
+    showFb('🎯 Хронометр показал правильный ответ!','hint');
   }else{
     for(let i=0;i<8;i++){const btn=document.getElementById('cb'+i);if(btn&&multi_correctVals.includes(multi_opts[i]))btn.classList.add('hint-hl');}
-    showFb('🎯 Рик показал все правильные!','hint');
+    showFb('🎯 Хронометр показал все правильные!','hint');
   }
 }
 
