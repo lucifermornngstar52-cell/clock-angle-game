@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yandex.mobile.ads.common.AdRequestConfiguration;
 import com.yandex.mobile.ads.common.AdRequestError;
 import com.yandex.mobile.ads.common.AdError;
+import com.yandex.mobile.ads.common.ImpressionData;
 import com.yandex.mobile.ads.common.InitializationListener;
 import com.yandex.mobile.ads.common.MobileAds;
 import com.yandex.mobile.ads.rewarded.Reward;
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadRewarded() {
         if (rewardedAdLoader == null) {
             rewardedAdLoader = new RewardedAdLoader(this);
-            rewardedAdLoader.setRewardedAdLoadListener(new RewardedAdLoadListener() {
+            rewardedAdLoader.setAdLoadListener(new RewardedAdLoadListener() {
                 @Override
                 public void onAdLoaded(RewardedAd ad) {
                     rewardedAd = ad;
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         }
         final RewardedAd ad = rewardedAd;
         rewardedAd = null; // показывается единожды
-        ad.setRewardedAdEventListener(new RewardedAdEventListener() {
+        ad.setAdEventListener(new RewardedAdEventListener() {
             @Override
             public void onRewarded(Reward reward) {
                 // награда начисляется только за полный просмотр
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onRewardedAdShown() {}
+            public void onAdImpression(ImpressionData data) {}
 
             @Override
             public void onRewardedAdFailedToShow(AdError error) {
