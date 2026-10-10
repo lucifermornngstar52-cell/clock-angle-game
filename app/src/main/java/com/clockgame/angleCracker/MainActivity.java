@@ -142,16 +142,22 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onAdShown() {}
+
+            @Override
+            public void onAdClicked() {}
+
+            @Override
             public void onAdImpression(ImpressionData data) {}
 
             @Override
-            public void onRewardedAdFailedToShow(AdError error) {
+            public void onAdFailedToShow(AdError error) {
                 pushJs("window.__adFail && window.__adFail('show')");
                 loadRewarded();
             }
 
             @Override
-            public void onRewardedAdDismissed() {
+            public void onAdDismissed() {
                 notifyAdState();
                 loadRewarded();
             }
