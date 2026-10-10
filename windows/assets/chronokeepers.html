@@ -448,6 +448,7 @@ let myId = '', opId = '';
 let myTime = {h:0,m:0};
 let opTime = {h:0,m:0};
 let myCrystals = 0, opCrystals = 0;
+let crystalAway = true; // true = можно получить кристалл за подход к 00:00
 let myCards = [], myMagic = [];
 let answerLocked = false;
 let currentQ = null;
@@ -610,6 +611,7 @@ function randCode() {
 // CLOCK RENDERING
 // ═══════════════════════════════════════════════════════
 function updateClockVisual(t) {
+  if(t === myTime && timeDiff(t) >= 30) crystalAway = true;
   const minDeg = (t.m / 60) * 360;
   const hrDeg = ((t.h % 12) / 12) * 360 + (t.m / 60) * 30;
   document.getElementById('minHand').setAttribute('transform', `rotate(${minDeg} 65 65)`);
@@ -717,9 +719,10 @@ function checkAnswer(idx) {
     } else {
       showToast(`🃏 Карта: ${TIME_CARDS[cardIdx].label.replace('\n',' ')}`);
     }
-    // Кристалл если подошли к цели
+    // Кристалл если подошли к цели (нужен НОВЫЙ подход: отойти и вернуться)
     const diff = timeDiff(myTime);
-    if(diff < 30) {
+    if(diff < 30 && crystalAway) {
+      crystalAway = false;
       myCrystals = Math.min(5, myCrystals + 1);
       showFx('💎 КРИСТАЛЛ!', '#ffd700', 1200);
       send({type:'crystals', crystals: myCrystals});
@@ -750,6 +753,7 @@ function useTimeCard(idx) {
 
   if(card.reset) {
     myTime = {h:0, m:0};
+    crystalAway = false; // СБРОС не считается подходом к цели
     showFx('🔄 СБРОС!', '#ffd700', 1000);
   } else {
     myTime = normalizeTime({h: myTime.h + card.delta.h, m: myTime.m + card.delta.m});
@@ -763,7 +767,8 @@ function useTimeCard(idx) {
 
   // Проверяем кристалл
   const diff = timeDiff(myTime);
-  if(diff === 0) {
+  if(diff === 0 && crystalAway) {
+    crystalAway = false;
     myCrystals = Math.min(5, myCrystals + 1);
     showFx('💎 КРИСТАЛЛ!', '#ffd700', 1200);
     updateCrystals();
@@ -919,7 +924,7 @@ function resetGame() {
   if(peer) peer.destroy();
   peer = null; conn = null;
   myCards = []; myMagic = [];
-  myCrystals = 0; opCrystals = 0;
+  myCrystals = 0; opCrystals = 0; crystalAway = true;
   myScore = 0; fqIdx = 0;
   inFinalMission = false; gameEnded = false;
   hkAskedQ = {0:new Set(),1:new Set(),2:new Set()};

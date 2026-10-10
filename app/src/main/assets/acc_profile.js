@@ -11,13 +11,16 @@
   function row(l,v){return '<div style="background:#101d33;border:1px solid #223;border-radius:8px;padding:8px;display:flex;justify-content:space-between;font-size:.65rem;"><span style="color:#556;">'+l+'</span><span style="color:#ffd700;">'+v+'</span></div>';}
 
   function inject(){
-    if(document.getElementById('acc-btn'))return;
+    // чип
+    if(!document.getElementById('acc-btn')){
     var b=document.createElement('button');
     b.id='acc-btn';
     b.setAttribute('style','display:none;position:fixed;top:10px;right:10px;z-index:150;background:rgba(13,26,46,.9);border:1px solid rgba(0,245,255,.5);border-radius:20px;padding:6px 12px;color:#0ff;font-family:Orbitron,monospace;font-size:.6rem;cursor:pointer;max-width:45vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;');
     b.textContent='👤 Игрок';
     b.addEventListener('click',openProfile);
     document.body.appendChild(b);
+    }
+    if(document.getElementById('profile-modal'))return;
 
     var m=document.createElement('div');
     m.id='profile-modal';
@@ -35,11 +38,11 @@
       +'<button id="pr-close" style="flex:1;background:rgba(0,245,255,.1);border:1px solid rgba(0,245,255,.5);border-radius:8px;padding:9px;color:#0ff;font-size:.6rem;cursor:pointer;font-family:inherit;">ЗАКРЫТЬ</button>'
       +'</div></div>';
     m.addEventListener('click',function(e){if(e.target===m)m.style.display='none';});
-    document.getElementById('pr-logout').addEventListener('click',function(){
+    m.querySelector('#pr-logout').addEventListener('click',function(){
       localStorage.removeItem('game_email');localStorage.removeItem('game_user');
       location.reload();
     });
-    document.getElementById('pr-close').addEventListener('click',function(){m.style.display='none';});
+    m.querySelector('#pr-close').addEventListener('click',function(){m.style.display='none';});
     document.body.appendChild(m);
   }
 
