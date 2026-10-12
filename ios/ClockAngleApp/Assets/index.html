@@ -316,7 +316,7 @@
 
   <div class="other-label" style="color:#ff6b35;margin-top:14px;">── 9–11 КЛАСС · ЕНТ ──</div>
   <button class="btn" style="border-color:#ff6b35;color:#ff6b35;" onclick="entMenu()">[ ⏰ ЭКЗАМЕН ХРОНОСА ]<br><span style="font-size:.5rem;opacity:.7;">ЗАДАНИЯ ЕНТ · БЕСКОНЕЧНАЯ БАШНЯ · РОГАЛИК</span></button>
-  <button class="btn" style="border-color:#c47aff;color:#c47aff;" onclick="wofMenu()">[ 🎡 ПОЛЕ ХРОНОСА ]<br><span style="font-size:.5rem;opacity:.7;">УГАДАЙ ТЕРМИН · КОЛЕСО ОЧКОВ · ПОЛЕ ЧУДЕС</span></button>
+  <button class="btn" style="border-color:#c47aff;color:#c47aff;" onclick="wofMenu()">[ 🎡 ПОЛЕ ХРОНОСА ]<br><span style="font-size:.5rem;opacity:.7;">НАСТОЯЩЕЕ ПОЛЕ ЧУДЕС · БОТЫ-СОПЕРНИКИ · ЕНТ</span></button>
 
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:14px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
 </div>
@@ -335,11 +335,11 @@
 <div class="screen hidden" id="sPole-rules">
   <div class="gmenu-title" style="font-size:.85rem;padding:10px 0 6px;">📜 ПОЛЕ ХРОНОСА</div>
   <div style="max-width:420px;font-size:.75rem;line-height:1.65;color:#aab;text-align:left;">
-    <p><b style="color:#00f5ff;">📖 Термин по определению.</b> На экране определение — угадай математическое слово буква за буквой. 5 слов за забег.</p>
-    <p><b style="color:#ffd700;">🎡 Колесо очков.</b> Перед каждой буквой крути колесо: сколько выпало очков — столько получишь за каждую открытую букву.</p>
+    <p><b style="color:#00f5ff;">📖 Настоящее Поле Чудес.</b> Ты и два соперника-бота с реальными именами. Угадывайте ЕНТ-термин по определению. 3 слова за игру.</p>
+    <p><b style="color:#ffd700;">🎡 Колесо очков.</b> Угадал букву — крути дальше. Промах — ход переходит сопернику. Кто открыл последнюю букву — забирает банк слова.</p>
     <p><b style="color:#c47aff;">✖ Сектор ×2.</b> Удваивает очки следующей буквы. <b style="color:#ffd700;">ПРИЗ</b> — бесплатная буква. <b style="color:#ff3355;">БАНКРОТ</b> — банк слова обнуляется!</p>
-    <p><b style="color:#ff3355;">❤ Промахи.</b> 3 неверных буквы на слово — слово сгорает, монеты за него не начисляются.</p>
-    <p><b style="color:#97ce4c;">💰 Награда.</b> Очки слова превращаются в монеты (2 очка = 1 монета) и зачисляются в конце забега.</p>
+    <p><b style="color:#ff3355;">💡 Подсказка.</b> Открывает одну букву за 25 монет. «Выход» завершает игру, заработок за отгаданные слова сохраняется.</p>
+    <p><b style="color:#97ce4c;">💰 Награда.</b> Твои очки превращаются в монеты (2 очка = 1 монета). БАНКРОТ сжигает банк, ПРИЗ даёт бесплатную букву, ×2 удваивает.</p>
   </div>
   <button class="btn" style="margin-top:12px;border-color:var(--dg);color:var(--dg);" onclick="showS('sPole-menu')">[ ← НАЗАД ]</button>
 </div>
@@ -350,7 +350,13 @@
 #wof-body{flex:1;overflow-y:auto;padding:10px 12px 20px;width:100%;max-width:480px;margin:0 auto;}
 #wof-clue{background:#0d1a2e;border:1px solid #1a2a4a;border-radius:10px;padding:10px 12px;font-size:.78rem;color:#8fd7ff;font-style:italic;text-align:center;margin-bottom:10px;}
 #wof-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-bottom:10px;}
-.wof-slot{width:30px;height:38px;border-bottom:3px solid #2a3a5a;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:1rem;color:#ffd700;}
+.wof-slot{width:28px;height:38px;background:#f2f4f8;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:1.05rem;color:#0a0f20;box-shadow:0 2px 6px rgba(0,0,0,.4);animation:slotflip .3s ease;}
+@keyframes slotflip{from{transform:rotateX(90deg);}to{transform:rotateX(0);}}
+#wof-players{display:flex;gap:8px;justify-content:center;margin-bottom:10px;width:100%;}
+.wof-pl{flex:1;max-width:110px;background:#0d1a2e;border:1px solid #1a2a4a;border-radius:10px;padding:6px 4px;text-align:center;transition:all .2s;}
+.wof-pl.active{border-color:#ffd700;box-shadow:0 0 12px rgba(255,215,0,.35);}
+#wof-btnrow{display:flex;gap:8px;justify-content:center;margin-bottom:8px;}
+#wof-btnrow .btn{flex:1;font-size:.62rem;padding:9px 4px;}
 #wof-wheelwrap{position:relative;width:190px;height:190px;margin:0 auto 6px;}
 .wof-ptr{position:absolute;top:-4px;left:50%;transform:translateX(-50%);z-index:5;color:#ffd700;font-size:1.3rem;text-shadow:0 0 8px #ffd700;}
 #wof-wheel{width:100%;height:100%;}
@@ -366,10 +372,15 @@
 </style>
   <div id="wof-hud"></div>
   <div id="wof-body">
+    <div id="wof-players"></div>
     <div id="wof-clue"></div>
     <div id="wof-slots"></div>
     <div id="wof-wheelwrap"><div id="wof-wheel"></div></div>
-    <button class="btn btn-gold" id="wof-spinbtn" onclick="wofSpin()">🎡 КРУТИТЬ</button>
+    <div id="wof-btnrow">
+      <button class="btn btn-gold" id="wof-spinbtn" onclick="wofSpin()">🎡 КРУТИТЬ</button>
+      <button class="btn" id="wof-hintbtn" onclick="wofHint()">💡 ПОДСКАЗКА</button>
+      <button class="btn" id="wof-exitbtn" style="border-color:#ff3355;color:#ff3355;" onclick="wofExit()">ВЫХОД</button>
+    </div>
     <div id="wof-fb">Крути колесо и угадывай буквы!</div>
     <div id="wof-keys"></div>
   </div>
