@@ -314,7 +314,126 @@
   <button class="btn" style="border-color:#ff00aa;color:#ff00aa;" onclick="window.location.href='minigames.html'">[ ⚡ 10 МИНИ-ИГР ]<br><span style="font-size:.5rem;opacity:.7;">5-6 → 10-11 КЛАСС · ПО УВЕЛИЧЕНИЮ</span></button>
   <button class="btn btn-gold" onclick="showS('intro-screen')" style="border-color:#00f5ff;color:#00f5ff;">[ ⏱ ПОВЕЛИТЕЛЬ ВРЕМЕНИ ]<br><span style="font-size:.5rem;opacity:.7;">УГЛЫ СТРЕЛОК · СЛОЖНЫЕ ЗАДАЧИ</span></button>
 
+  <div class="other-label" style="color:#ff6b35;margin-top:14px;">── 9–11 КЛАСС · ЕНТ ──</div>
+  <button class="btn" style="border-color:#ff6b35;color:#ff6b35;" onclick="entMenu()">[ ⏰ ЭКЗАМЕН ХРОНОСА ]<br><span style="font-size:.5rem;opacity:.7;">ЗАДАНИЯ ЕНТ · БЕСКОНЕЧНАЯ БАШНЯ · РОГАЛИК</span></button>
+  <button class="btn" style="border-color:#c47aff;color:#c47aff;" onclick="wofMenu()">[ 🎡 ПОЛЕ ХРОНОСА ]<br><span style="font-size:.5rem;opacity:.7;">УГАДАЙ ТЕРМИН · КОЛЕСО ОЧКОВ · ПОЛЕ ЧУДЕС</span></button>
+
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:14px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<!-- ══ ПОЛЕ ХРОНОСА ══ -->
+<div class="screen hidden" id="sPole-menu">
+  <div style="font-size:2.4rem;">🎡</div>
+  <div class="gmenu-title" style="font-size:.95rem;line-height:1.3;">ПОЛЕ<br>ХРОНОСА</div>
+  <div class="gmenu-sub" style="margin-bottom:10px;">// УГАДАЙ МАТЕМАТИЧЕСКИЙ ТЕРМИН //</div>
+  <div id="wof-best" style="color:#889;font-size:.62rem;letter-spacing:1px;margin-bottom:14px;text-align:center;"></div>
+  <button class="btn btn-gold" onclick="wofStart()">[ 🎮 ИГРАТЬ ]</button>
+  <button class="btn" onclick="showS('sPole-rules')">[ 📜 ПРАВИЛА ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:8px;" onclick="showS('game-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<div class="screen hidden" id="sPole-rules">
+  <div class="gmenu-title" style="font-size:.85rem;padding:10px 0 6px;">📜 ПОЛЕ ХРОНОСА</div>
+  <div style="max-width:420px;font-size:.75rem;line-height:1.65;color:#aab;text-align:left;">
+    <p><b style="color:#00f5ff;">📖 Термин по определению.</b> На экране определение — угадай математическое слово буква за буквой. 5 слов за забег.</p>
+    <p><b style="color:#ffd700;">🎡 Колесо очков.</b> Перед каждой буквой крути колесо: сколько выпало очков — столько получишь за каждую открытую букву.</p>
+    <p><b style="color:#c47aff;">✖ Сектор ×2.</b> Удваивает очки следующей буквы. <b style="color:#ffd700;">ПРИЗ</b> — бесплатная буква. <b style="color:#ff3355;">БАНКРОТ</b> — банк слова обнуляется!</p>
+    <p><b style="color:#ff3355;">❤ Промахи.</b> 3 неверных буквы на слово — слово сгорает, монеты за него не начисляются.</p>
+    <p><b style="color:#97ce4c;">💰 Награда.</b> Очки слова превращаются в монеты (2 очка = 1 монета) и зачисляются в конце забега.</p>
+  </div>
+  <button class="btn" style="margin-top:12px;border-color:var(--dg);color:var(--dg);" onclick="showS('sPole-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<div class="screen hidden" id="sPole-game" style="padding:0;overflow:hidden;">
+<style>
+#wof-hud{display:flex;justify-content:space-around;align-items:center;padding:8px 10px;background:#0a0f20;border-bottom:1px solid #1a2a4a;width:100%;flex-shrink:0;}
+#wof-body{flex:1;overflow-y:auto;padding:10px 12px 20px;width:100%;max-width:480px;margin:0 auto;}
+#wof-clue{background:#0d1a2e;border:1px solid #1a2a4a;border-radius:10px;padding:10px 12px;font-size:.78rem;color:#8fd7ff;font-style:italic;text-align:center;margin-bottom:10px;}
+#wof-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-bottom:10px;}
+.wof-slot{width:30px;height:38px;border-bottom:3px solid #2a3a5a;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:1rem;color:#ffd700;}
+#wof-wheelwrap{position:relative;width:190px;height:190px;margin:0 auto 6px;}
+.wof-ptr{position:absolute;top:-4px;left:50%;transform:translateX(-50%);z-index:5;color:#ffd700;font-size:1.3rem;text-shadow:0 0 8px #ffd700;}
+#wof-wheel{width:100%;height:100%;}
+#wof-spinbtn{display:block;margin:0 auto 8px;}
+#wof-fb{min-height:20px;text-align:center;font-size:.72rem;color:#aab;margin-bottom:8px;}
+#wof-keys{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.wof-key{background:#0a0f20;color:#dde;border:1px solid #1a2a4a;border-radius:8px;padding:9px 0;font-family:'Share Tech Mono',monospace;font-size:.85rem;cursor:pointer;transition:all .12s;}
+.wof-key:not(:disabled):active{border-color:#00f5ff;transform:scale(.93);}
+.wof-key.hit{background:#123a1a;border-color:#97ce4c;color:#97ce4c;}
+.wof-key.miss{opacity:.18;}
+#wof-worddone,#wof-over{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,8,18,.94);padding:20px;text-align:center;}
+#wof-worddone.hidden,#wof-over.hidden{display:none;}
+</style>
+  <div id="wof-hud"></div>
+  <div id="wof-body">
+    <div id="wof-clue"></div>
+    <div id="wof-slots"></div>
+    <div id="wof-wheelwrap"><div id="wof-wheel"></div></div>
+    <button class="btn btn-gold" id="wof-spinbtn" onclick="wofSpin()">🎡 КРУТИТЬ</button>
+    <div id="wof-fb">Крути колесо и угадывай буквы!</div>
+    <div id="wof-keys"></div>
+  </div>
+  <div id="wof-worddone" class="hidden"></div>
+  <div id="wof-over" class="hidden"></div>
+</div>
+
+<!-- ══ ЭКЗАМЕН ХРОНОСА (ЕНТ) ══ -->
+<div class="screen hidden" id="sEnt-menu">
+  <div style="font-size:2.4rem;">⏰</div>
+  <div class="gmenu-title" style="font-size:.95rem;line-height:1.3;">ЭКЗАМЕН<br>ХРОНОСА</div>
+  <div class="gmenu-sub" style="margin-bottom:10px;">// ЗАДАНИЯ ЕНТ · МАТЕМАТИКА · БАШНЯ //</div>
+  <div id="ent-best" style="color:#889;font-size:.62rem;letter-spacing:1px;margin-bottom:14px;text-align:center;"></div>
+  <button class="btn btn-gold" onclick="entStart()">[ 🎮 НАЧАТЬ ВОСХОЖДЕНИЕ ]</button>
+  <button class="btn" onclick="entRules()">[ 📜 ПРАВИЛА ]</button>
+  <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:8px;" onclick="showS('game-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<div class="screen hidden" id="sEnt-rules">
+  <div class="gmenu-title" style="font-size:.85rem;padding:10px 0 6px;">📜 ЭКЗАМЕН ХРОНОСА</div>
+  <div style="max-width:420px;font-size:.75rem;line-height:1.65;color:#aab;text-align:left;">
+    <p><b style="color:#00f5ff;">⏰ Стрелка Хроноса.</b> На каждый вопрос у тебя один оборот стрелки часов. С каждым этажом она быстрее. Стрелка дошла до 12:00 — ответ не принят.</p>
+    <p><b style="color:#ffd700;">⏳ Жизни-часы.</b> Ошибка или таймаут тратит один «час». У тебя 3 часа, максимум 5. Потерял все — забег окончен.</p>
+    <p><b style="color:#ff6b35;">🏗 Бесконечная башня.</b> Этажи идут без конца, вопросы ЕНТ усложняются: этажи 1–3 — база, 4–8 — средний, дальше — профильный уровень.</p>
+    <p><b style="color:#97ce4c;">🎁 Дары Хроноса.</b> Каждый 4-й этаж дарит выбор усиления: замедление стрелки, +1 час, 50/50, двойные монеты или щит.</p>
+    <p><b style="color:#00f5ff;">💰 Награда.</b> +3 монеты за верный ответ, +10 за каждую серию из 5. Монеты зачисляются в конце забега.</p>
+  </div>
+  <button class="btn" style="margin-top:12px;border-color:var(--dg);color:var(--dg);" onclick="showS('sEnt-menu')">[ ← НАЗАД ]</button>
+</div>
+
+<div class="screen hidden" id="sEnt-game" style="padding:0;overflow:hidden;">
+<style>
+#ent-hud{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0f20;border-bottom:1px solid #1a2a4a;width:100%;flex-shrink:0;}
+#ent-body{flex:1;overflow-y:auto;padding:10px 12px 20px;width:100%;max-width:480px;margin:0 auto;}
+#ent-clockwrap{display:flex;justify-content:center;margin:6px 0 2px;}
+#ent-qcard{background:#0d1a2e;border-radius:12px;padding:14px;border:2px solid #1a2a4a;transition:border-color .3s;}
+.ent-opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#0a0f20;color:#dde;border:1px solid #1a2a4a;border-radius:10px;padding:11px 12px;margin-bottom:8px;font-size:.85rem;cursor:pointer;font-family:'Share Tech Mono',monospace;transition:all .15s;}
+.ent-opt:not(:disabled):active{border-color:#00f5ff;transform:scale(.98);}
+.ent-opt:disabled{cursor:default;}
+.ent-opt-l{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;border:1px solid #2a3a5a;border-radius:8px;color:#00f5ff;font-size:.75rem;flex-shrink:0;}
+#ent-sol{margin-top:10px;font-size:.78rem;line-height:1.5;background:#0a0f20;border-radius:8px;padding:10px;}
+#ent-perks-row{min-height:16px;text-align:center;font-size:.7rem;color:#ffd700;margin-top:8px;letter-spacing:2px;}
+#ent-perk-modal,#ent-over{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,8,18,.94);padding:20px;text-align:center;}
+#ent-perk-modal.hidden,#ent-over.hidden{display:none;}
+.ent-perk{width:280px;max-width:88%;background:#0d1a2e;border:2px solid #2a4a1a;border-radius:12px;padding:12px;margin-bottom:10px;cursor:pointer;color:#dde;font-family:'Share Tech Mono',monospace;font-size:.8rem;display:flex;flex-direction:column;gap:4px;transition:all .15s;}
+.ent-perk:active{border-color:#ffd700;transform:scale(.97);}
+#ent-over .btn{margin-top:10px;}
+</style>
+  <div id="ent-hud"></div>
+  <div id="ent-body">
+    <div id="ent-clockwrap">
+      <svg viewBox="0 0 200 200" style="width:110px;height:110px;">
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#1a2a4a" stroke-width="5"/>
+        <g id="ent-ticks"></g>
+        <line id="ent-hand" x1="100" y1="112" x2="100" y2="34" stroke="#00f5ff" stroke-width="5" stroke-linecap="round" transform="rotate(0 100 100)"/>
+        <circle cx="100" cy="100" r="7" fill="#0a0f20" stroke="#00f5ff" stroke-width="3"/>
+        <text id="ent-secs" x="100" y="168" text-anchor="middle" fill="#00f5ff" font-size="30" font-family="Orbitron,monospace" font-weight="bold">60</text>
+      </svg>
+    </div>
+    <div id="ent-qcard"></div>
+    <div id="ent-perks-row"></div>
+  </div>
+  <div id="ent-perk-modal" class="hidden"></div>
+  <div id="ent-over" class="hidden"></div>
 </div>
 
 <!-- ══ ВЛАСТЕЛИНЫ ВРЕМЕНИ — МЕНЮ ══ -->
@@ -764,6 +883,9 @@
 </div>
 
 <script src="qb.js"></script>
+<script src="ent.js"></script>
+<script src="ent_game.js"></script>
+<script src="pole.js"></script>
 <script>
 /* ══ РЕПЛИКИ РИКА ══ */
 const RICK_OK=['✓ ГЕНИАЛЬНО, МОРТИ!','✓ НАУКА ПОБЕДИЛА!','✓ РИК БЫ ГОРДИЛСЯ!','✓ ПОРТАЛ СТАБИЛЕН!','✓ ВОТ ЭТО Я ПОНИМАЮ, НАУКА!'];
@@ -1395,7 +1517,7 @@ function useAns(){
 function updMenuCoins(){document.getElementById('menu-coins').textContent='💰 '+SAVE.coins+' монет';}
 function showFb(msg,cls){const e=document.getElementById('fb');e.textContent=msg;e.className='fb '+cls;}
 function showS(id){
-  ['sAuth','intro-screen','main-menu','game-menu','vl-menu','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','result-screen','gameover-screen','win-screen','hk-result','sTournament','sShop','sLB']
+  ['sAuth','intro-screen','main-menu','game-menu','vl-menu','vl-game','vl-rules','hk-menu','hk-cards','hk-game','hk-rules','game-screen','result-screen','gameover-screen','win-screen','hk-result','sTournament','sShop','sLB','sEnt-menu','sEnt-rules','sEnt-game','sPole-menu','sPole-rules','sPole-game']
     .forEach(s=>{var e=document.getElementById(s);if(e)e.classList.add('hidden');});
   var t=document.getElementById(id);if(t)t.classList.remove('hidden');
 }
@@ -1406,6 +1528,21 @@ function goMenu(){updMenuCoins();showS('main-menu');}
 /* ══ INIT ══ */
 document.body.addEventListener('click',initA,{once:true});
 drawTicks();updMenuCoins();checkIntro();
+wofBuildWheel();
+/* тики часов Экзамена Хроноса */
+(function(){
+  var g=document.getElementById('ent-ticks');
+  if(!g)return;
+  var h='';
+  for(var i=0;i<12;i++){
+    var a=i*30*Math.PI/180;
+    var x1=100+78*Math.sin(a),y1=100-78*Math.cos(a);
+    var x2=100+88*Math.sin(a),y2=100-88*Math.cos(a);
+    var big=(i%3===0);
+    h+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+(big?'#2a3a5a':'#16243f')+'" stroke-width="'+(big?3:2)+'"/>';
+  }
+  g.innerHTML=h;
+})();
 
 /* ══ ВЛАСТЕЛИНИ ВРЕМЕНИ ══ */
 /* ══ ВЛАСТЕЛИНЫ ВРЕМЕНИ — ПОЛНАЯ ИГРА ══ */
