@@ -168,9 +168,11 @@ function wofSpin(){
   wofRender();
   document.getElementById('wof-fb').textContent='Колесо вращается...';
   var si=Math.floor(Math.random()*12);
-  var center=si*30+15;
+  WOF.lastSector=si;
+  // центр сектора si в координатах SVG: si*30-75; указатель сверху: -90°
+  // доводим так, чтобы центр сектора встал под указатель (±10° внутри сектора)
   var jitter=(Math.random()*20-10);
-  var target=(270-center-jitter)%360;
+  var target=(((-15-si*30+jitter)%360)+360)%360;
   WOF.rot+=360*(4+Math.floor(Math.random()*3));
   var cur=((WOF.rot%360)+360)%360;
   WOF.rot+=(((target-cur)%360)+360)%360;
@@ -234,9 +236,9 @@ function wofBotTurn(){
 function wofBotGuess(){
   if(!WOF||WOF.over||!wofCur().bot)return;
   var w=WOF.words[WOF.idx];
-  // 65% бот назовёт верную букву
+  // боты угадывают верную букву в 30% случаев
   var L;
-  if(Math.random()<0.65){
+  if(Math.random()<0.30){
     var good=[];
     for(var i=0;i<w[0].length;i++){var c=w[0][i];if(!WOF.used[c]&&good.indexOf(c)<0)good.push(c);}
     if(good.length>0)L=good[Math.floor(Math.random()*good.length)];
