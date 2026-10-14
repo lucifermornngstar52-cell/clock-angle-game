@@ -317,7 +317,7 @@
   <div class="other-label" style="color:#ff6b35;margin-top:14px;">── 9–11 КЛАСС · ЕНТ ──</div>
   <button class="btn" style="border-color:#ff6b35;color:#ff6b35;" onclick="entMenu()">[ ⏰ ЭКЗАМЕН ХРОНОСА ]<br><span style="font-size:.5rem;opacity:.7;">ЗАДАНИЯ ЕНТ · БЕСКОНЕЧНАЯ БАШНЯ · РОГАЛИК</span></button>
   <button class="btn" style="border-color:#c47aff;color:#c47aff;" onclick="wofMenu()">[ 🎡 ПОЛЕ ХРОНОСА ]<br><span style="font-size:.5rem;opacity:.7;">НАСТОЯЩЕЕ ПОЛЕ ЧУДЕС · БОТЫ-СОПЕРНИКИ · ЕНТ</span></button>
-  <button class="btn" style="border-color:#5cff8f;color:#5cff8f;" onclick="mazeMenu()">[ 🗺 ЛАБИРИНТ ЕНТ ]<br><span style="font-size:.5rem;opacity:.7;">ПОБЕГ ИЗ ЛАБИРИНТА · КЛЕТКИ-СОБЫТИЯ · БОТЫ</span></button>
+  <button class="btn" style="border-color:#5cff8f;color:#5cff8f;" onclick="mazeMenu()">[ 🗺 ЛАБИРИНТ ЕНТ ]<br><span style="font-size:.5rem;opacity:.7;">НАСТОЯЩИЙ ЛАБИРИНТ · ВЫБОР ХОДА · БОТЫ-СОПЕРНИКИ</span></button>
 
   <button class="btn" style="border-color:var(--dg);color:var(--dg);margin-top:14px;" onclick="showS('main-menu')">[ ← НАЗАД ]</button>
 </div>
@@ -359,9 +359,9 @@
 <div class="screen hidden" id="sMaze-rules">
   <div class="gmenu-title" style="font-size:.85rem;padding:10px 0 6px;">📜 ЛАБИРИНТ ЕНТ</div>
   <div style="max-width:420px;font-size:.75rem;line-height:1.65;color:#aab;text-align:left;">
-    <p><b style="color:#5cff8f;">🗺 Побег.</b> Ты и два соперника-бота стартуют вместе. Каждый ход — вопрос клетки впереди: ответил верно — шагаешь на неё, ошибся — стоишь. Кто первый добрался до 🏁 — победил.</p>
-    <p><b style="color:#97ce4c;">🟢 Путь.</b> Обычный вопрос ЕНТ. <b style="color:#ff3355;">🔴 Препятствие</b> — сложный вопрос: ошибся — пропускаешь следующий ход (❄). <b style="color:#ffd700;">⭐ Сокровище</b> — 3 варианта: верно — <b style="color:#ffd700;">+2 шага сразу</b>.</p>
-    <p><b style="color:#ff6b35;">🔥 Испытание.</b> Введи термин по определению. Ошибся — <b style="color:#ff3355;">шаг назад</b>. <b style="color:#c47aff;">🔄 Портал</b> — верный ответ открывает выбор: прыжок на 2 клетки вперёд себе ИЛИ отправить соперника на 2 назад 😈.</p>
+    <p><b style="color:#5cff8f;">🗺 Тьма.</b> Лабиринт затемнён: видно только небольшую освещённую зону вокруг персонажей (у тебя она больше). Выход 🏁 мерцает маяком в темноте. Стены, коридоры, развилки. Каждый ход ты сам выбираешь, куда пойти: тапни подсвеченную соседнюю клетку. Боты тоже блуждают к выходу. Кто первым дошёл до 🏁 — победил.</p>
+    <p><b style="color:#97ce4c;">🟢 Путь.</b> Обычный вопрос ЕНТ. <b style="color:#ff3355;">🔴 Препятствие</b> — сложный вопрос: ошибся — пропускаешь следующий ход (❄). <b style="color:#ffd700;">⭐ Сокровище</b> — 3 варианта: верно — <b style="color:#ffd700;">бесплатный второй ход</b>.</p>
+    <p><b style="color:#ff6b35;">🔥 Испытание.</b> Введи термин по определению. Ошибся — <b style="color:#ff3355;">отброшен на клетку назад</b>. <b style="color:#c47aff;">🔄 Портал</b> — верный ответ открывает выбор: прыжок на 2 клетки к выходу себе ИЛИ отбросить соперника на 2 клетки к старту 😈.</p>
     <p><b style="color:#97ce4c;">💰 Награда.</b> +2 монеты за каждый верный ответ, +20 за победу в забеге. Монеты за ответы зачисляются сразу.</p>
   </div>
   <button class="btn" style="margin-top:12px;border-color:var(--dg);color:var(--dg);" onclick="showS('sMaze-menu')">[ ← НАЗАД ]</button>
@@ -420,7 +420,8 @@
 #mz-over:not(.hidden),#mz-q:not(.hidden),#mz-term:not(.hidden),#mz-portal:not(.hidden){display:flex;}
 .mz-row{display:flex;gap:6px;justify-content:center;margin-bottom:6px;}
 .mz-cell{width:50px;height:50px;border:1px solid var(--dg);border-radius:8px;background:rgba(255,255,255,.04);font-size:1.05rem;display:flex;align-items:center;justify-content:center;position:relative;}
-.mz-tok{position:absolute;bottom:2px;width:13px;height:13px;border-radius:50%;border:1px solid rgba(255,255,255,.7);font-size:7px;line-height:12px;text-align:center;color:#000;}
+.mz-can{outline:2px solid #ffd700;outline-offset:-2px;box-shadow:0 0 10px #ffd7006e,inset 0 0 8px #ffd70033;}
+.mz-tok{position:absolute;bottom:2px;width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.85);font-size:10px;line-height:13px;text-align:center;filter:drop-shadow(0 0 4px rgba(255,255,255,.5));}
 #wof-sayword{display:none;flex-direction:column;align-items:center;justify-content:center;}
 #wof-sayword:not(.hidden){display:flex;}
 #wof-wheelwrap{position:relative;width:190px;height:190px;margin:0 auto 6px;}
