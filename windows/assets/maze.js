@@ -331,10 +331,13 @@ function mazeWin(p){
 function mzCloseOver(){document.getElementById('mz-over').classList.add('hidden');MZG=null;}
 
 function mazeExit(){
-  if(MZG&&MZG.on&&!MZG.players[0].bot){
+  if(MZG&&MZG.on){
     if(!confirm('Выйти из лабиринта? Монеты за верные ответы сохранены.'))return;
-    MZG.on=false;MZG=null;
-    mzCloseQ();mzCloseTerm();document.getElementById('mz-portal').classList.add('hidden');mzCloseOver();
-    mazeMenu();
   }
+  if(MZG)MZG.on=false;
+  MZG=null;
+  mzCloseQ();mzCloseTerm();
+  document.getElementById('mz-portal').classList.add('hidden');
+  mzCloseOver();
+  mazeMenu();
 }
