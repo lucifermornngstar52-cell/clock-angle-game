@@ -125,7 +125,7 @@ function wofTurnMsg(){
   hb.disabled=p.bot||SAVE.coins<WOF_HINT_COST||WOF.over;
   hb.textContent='💡 ПОДСКАЗКА (−'+WOF_HINT_COST+'🪙)';
   var sb=document.getElementById('wof-saybtn');
-  if(sb)sb.disabled=p.bot||WOF.over;
+  if(sb)sb.disabled=p.bot||WOF.over||WOF.spinVal===null;
 }
 
 function wofRender(){
@@ -301,6 +301,10 @@ function wofNextTurn(){
 /* ── назвать слово целиком ── */
 function wofSayWord(){
   if(!WOF||WOF.over||wofCur().bot||WOF.spinning)return;
+  if(WOF.spinVal===null){
+    document.getElementById('wof-fb').innerHTML='<b style="color:#ff3355;">Сначала прокрути барабан!</b> Назвать слово можно после прокрутки.';
+    return;
+  }
   var box=document.getElementById('wof-sayword');
   box.classList.remove('hidden');
   var inp=document.getElementById('wof-sayinp');
@@ -316,6 +320,8 @@ function wofSayCheck(){
   var w=WOF.words[WOF.idx];
   if(guess===w[0]){
     for(var i=0;i<w[0].length;i++)if(WOF.opened.indexOf(i)<0)WOF.opened.push(i);
+    wofCur().bank+=WOF.spinVal||0;
+    WOF.spinVal=null;
     sfx('ok');
     wofRender();
     document.getElementById('wof-fb').innerHTML='<b style="color:#97ce4c;">ВЕРНО! Слово названо целиком!</b>';
@@ -377,7 +383,8 @@ function wofNextWord(){
 function wofOver(){
   WOF.over=true;
   var me=WOF.players[0];
-  var coins=Math.floor(me.total/2);
+  var winner=WOF.players.slice().sort(function(a,b){return b.total-a.total;})[0];
+  var coins=me.wins*10+(!winner.bot?25:0);
   WOF.coins=coins;
   SAVE.coins+=coins;
   saveData();
@@ -391,7 +398,7 @@ function wofOver(){
   box.innerHTML='<div style="font-size:1.2rem;font-family:Orbitron,monospace;color:#ffd700;">ИГРА ОКОНЧЕНА</div>'+
     '<div style="font-size:.85rem;color:'+(winner.bot?'#ff3355':'#97ce4c')+';margin:8px 0;font-family:Orbitron,monospace;">ПОБЕДИТЕЛЬ: '+winner.name+'</div>'+
     '<div style="font-size:.72rem;color:#aab;margin:8px 0;line-height:1.6;">'+ph+'</div>'+
-    '<div style="font-size:.9rem;color:#97ce4c;font-family:Orbitron,monospace;">+'+coins+' 🪙'+(rec?' <b style="color:#ffd700;">РЕКОРД!</b>':'')+'</div>'+
+    '<div style="font-size:.9rem;color:#97ce4c;font-family:Orbitron,monospace;">+'+coins+' 🪙 '+(me.wins?'('+me.wins+'×10 за слова'+(!winner.bot?' +25 за победу':'')+')':'')+(rec?' <b style="color:#ffd700;">РЕКОРД!</b>':'')+'</div>'+
     '<button class="btn btn-gold" style="margin-top:14px;" onclick="wofStart()">[ 🔁 СНОВА ]</button>'+
     '<button class="btn" onclick="goMenu()">[ ← В МЕНЮ ]</button>';
   box.classList.remove('hidden');
@@ -410,7 +417,7 @@ function wofExit(){
   }
   wofClearTimers();
   // монеты за завершённые слова зачитываем, банк текущего слова сгорает
-  var coins=Math.floor(WOF.players[0].total/2);
+  var coins=WOF.players[0].wins*10;
   if(coins>0){SAVE.coins+=coins;saveData();}
   WOF=null;
   goMenu();
