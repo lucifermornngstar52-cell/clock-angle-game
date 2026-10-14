@@ -29,6 +29,8 @@ bigo.sg, 1114681, RESELLER
 blueseasx.com, 203620, RESELLER, 7998eac5087f6110
 bold-win.com, 1080, RESELLER, 71746737d0bab951
 bold-win.com, 1139, RESELLER, 71746737d0bab951
+bold-win.com, 1145, RESELLER, 71746737d0bab951
+conversantmedia.com, 100269, RESELLER, 03113cd04947736d
 conversantmedia.com, 100308, RESELLER, 03113cd04947736d
 conversantmedia.com, 100339, RESELLER, 03113cd04947736d
 conversantmedia.com, 100358, RESELLER, 03113cd04947736d
@@ -72,6 +74,7 @@ opera.com, pub5865193350528, RESELLER, 55a0c5fd61378de3
 opera.com, pub6148735850944, RESELLER, 55a0c5fd61378de3
 opera.com, pub9166643429696, RESELLER, 55a0c5fd61378de3
 playdigo.com, 1988, RESELLER, 92011346d63d3c30
+playdigo.com, 2041, RESELLER, 92011346d63d3c30
 prado.co, 15614, RESELLER
 pubmatic.com, 137711, RESELLER, 5d62403b186f2ace
 pubmatic.com, 156212, RESELLER, 5d62403b186f2ace
@@ -83,6 +86,7 @@ pubmatic.com, 161162, RESELLER, 5d62403b186f2ace
 pubmatic.com, 165117, RESELLER, 5d62403b186f2ace
 pubmatic.com, 165157, RESELLER, 5d62403b186f2ace
 pubmatic.com, 165329, RESELLER, 5d62403b186f2ace
+pubmatic.com, 165864, RESELLER, 5d62403b186f2ace
 pubmatic.com, 167188, RESELLER, 5d62403b186f2ace
 pubmatic.com, 167323, RESELLER, 5d62403b186f2ace
 pubmatic.com, 167514, RESELLER, 5d62403b186f2ace
@@ -108,6 +112,7 @@ rubiconproject.com, 26132, RESELLER, 0bfd66d529a55807
 rubiconproject.com, 26156, RESELLER, 0bfd66d529a55807
 rubiconproject.com, 27136, RESELLER, 0bfd66d529a55807
 rubiconproject.com, 27386, RESELLER, 0bfd66d529a55807
+rubiconproject.com, 27714, RESELLER, 0bfd66d529a55807
 rubiconproject.com, 27842, RESELLER, 0bfd66d529a55807
 rubiconproject.com, 27867, RESELLER, 0bfd66d529a55807
 rubiconproject.com, 27969, RESELLER, 0bfd66d529a55807
@@ -155,6 +160,7 @@ video.unrulymedia.com, 3948367200, RESELLER, 98c21ef9a666c68b
 video.unrulymedia.com, 475093422, RESELLER, 98c21ef9a666c68b
 video.unrulymedia.com, 630415254, RESELLER, 98c21ef9a666c68b
 video.unrulymedia.com, 894246135, RESELLER, 98c21ef9a666c68b
+xandr.com, 13955, RESELLER, f5ab79cb980f11d1
 xandr.com, 15278, RESELLER, f5ab79cb980f11d1
 yandex.com, 332620863, DIRECT
 yandex.com, 99368458, DIRECT
