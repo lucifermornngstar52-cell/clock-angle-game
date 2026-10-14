@@ -338,7 +338,7 @@
     <p><b style="color:#00f5ff;">📖 Настоящее Поле Чудес.</b> Ты и два соперника-бота с реальными именами. Угадывайте ЕНТ-термин по определению. 3 слова за игру.</p>
     <p><b style="color:#ffd700;">🎡 Колесо очков.</b> Угадал букву — крути дальше. Промах — ход переходит сопернику. Кто открыл последнюю букву — забирает банк слова.</p>
     <p><b style="color:#c47aff;">✖ Сектор ×2.</b> Удваивает очки следующей буквы. <b style="color:#ffd700;">ПРИЗ</b> — бесплатная буква. <b style="color:#ff3355;">БАНКРОТ</b> — банк слова обнуляется!</p>
-    <p><b style="color:#ff3355;">💡 Подсказка.</b> Открывает одну букву за 25 монет. «Выход» завершает игру, заработок за отгаданные слова сохраняется.</p>
+    <p><b style="color:#ff3355;">💡 Подсказка.</b> Открывает одну букву за 25 монет. «Назвать слово» — введи термин целиком: верно — забираешь банк, ошибся — ход сопернику. «Выход» завершает игру, заработок сохраняется.</p>
     <p><b style="color:#97ce4c;">💰 Награда.</b> Твои очки превращаются в монеты (2 очка = 1 монета). БАНКРОТ сжигает банк, ПРИЗ даёт бесплатную букву, ×2 удваивает.</p>
   </div>
   <button class="btn" style="margin-top:12px;border-color:var(--dg);color:var(--dg);" onclick="showS('sPole-menu')">[ ← НАЗАД ]</button>
@@ -381,8 +381,19 @@
       <button class="btn" id="wof-hintbtn" onclick="wofHint()">💡 ПОДСКАЗКА</button>
       <button class="btn" id="wof-exitbtn" style="border-color:#ff3355;color:#ff3355;" onclick="wofExit()">ВЫХОД</button>
     </div>
+    <button class="btn" id="wof-saybtn" style="width:100%;margin-bottom:8px;border-color:#97ce4c;color:#97ce4c;" onclick="wofSayWord()">📝 НАЗВАТЬ СЛОВО ЦЕЛИКОМ</button>
     <div id="wof-fb">Крути колесо и угадывай буквы!</div>
     <div id="wof-keys"></div>
+  </div>
+  <div id="wof-sayword" class="hidden" style="position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,8,18,.94);padding:20px;">
+    <div style="font-size:.8rem;color:#00f5ff;font-family:Orbitron,monospace;margin-bottom:12px;">НАЗОВИ СЛОВО ЦЕЛИКОМ</div>
+    <input id="wof-sayinp" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false"
+      style="width:min(320px,86%);background:#f2f4f8;color:#0a0f20;border:2px solid #00f5ff;border-radius:10px;padding:12px;font-family:Orbitron,monospace;font-size:1.1rem;text-align:center;text-transform:uppercase;letter-spacing:3px;outline:none;">
+    <div style="font-size:.6rem;color:#889;margin-top:6px;">ошибёшься — ход перейдёт сопернику</div>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button class="btn btn-gold" onclick="wofSayCheck()">[ ✓ ВВЕСТИ ]</button>
+      <button class="btn" style="border-color:var(--dg);color:var(--dg);" onclick="wofSayCancel()">[ ← ОТМЕНА ]</button>
+    </div>
   </div>
   <div id="wof-worddone" class="hidden"></div>
   <div id="wof-over" class="hidden"></div>

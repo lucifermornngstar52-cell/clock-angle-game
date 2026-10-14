@@ -106,6 +106,8 @@ function wofWord(){
   WOF.turn=WOF.idx%3; // стартовый игрок меняется от слова к слову
   document.getElementById('wof-over').classList.add('hidden');
   document.getElementById('wof-worddone').classList.add('hidden');
+  var sw=document.getElementById('wof-sayword');
+  if(sw)sw.classList.add('hidden');
   wofRender();
   wofTurnMsg();
   if(WOF.players[WOF.turn].bot)wofLater(wofBotTurn,1200);
@@ -122,6 +124,8 @@ function wofTurnMsg(){
   var hb=document.getElementById('wof-hintbtn');
   hb.disabled=p.bot||SAVE.coins<WOF_HINT_COST||WOF.over;
   hb.textContent='💡 ПОДСКАЗКА (−'+WOF_HINT_COST+'🪙)';
+  var sb=document.getElementById('wof-saybtn');
+  if(sb)sb.disabled=p.bot||WOF.over;
 }
 
 function wofRender(){
@@ -293,6 +297,36 @@ function wofNextTurn(){
   wofTurnMsg();
   if(wofCur().bot)wofLater(wofBotTurn,900);
 }
+
+/* ── назвать слово целиком ── */
+function wofSayWord(){
+  if(!WOF||WOF.over||wofCur().bot||WOF.spinning)return;
+  var box=document.getElementById('wof-sayword');
+  box.classList.remove('hidden');
+  var inp=document.getElementById('wof-sayinp');
+  inp.value='';
+  setTimeout(function(){try{inp.focus();}catch(e){}},80);
+}
+function wofSayCheck(){
+  if(!WOF||WOF.over)return;
+  var inp=document.getElementById('wof-sayinp');
+  var guess=(inp.value||'').toUpperCase().replace(/Ё/g,'Ё').trim();
+  document.getElementById('wof-sayword').classList.add('hidden');
+  if(!guess)return;
+  var w=WOF.words[WOF.idx];
+  if(guess===w[0]){
+    for(var i=0;i<w[0].length;i++)if(WOF.opened.indexOf(i)<0)WOF.opened.push(i);
+    sfx('ok');
+    wofRender();
+    document.getElementById('wof-fb').innerHTML='<b style="color:#97ce4c;">ВЕРНО! Слово названо целиком!</b>';
+    wofLater(function(){wofRoundEnd();},900);
+  } else {
+    sfx('no');
+    document.getElementById('wof-fb').innerHTML='<b style="color:#ff3355;">«'+guess+'» — не то слово!</b> Ход переходит сопернику.';
+    wofLater(wofNextTurn,1200);
+  }
+}
+function wofSayCancel(){document.getElementById('wof-sayword').classList.add('hidden');}
 
 /* ── подсказка ── */
 function wofHint(){
