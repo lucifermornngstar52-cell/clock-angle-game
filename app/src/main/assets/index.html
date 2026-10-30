@@ -2768,5 +2768,18 @@ function vlUseHint(){
 }
 </script>
 <script>document.addEventListener("DOMContentLoaded",initAdsUI);</script>
+
+<!-- Счётчик посещений (без регистрации): визиты за сессию + уникальные устройства -->
+<script>
+(function(){
+  try{
+    var NS='numbra-clock-angle-game';
+    function bump(key){try{fetch('https://abacus.jasoncameron.dev/hit/'+NS+'/'+key,{cache:'no-store'}).catch(function(){});}catch(e){}}
+    if(!sessionStorage.getItem('nv_s')){sessionStorage.setItem('nv_s','1');bump('visits');}
+    if(!localStorage.getItem('nv_u')){localStorage.setItem('nv_u','1');bump('unique');}
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
